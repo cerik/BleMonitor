@@ -57,17 +57,20 @@
             this.label1 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.btConnect = new System.Windows.Forms.Button();
+            this.btScanStop = new System.Windows.Forms.Button();
+            this.btScanStart = new System.Windows.Forms.Button();
             this.lvScanDev = new System.Windows.Forms.ListView();
             this.cName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.cRssi = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.cPacketType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.cMacAddr = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.mAdrTye = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.cBond = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.btScanStop = new System.Windows.Forms.Button();
-            this.btScanStart = new System.Windows.Forms.Button();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.txtLog = new System.Windows.Forms.TextBox();
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.btDisconnect = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -387,43 +390,29 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             // 
-            // lvScanDev
+            // panel1
             // 
-            this.lvScanDev.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.cName,
-            this.cRssi,
-            this.cPacketType,
-            this.cMacAddr,
-            this.cBond});
-            this.lvScanDev.Dock = System.Windows.Forms.DockStyle.Top;
-            this.lvScanDev.Location = new System.Drawing.Point(3, 3);
-            this.lvScanDev.Name = "lvScanDev";
-            this.lvScanDev.Size = new System.Drawing.Size(605, 241);
-            this.lvScanDev.TabIndex = 3;
-            this.lvScanDev.UseCompatibleStateImageBehavior = false;
-            this.lvScanDev.View = System.Windows.Forms.View.Details;
+            this.panel1.Controls.Add(this.btDisconnect);
+            this.panel1.Controls.Add(this.btConnect);
+            this.panel1.Controls.Add(this.btScanStop);
+            this.panel1.Controls.Add(this.btScanStart);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel1.Location = new System.Drawing.Point(3, 244);
+            this.panel1.MaximumSize = new System.Drawing.Size(0, 23);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(605, 23);
+            this.panel1.TabIndex = 4;
             // 
-            // cName
+            // btConnect
             // 
-            this.cName.Text = "Name";
-            this.cName.Width = 100;
-            // 
-            // cRssi
-            // 
-            this.cRssi.Text = "RSSI";
-            // 
-            // cPacketType
-            // 
-            this.cPacketType.Text = "PacketType";
-            // 
-            // cMacAddr
-            // 
-            this.cMacAddr.Text = "MacAddress";
-            this.cMacAddr.Width = 120;
-            // 
-            // cBond
-            // 
-            this.cBond.Text = "Bond";
+            this.btConnect.Dock = System.Windows.Forms.DockStyle.Left;
+            this.btConnect.Location = new System.Drawing.Point(150, 0);
+            this.btConnect.Name = "btConnect";
+            this.btConnect.Size = new System.Drawing.Size(75, 23);
+            this.btConnect.TabIndex = 3;
+            this.btConnect.Text = "Connect";
+            this.btConnect.UseVisualStyleBackColor = true;
+            this.btConnect.Click += new System.EventHandler(this.btConnect_Click);
             // 
             // btScanStop
             // 
@@ -447,15 +436,49 @@
             this.btScanStart.UseVisualStyleBackColor = true;
             this.btScanStart.Click += new System.EventHandler(this.btScanStart_Click);
             // 
-            // tabPage2
+            // lvScanDev
             // 
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(875, 443);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "tabPage2";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.lvScanDev.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.cName,
+            this.cRssi,
+            this.cPacketType,
+            this.cMacAddr,
+            this.mAdrTye,
+            this.cBond});
+            this.lvScanDev.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lvScanDev.Location = new System.Drawing.Point(3, 3);
+            this.lvScanDev.Name = "lvScanDev";
+            this.lvScanDev.Size = new System.Drawing.Size(605, 264);
+            this.lvScanDev.TabIndex = 3;
+            this.lvScanDev.UseCompatibleStateImageBehavior = false;
+            this.lvScanDev.View = System.Windows.Forms.View.Details;
+            this.lvScanDev.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.lvScanDev_ItemSelectionChanged);
+            // 
+            // cName
+            // 
+            this.cName.Text = "Name";
+            this.cName.Width = 100;
+            // 
+            // cRssi
+            // 
+            this.cRssi.Text = "RSSI";
+            // 
+            // cPacketType
+            // 
+            this.cPacketType.Text = "PacketType";
+            // 
+            // cMacAddr
+            // 
+            this.cMacAddr.Text = "MacAddress";
+            this.cMacAddr.Width = 120;
+            // 
+            // mAdrTye
+            // 
+            this.mAdrTye.Text = "AddressType";
+            // 
+            // cBond
+            // 
+            this.cBond.Text = "Bond";
             // 
             // txtLog
             // 
@@ -469,15 +492,25 @@
             this.txtLog.Size = new System.Drawing.Size(605, 119);
             this.txtLog.TabIndex = 0;
             // 
-            // panel1
+            // tabPage2
             // 
-            this.panel1.Controls.Add(this.btScanStop);
-            this.panel1.Controls.Add(this.btScanStart);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(3, 244);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(605, 23);
-            this.panel1.TabIndex = 4;
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(611, 389);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "tabPage2";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // btDisconnect
+            // 
+            this.btDisconnect.Location = new System.Drawing.Point(231, 0);
+            this.btDisconnect.Name = "btDisconnect";
+            this.btDisconnect.Size = new System.Drawing.Size(75, 23);
+            this.btDisconnect.TabIndex = 4;
+            this.btDisconnect.Text = "Disconnect";
+            this.btDisconnect.UseVisualStyleBackColor = true;
+            this.btDisconnect.Click += new System.EventHandler(this.btDisconnect_Click);
             // 
             // frmMain
             // 
@@ -557,6 +590,9 @@
         private System.Windows.Forms.ColumnHeader cBond;
         private System.Windows.Forms.TextBox txtLog;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button btConnect;
+        private System.Windows.Forms.ColumnHeader mAdrTye;
+        private System.Windows.Forms.Button btDisconnect;
     }
 }
 

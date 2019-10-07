@@ -82,8 +82,10 @@ namespace ToolSet
         public UInt16 att_handle_measurement_ccc = 0;   // heart rate measurement client characteristic configuration handle (to enable notifications)
 
         public Bluegiga.BGLib bglib = new Bluegiga.BGLib();
-        //byte[] macaddress;
-        //byte addresstype;
+        byte[] gMacAddr;
+        byte   gAddrType;
+        byte   gConnectID;
+        byte   gConnectFlag;
 
         public void SystemBootEvent(object sender, Bluegiga.BLE.Events.System.BootEventArgs e)
         {
@@ -99,9 +101,10 @@ namespace ToolSet
             Console.Write(log);
         }
 
+        //Adevertising search event.
         public void GAPScanResponseEvent(object sender, Bluegiga.BLE.Events.GAP.ScanResponseEventArgs e)
         {
-            string mName = "";
+            string mName = "(No Name)";
 
             // pull all advertised service info from ad packet
             List<Byte[]> ad_services = new List<Byte[]>();
@@ -124,18 +127,15 @@ namespace ToolSet
                     if (bytes_left == 0)
                     {
                         if (this_field[0] == 0x02 || this_field[0] == 0x03)
-                        {
-                            // partial or complete list of 16-bit UUIDs
+                        {// partial or complete list of 16-bit UUIDs
                             ad_services.Add(this_field.Skip(1).Take(2).Reverse().ToArray());
                         }
                         else if (this_field[0] == 0x04 || this_field[0] == 0x05)
-                        {
-                            // partial or complete list of 32-bit UUIDs
+                        {// partial or complete list of 32-bit UUIDs
                             ad_services.Add(this_field.Skip(1).Take(4).Reverse().ToArray());
                         }
                         else if (this_field[0] == 0x06 || this_field[0] == 0x07)
-                        {
-                            // partial or complete list of 128-bit UUIDs
+                        {// partial or complete list of 128-bit UUIDs
                             ad_services.Add(this_field.Skip(1).Take(16).Reverse().ToArray());
                         }
                         else if (this_field[0] == 0x09)
@@ -155,35 +155,36 @@ namespace ToolSet
                     ByteArrayToHexString(e.data),
                     mName
                     );
-                Console.Write(log);
+                //Console.Write(log); //to slow ,waste lots of time.
 
                 int a = Math.Abs(e.rssi);
                 string macaddr = ByteArrayToHexString(e.sender);
 
-                if (mName.Length > 1)
+                ThreadSafeDelegate(delegate
                 {
-                    ThreadSafeDelegate(delegate
+                    //
+                    //check whether this dev is already displayed in the list.
+                    //if it is not, we add it to the listbox,otherwise, just update.
+                    //
+                    ListViewItem lvS = lvScanDev.FindItemWithText(macaddr);
+                    if (lvS != null)
                     {
-                        ListViewItem lvS = lvScanDev.FindItemWithText(macaddr);
-                        if (lvS != null)
-                        {
-                            lvS.SubItems[0].Text = mName;
-                            lvS.SubItems[1].Text = a.ToString();
-                            lvS.SubItems[2].Text = e.packet_type.ToString();
-                            lvS.SubItems[3].Text = ByteArrayToHexString(e.sender);
-                        }
-                        else
-                        { 
-                            ListViewItem lv = new ListViewItem(mName);//[0];
-                            lv.SubItems.Add(a.ToString());//[1]
-                            lv.SubItems.Add(e.packet_type.ToString());//[2]
-                            lv.SubItems.Add(ByteArrayToHexString(e.sender));//[3]
-                            lvScanDev.Items.Add(lv);
-                        }
-                        //txtLog.AppendText(log);
+                        lvS.SubItems[0].Text = mName;
+                        lvS.SubItems[1].Text = a.ToString();
+                        lvS.SubItems[2].Text = e.packet_type.ToString();
+                        lvS.SubItems[3].Text = ByteArrayToHexString(e.sender);
+                        lvS.SubItems[4].Text = e.address_type.ToString();
                     }
-                    );
-                }
+                    else
+                    { 
+                        ListViewItem lv = new ListViewItem(mName);//[0];
+                        lv.SubItems.Add(a.ToString());//[1]
+                        lv.SubItems.Add(e.packet_type.ToString());//[2]
+                        lv.SubItems.Add(ByteArrayToHexString(e.sender));//[3]
+                        lv.SubItems.Add(e.address_type.ToString());//[4]
+                        lvScanDev.Items.Add(lv);
+                    }
+                });
             }
         }
 
@@ -345,6 +346,83 @@ namespace ToolSet
             }
         }
 
+        public void ATTClientReadByTypeEvent(object sender, Bluegiga.BLE.Responses.ATTClient.ReadByTypeEventArgs e)
+        {
+            byte a = e.connection;
+            ushort b = e.result;
+            bglib.BLEEventATTClientAttributeValue += new Bluegiga.BLE.Events.ATTClient.AttributeValueEventHandler(AttributeValue);
+        }
+
+        public void WriteCommandEvent(object sender, Bluegiga.BLE.Responses.ATTClient.WriteCommandEventArgs e)
+        {
+            ushort a = e.result;
+        }
+        public void ProcedureCompleted(object sender, Bluegiga.BLE.Events.ATTClient.ProcedureCompletedEventArgs e)
+        {
+            ushort a = e.result;
+        }
+
+        public void AttributeWriteEvent(object sender, Bluegiga.BLE.Responses.ATTClient.AttributeWriteEventArgs e)
+        {
+            bglib.BLEEventATTClientProcedureCompleted += new Bluegiga.BLE.Events.ATTClient.ProcedureCompletedEventHandler(ProcedureCompleted);
+        }
+
+        public void ConnectionEvent(object sender, Bluegiga.BLE.Events.Connection.StatusEventArgs e)
+        {
+            gConnectID = e.connection;
+            gConnectFlag = e.flags;
+        }
+
+        public void ConnectDirect(object sender, Bluegiga.BLE.Responses.GAP.ConnectDirectEventArgs e)
+        {
+            ushort a = e.result;
+            bglib.BLEEventConnectionStatus += new Bluegiga.BLE.Events.Connection.StatusEventHandler(ConnectionEvent);
+        }
+
+        ushort handel = 0;
+        byte Serverconnection2;
+        public void AttributeValue(object sender, Bluegiga.BLE.Events.ATTClient.AttributeValueEventArgs e)
+        {
+            StringBuilder n = new StringBuilder();
+            Serverconnection2 = e.connection;
+            byte[] f = e.value;
+            if (f.Length > 3)
+            {
+                if (f[f.Length - 1] == 0x60 & f[f.Length - 2] == 0x74 & f[f.Length - 3] == 0xef)
+                {
+                    for (int i = 0; i < f.Length; i++)
+                    {
+                        int aa = Convert.ToInt32(f[i]);
+                        string hexOutput = String.Format("{0:X}", aa);
+                        n.Append(hexOutput + "|");
+                    }
+                    MessageBox.Show(n.ToString());
+                    handel = e.atthandle;
+                    bglib.BLEEventATTClientProcedureCompleted += new Bluegiga.BLE.Events.ATTClient.ProcedureCompletedEventHandler(ProcedureCompleted);
+                }
+            }
+        }
+
+        public void AttributeValueFirmWare(object sender, Bluegiga.BLE.Events.ATTClient.AttributeValueEventArgs e)
+        {
+
+            if (e.value.Length == 4)
+            {
+                byte[] rtc = e.value;
+                //string a = Ten2Hex(rtc[0].ToString());
+                //string b = Ten2Hex(rtc[1].ToString());
+                //string c = Ten2Hex(rtc[2].ToString());
+                //string d = Ten2Hex(rtc[3].ToString());
+               // string time = a + b + c + d;
+                //string tentime = Hex2Ten(time);
+            }
+            else
+            {
+                //ASCii码转换
+                string s = System.Text.Encoding.ASCII.GetString(e.value);
+                MessageBox.Show(s);
+            }
+        }
         /* ================================================================ */
         /*                 END MAIN EVENT-DRIVEN APP LOGIC                  */
         /* ================================================================ */
@@ -370,18 +448,37 @@ namespace ToolSet
             cmbComPort.Items.AddRange(SerialPort.GetPortNames());
 
             bglib.BLEEventSystemBoot += new Bluegiga.BLE.Events.System.BootEventHandler(this.SystemBootEvent);
+            //Search Event
             bglib.BLEEventGAPScanResponse += new Bluegiga.BLE.Events.GAP.ScanResponseEventHandler(this.GAPScanResponseEvent);
 
-            //bglib.BLEEventConnectionStatus += new Bluegiga.BLE.Events.Connection.StatusEventHandler(this.ConnectionStatusEvent);
-            //bglib.BLEEventATTClientGroupFound += new Bluegiga.BLE.Events.ATTClient.GroupFoundEventHandler(this.ATTClientGroupFoundEvent);
-            //bglib.BLEEventATTClientFindInformationFound += new Bluegiga.BLE.Events.ATTClient.FindInformationFoundEventHandler(this.ATTClientFindInformationFoundEvent);
-            //bglib.BLEEventATTClientProcedureCompleted += new Bluegiga.BLE.Events.ATTClient.ProcedureCompletedEventHandler(this.ATTClientProcedureCompletedEvent);
-            //bglib.BLEEventATTClientAttributeValue += new Bluegiga.BLE.Events.ATTClient.AttributeValueEventHandler(this.ATTClientAttributeValueEvent);
+            //连接动作
+            bglib.BLEResponseGAPConnectDirect += new Bluegiga.BLE.Responses.GAP.ConnectDirectEventHandler(ConnectDirect);
+            //连接事件
+            bglib.BLEEventConnectionStatus += new Bluegiga.BLE.Events.Connection.StatusEventHandler(this.ConnectionStatusEvent);
+            //查找一级服务
+            bglib.BLEEventATTClientGroupFound += new Bluegiga.BLE.Events.ATTClient.GroupFoundEventHandler(this.ATTClientGroupFoundEvent);
+            //查找二级服务
+            bglib.BLEResponseATTClientReadByType += new Bluegiga.BLE.Responses.ATTClient.ReadByTypeEventHandler(ATTClientReadByTypeEvent);
+
+            bglib.BLEEventATTClientFindInformationFound += new Bluegiga.BLE.Events.ATTClient.FindInformationFoundEventHandler(this.ATTClientFindInformationFoundEvent);
+
+            bglib.BLEEventATTClientProcedureCompleted += new Bluegiga.BLE.Events.ATTClient.ProcedureCompletedEventHandler(this.ATTClientProcedureCompletedEvent);
+
+            bglib.BLEEventATTClientAttributeValue += new Bluegiga.BLE.Events.ATTClient.AttributeValueEventHandler(this.ATTClientAttributeValueEvent);
         }
 
-        private void InitComConfig()
+        private void frmMain_Load(object sender, EventArgs e)
         {
-            
+            EnumAllComPort();
+            if (cmbComPort.Items.Count > 0) cmbComPort.SelectedIndex = 0;
+            cmbComBaud.SelectedIndex = 5;
+            cmbComParity.SelectedIndex = 0;
+            cmbComDatabit.SelectedIndex = 0;
+            cmbComStopbit.SelectedIndex = 0;
+
+            //向ComDevice.DataReceived（是一个事件）注册一个方法Com_DataReceived，
+            //当端口类接收到信息时时会自动调用Com_DataReceived方法
+            hComDev.DataReceived += new SerialDataReceivedEventHandler(OnComReceived);
         }
 
         private void btOpenCom_Click(object sender, EventArgs e)
@@ -399,8 +496,7 @@ namespace ToolSet
                 hComDev.Parity = (Parity)M_PARITY[cmbComParity.SelectedIndex];
                 hComDev.DataBits = M_DATABITS[cmbComDatabit.SelectedIndex];
                 hComDev.StopBits = (StopBits)M_STOPBITS[cmbComStopbit.SelectedIndex];
-                try
-                {
+                try{
                     hComDev.Open();
                     btOpenCom.Text = "关闭串口";
                     picOpenCom.Image = Properties.Resources.BMP_GREEN;
@@ -410,7 +506,6 @@ namespace ToolSet
                     MessageBox.Show(ex.Message, "打开失败", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                
             }
             else
             {
@@ -431,20 +526,6 @@ namespace ToolSet
             cmbComParity.Enabled  = !hComDev.IsOpen;
             cmbComDatabit.Enabled = !hComDev.IsOpen;
             cmbComStopbit.Enabled = !hComDev.IsOpen;
-        }
-
-        private void frmMain_Load(object sender, EventArgs e)
-        {
-            EnumAllComPort();
-            if (cmbComPort.Items.Count > 0) cmbComPort.SelectedIndex = 0;
-            cmbComBaud.SelectedIndex = 5;
-            cmbComParity.SelectedIndex = 0;
-            cmbComDatabit.SelectedIndex = 0;
-            cmbComStopbit.SelectedIndex = 0;
-
-            //向ComDevice.DataReceived（是一个事件）注册一个方法Com_DataReceived，
-            //当端口类接收到信息时时会自动调用Com_DataReceived方法
-            hComDev.DataReceived += new SerialDataReceivedEventHandler(OnComReceived);
         }
 
         /// <summary>
@@ -481,7 +562,6 @@ namespace ToolSet
                 hex = data[i];
                 sb.AppendFormat("{0}", Char.ConvertFromUtf32(data[i]));
             }
-            
 
             this.Invoke((EventHandler)(delegate
             {
@@ -564,6 +644,30 @@ namespace ToolSet
             {
                 MessageBox.Show("请先打开串口", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void btConnect_Click(object sender, EventArgs e)
+        {
+            if (hComDev.IsOpen == false)
+            {
+                MessageBox.Show("请先打开串口", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            bglib.SendCommand(hComDev, bglib.BLECommandGAPConnectDirect(gMacAddr, gAddrType, 0x20, 0x30, 0x100, 0));
+        }
+
+        private void lvScanDev_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            if (e.IsSelected)
+            {
+                gMacAddr = strToHexByte(e.Item.SubItems[3].Text);
+                gAddrType = byte.Parse(e.Item.SubItems[4].Text);
+            }
+        }
+
+        private void btDisconnect_Click(object sender, EventArgs e)
+        {
+            bglib.SendCommand(hComDev, bglib.BLECommandConnectionDisconnect(gConnectID));
         }
     }
 }
