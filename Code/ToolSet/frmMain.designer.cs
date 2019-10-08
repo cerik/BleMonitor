@@ -28,10 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tslbRxMsg = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.文件ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.编辑ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -58,6 +59,7 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btDisconnect = new System.Windows.Forms.Button();
             this.btConnect = new System.Windows.Forms.Button();
             this.btScanStop = new System.Windows.Forms.Button();
             this.btScanStart = new System.Windows.Forms.Button();
@@ -70,7 +72,8 @@
             this.cBond = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.txtLog = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.btDisconnect = new System.Windows.Forms.Button();
+            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.comDev = new System.IO.Ports.SerialPort(this.components);
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -83,6 +86,10 @@
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
+            this.splitContainer2.Panel1.SuspendLayout();
+            this.splitContainer2.Panel2.SuspendLayout();
+            this.splitContainer2.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -90,30 +97,35 @@
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1,
             this.toolStripStatusLabel2,
-            this.toolStripStatusLabel3});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 464);
+            this.tslbRxMsg});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 566);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(793, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1087, 24);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(62, 17);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(71, 19);
             this.toolStripStatusLabel1.Text = "tslbComCnt";
             // 
             // toolStripStatusLabel2
             // 
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(60, 17);
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(66, 19);
             this.toolStripStatusLabel2.Text = "tslbCanCnt";
             // 
-            // toolStripStatusLabel3
+            // tslbRxMsg
             // 
-            this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
-            this.toolStripStatusLabel3.Size = new System.Drawing.Size(57, 17);
-            this.toolStripStatusLabel3.Text = "tslbLogFile";
+            this.tslbRxMsg.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.tslbRxMsg.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Top) 
+            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) 
+            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
+            this.tslbRxMsg.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenOuter;
+            this.tslbRxMsg.Name = "tslbRxMsg";
+            this.tslbRxMsg.Size = new System.Drawing.Size(65, 19);
+            this.tslbRxMsg.Text = "tslbRxMsg";
             // 
             // menuStrip1
             // 
@@ -123,7 +135,7 @@
             this.工具ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(793, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1087, 24);
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -136,7 +148,7 @@
             // 编辑ToolStripMenuItem
             // 
             this.编辑ToolStripMenuItem.Name = "编辑ToolStripMenuItem";
-            this.编辑ToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
+            this.编辑ToolStripMenuItem.Size = new System.Drawing.Size(45, 20);
             this.编辑ToolStripMenuItem.Text = "编辑";
             // 
             // 工具ToolStripMenuItem
@@ -153,7 +165,7 @@
             this.toolStripButton3});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(793, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(1087, 25);
             this.toolStrip1.TabIndex = 3;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -197,7 +209,7 @@
             // 
             this.splitContainer1.Panel2.AutoScroll = true;
             this.splitContainer1.Panel2.Controls.Add(this.tabControl1);
-            this.splitContainer1.Size = new System.Drawing.Size(793, 415);
+            this.splitContainer1.Size = new System.Drawing.Size(1087, 517);
             this.splitContainer1.SplitterDistance = 170;
             this.splitContainer1.TabIndex = 4;
             // 
@@ -374,19 +386,17 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(619, 415);
+            this.tabControl1.Size = new System.Drawing.Size(913, 517);
             this.tabControl1.TabIndex = 0;
             // 
             // tabPage1
             // 
             this.tabPage1.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.tabPage1.Controls.Add(this.panel1);
-            this.tabPage1.Controls.Add(this.lvScanDev);
-            this.tabPage1.Controls.Add(this.txtLog);
+            this.tabPage1.Controls.Add(this.splitContainer2);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(611, 389);
+            this.tabPage1.Size = new System.Drawing.Size(905, 491);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             // 
@@ -397,11 +407,21 @@
             this.panel1.Controls.Add(this.btScanStop);
             this.panel1.Controls.Add(this.btScanStart);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(3, 244);
+            this.panel1.Location = new System.Drawing.Point(0, 331);
             this.panel1.MaximumSize = new System.Drawing.Size(0, 23);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(605, 23);
+            this.panel1.Size = new System.Drawing.Size(899, 23);
             this.panel1.TabIndex = 4;
+            // 
+            // btDisconnect
+            // 
+            this.btDisconnect.Location = new System.Drawing.Point(231, 0);
+            this.btDisconnect.Name = "btDisconnect";
+            this.btDisconnect.Size = new System.Drawing.Size(75, 23);
+            this.btDisconnect.TabIndex = 4;
+            this.btDisconnect.Text = "Disconnect";
+            this.btDisconnect.UseVisualStyleBackColor = true;
+            this.btDisconnect.Click += new System.EventHandler(this.btDisconnect_Click);
             // 
             // btConnect
             // 
@@ -446,9 +466,10 @@
             this.mAdrTye,
             this.cBond});
             this.lvScanDev.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lvScanDev.Location = new System.Drawing.Point(3, 3);
+            this.lvScanDev.HideSelection = false;
+            this.lvScanDev.Location = new System.Drawing.Point(0, 0);
             this.lvScanDev.Name = "lvScanDev";
-            this.lvScanDev.Size = new System.Drawing.Size(605, 264);
+            this.lvScanDev.Size = new System.Drawing.Size(899, 331);
             this.lvScanDev.TabIndex = 3;
             this.lvScanDev.UseCompatibleStateImageBehavior = false;
             this.lvScanDev.View = System.Windows.Forms.View.Details;
@@ -483,13 +504,13 @@
             // txtLog
             // 
             this.txtLog.AcceptsReturn = true;
-            this.txtLog.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.txtLog.Location = new System.Drawing.Point(3, 267);
+            this.txtLog.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtLog.Location = new System.Drawing.Point(0, 0);
             this.txtLog.Multiline = true;
             this.txtLog.Name = "txtLog";
             this.txtLog.ReadOnly = true;
             this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtLog.Size = new System.Drawing.Size(605, 119);
+            this.txtLog.Size = new System.Drawing.Size(899, 127);
             this.txtLog.TabIndex = 0;
             // 
             // tabPage2
@@ -502,21 +523,30 @@
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // btDisconnect
+            // splitContainer2
             // 
-            this.btDisconnect.Location = new System.Drawing.Point(231, 0);
-            this.btDisconnect.Name = "btDisconnect";
-            this.btDisconnect.Size = new System.Drawing.Size(75, 23);
-            this.btDisconnect.TabIndex = 4;
-            this.btDisconnect.Text = "Disconnect";
-            this.btDisconnect.UseVisualStyleBackColor = true;
-            this.btDisconnect.Click += new System.EventHandler(this.btDisconnect_Click);
+            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer2.Location = new System.Drawing.Point(3, 3);
+            this.splitContainer2.Name = "splitContainer2";
+            this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer2.Panel1
+            // 
+            this.splitContainer2.Panel1.Controls.Add(this.lvScanDev);
+            this.splitContainer2.Panel1.Controls.Add(this.panel1);
+            // 
+            // splitContainer2.Panel2
+            // 
+            this.splitContainer2.Panel2.Controls.Add(this.txtLog);
+            this.splitContainer2.Size = new System.Drawing.Size(899, 485);
+            this.splitContainer2.SplitterDistance = 354;
+            this.splitContainer2.TabIndex = 5;
             // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(793, 486);
+            this.ClientSize = new System.Drawing.Size(1087, 590);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.statusStrip1);
@@ -541,8 +571,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.picOpenCom)).EndInit();
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
             this.panel1.ResumeLayout(false);
+            this.splitContainer2.Panel1.ResumeLayout(false);
+            this.splitContainer2.Panel2.ResumeLayout(false);
+            this.splitContainer2.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
+            this.splitContainer2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -579,7 +613,7 @@
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
+        private System.Windows.Forms.ToolStripStatusLabel tslbRxMsg;
         private System.Windows.Forms.Button btScanStart;
         private System.Windows.Forms.Button btScanStop;
         private System.Windows.Forms.ListView lvScanDev;
@@ -593,6 +627,8 @@
         private System.Windows.Forms.Button btConnect;
         private System.Windows.Forms.ColumnHeader mAdrTye;
         private System.Windows.Forms.Button btDisconnect;
+        private System.Windows.Forms.SplitContainer splitContainer2;
+        private System.IO.Ports.SerialPort comDev;
     }
 }
 

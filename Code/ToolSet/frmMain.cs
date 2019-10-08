@@ -14,7 +14,6 @@ namespace ToolSet
 {
     public partial class frmMain : Form
     {
-        
         //波特率;
         readonly int[] M_BAUNDRATE = { 300, 600, 1200, 2400, 4800, 9600, 19200, 38400, 43000, 56000, 57600, 115200 };
 
@@ -33,7 +32,7 @@ namespace ToolSet
         readonly byte[] M_STOPBITS = { 1, 3, 2 };
 
         //定义端口类
-        private SerialPort hComDev = new SerialPort();
+        //private SerialPort comDev = new SerialPort();
 
         [StructLayout(LayoutKind.Explicit, Size=8)]
         struct mSysCfg{
@@ -48,7 +47,7 @@ namespace ToolSet
         public struct tDataMsg{
             Byte  m_Header;//0x55AA
             Byte  m_Frame;
-            Byte  m_Tag; //消息计数,0~255循环,可用于统计消息丢包或误码率;
+            Byte  m_Tag;   //消息计数,0~255循环,可用于统计消息丢包或误码率;
         }
 
         //
@@ -102,6 +101,8 @@ namespace ToolSet
         }
 
         //Adevertising search event.
+        // for master/scanner devices, the "gap_scan_response" event is a common entry-like point
+        // this filters ad packets and display it into listview.
         public void GAPScanResponseEvent(object sender, Bluegiga.BLE.Events.GAP.ScanResponseEventArgs e)
         {
             string mName = "(No Name)";
@@ -191,7 +192,7 @@ namespace ToolSet
         // the "connection_status" event occurs when a new connection is established
         public void ConnectionStatusEvent(object sender, Bluegiga.BLE.Events.Connection.StatusEventArgs e)
         {
-            if (hComDev.IsOpen == false) return;
+            if (comDev.IsOpen == false) return;
 
             String log = String.Format("ble_evt_connection_status: connection={0}, flags={1}, address=[ {2}], address_type={3}, conn_interval={4}, timeout={5}, latency={6}, bonding={7}" + Environment.NewLine,
                 e.connection,
@@ -214,7 +215,7 @@ namespace ToolSet
                 Byte[] cmd = bglib.BLECommandATTClientReadByGroupType(e.connection, 0x0001, 0xFFFF, new Byte[] { 0x00, 0x28 }); // "service" UUID is 0x2800 (little-endian for UUID uint8array)
                 // DEBUG: display bytes written
                 ThreadSafeDelegate(delegate { txtLog.AppendText(String.Format("=> TX ({0}) [ {1}]", cmd.Length, ByteArrayToHexString(cmd)) + Environment.NewLine); });
-                bglib.SendCommand(hComDev, cmd);
+                bglib.SendCommand(comDev, cmd);
                 //while (bglib.IsBusy()) ;
 
                 // update state
@@ -267,7 +268,7 @@ namespace ToolSet
 
         public void ATTClientProcedureCompletedEvent(object sender, Bluegiga.BLE.Events.ATTClient.ProcedureCompletedEventArgs e)
         {
-            if (hComDev.IsOpen == false) return;
+            if (comDev.IsOpen == false) return;
 
             String log = String.Format("ble_evt_attclient_procedure_completed: connection={0}, result={1}, chrhandle={2}" + Environment.NewLine,
                 e.connection,
@@ -288,7 +289,7 @@ namespace ToolSet
                     Byte[] cmd = bglib.BLECommandATTClientFindInformation(e.connection, att_handlesearch_start, att_handlesearch_end);
                     // DEBUG: display bytes written
                     ThreadSafeDelegate(delegate { txtLog.AppendText(String.Format("=> TX ({0}) [ {1}]", cmd.Length, ByteArrayToHexString(cmd)) + Environment.NewLine); });
-                    bglib.SendCommand(hComDev, cmd);
+                    bglib.SendCommand(comDev, cmd);
                     //while (bglib.IsBusy()) ;
 
                     // update state
@@ -311,7 +312,7 @@ namespace ToolSet
                     Byte[] cmd = bglib.BLECommandATTClientAttributeWrite(e.connection, att_handle_measurement_ccc, new Byte[] { 0x01, 0x00 });
                     // DEBUG: display bytes written
                     ThreadSafeDelegate(delegate { txtLog.AppendText(String.Format("=> TX ({0}) [ {1}]", cmd.Length, ByteArrayToHexString(cmd)) + Environment.NewLine); });
-                    bglib.SendCommand(hComDev, cmd);
+                    bglib.SendCommand(comDev, cmd);
                     //while (bglib.IsBusy()) ;
 
                     // update state
@@ -446,9 +447,29 @@ namespace ToolSet
         private void EnumAllComPort()
         {
             cmbComPort.Items.AddRange(SerialPort.GetPortNames());
+        }
 
+        private void frmMain_Load(object sender, EventArgs e)
+        {
+            EnumAllComPort();
+            if (cmbComPort.Items.Count > 0) cmbComPort.SelectedIndex = 0;
+            cmbComBaud.SelectedIndex = 5;
+            cmbComParity.SelectedIndex = 0;
+            cmbComDatabit.SelectedIndex = 0;
+            cmbComStopbit.SelectedIndex = 0;
+
+            //向ComDevice.DataReceived（是一个事件）注册一个方法Com_DataReceived，
+            //当端口类接收到信息时时会自动调用Com_DataReceived方法
+            comDev.DataReceived += new SerialDataReceivedEventHandler(OnComReceived);
+
+            //
+            //BLE 事件回调;
+            //
             bglib.BLEEventSystemBoot += new Bluegiga.BLE.Events.System.BootEventHandler(this.SystemBootEvent);
+
             //Search Event
+            // for master/scanner devices, the "gap_scan_response" event is a common entry-like point
+            // this filters ad packets to find devices which advertise the Health Thermometer service
             bglib.BLEEventGAPScanResponse += new Bluegiga.BLE.Events.GAP.ScanResponseEventHandler(this.GAPScanResponseEvent);
 
             //连接动作
@@ -467,20 +488,6 @@ namespace ToolSet
             bglib.BLEEventATTClientAttributeValue += new Bluegiga.BLE.Events.ATTClient.AttributeValueEventHandler(this.ATTClientAttributeValueEvent);
         }
 
-        private void frmMain_Load(object sender, EventArgs e)
-        {
-            EnumAllComPort();
-            if (cmbComPort.Items.Count > 0) cmbComPort.SelectedIndex = 0;
-            cmbComBaud.SelectedIndex = 5;
-            cmbComParity.SelectedIndex = 0;
-            cmbComDatabit.SelectedIndex = 0;
-            cmbComStopbit.SelectedIndex = 0;
-
-            //向ComDevice.DataReceived（是一个事件）注册一个方法Com_DataReceived，
-            //当端口类接收到信息时时会自动调用Com_DataReceived方法
-            hComDev.DataReceived += new SerialDataReceivedEventHandler(OnComReceived);
-        }
-
         private void btOpenCom_Click(object sender, EventArgs e)
         {
             if (cmbComPort.Items.Count <= 0)
@@ -489,15 +496,15 @@ namespace ToolSet
                 return;
             }
 
-            if (hComDev.IsOpen == false)
+            if (comDev.IsOpen == false)
             {
-                hComDev.PortName = cmbComPort.SelectedItem.ToString();
-                hComDev.BaudRate = Convert.ToInt32(cmbComBaud.SelectedItem.ToString());
-                hComDev.Parity = (Parity)M_PARITY[cmbComParity.SelectedIndex];
-                hComDev.DataBits = M_DATABITS[cmbComDatabit.SelectedIndex];
-                hComDev.StopBits = (StopBits)M_STOPBITS[cmbComStopbit.SelectedIndex];
+                comDev.PortName = cmbComPort.SelectedItem.ToString();
+                comDev.BaudRate = Convert.ToInt32(cmbComBaud.SelectedItem.ToString());
+                comDev.Parity = (Parity)M_PARITY[cmbComParity.SelectedIndex];
+                comDev.DataBits = M_DATABITS[cmbComDatabit.SelectedIndex];
+                comDev.StopBits = (StopBits)M_STOPBITS[cmbComStopbit.SelectedIndex];
                 try{
-                    hComDev.Open();
+                    comDev.Open();
                     btOpenCom.Text = "关闭串口";
                     picOpenCom.Image = Properties.Resources.BMP_GREEN;
                 }
@@ -511,7 +518,7 @@ namespace ToolSet
             {
                 try
                 {
-                    hComDev.Close();
+                    comDev.Close();
                     btOpenCom.Text = "打开串口";
                     picOpenCom.Image = Properties.Resources.BMP_GRAY;
                 }
@@ -521,11 +528,11 @@ namespace ToolSet
                     return;
                 }
             }
-            cmbComPort.Enabled    = !hComDev.IsOpen;
-            cmbComBaud.Enabled    = !hComDev.IsOpen;
-            cmbComParity.Enabled  = !hComDev.IsOpen;
-            cmbComDatabit.Enabled = !hComDev.IsOpen;
-            cmbComStopbit.Enabled = !hComDev.IsOpen;
+            cmbComPort.Enabled    = !comDev.IsOpen;
+            cmbComBaud.Enabled    = !comDev.IsOpen;
+            cmbComParity.Enabled  = !comDev.IsOpen;
+            cmbComDatabit.Enabled = !comDev.IsOpen;
+            cmbComStopbit.Enabled = !comDev.IsOpen;
         }
 
         /// <summary>
@@ -536,15 +543,15 @@ namespace ToolSet
         private void OnComReceived(object sender, SerialDataReceivedEventArgs e)
         {
             //开辟接收缓冲区
-            byte[] ReDatas = new byte[hComDev.BytesToRead];
+            byte[] ReDatas = new byte[comDev.BytesToRead];
            
             //从串口读取数据
-            hComDev.Read(ReDatas, 0, ReDatas.Length);
+            comDev.Read(ReDatas, 0, ReDatas.Length);
             AddData(ReDatas);
 
             // DEBUG: display bytes read
-            Console.WriteLine("<= RX ({0}) [ {1}]", ReDatas.Length, ByteArrayToHexString(ReDatas));
-
+            //Console.WriteLine("<= RX ({0}) [ {1}]", ReDatas.Length, ByteArrayToHexString(ReDatas));
+            tslbRxMsg.Text = string.Format("<= RX ({0}) [ {1}]", ReDatas.Length, ByteArrayToHexString(ReDatas));
             // parse all bytes read through BGLib parser
             for (int i = 0; i < ReDatas.Length; i++)
             {
@@ -576,12 +583,12 @@ namespace ToolSet
         /// <returns></returns>
         public bool SendData(byte[] data)
         {
-            if (hComDev.IsOpen)
+            if (comDev.IsOpen)
             {
                 try
                 {
                     //将消息传递给串口
-                    hComDev.Write(data, 0, data.Length);
+                    comDev.Write(data, 0, data.Length);
                     return true;
                 }
                 catch (Exception ex)
@@ -622,9 +629,9 @@ namespace ToolSet
         {
             // send gap_discover(mode: 1)
             //serialAPI.Write(new Byte[] { 0, 1, 6, 2, 1 }, 0, 5);
-            if (hComDev.IsOpen == true)
+            if (comDev.IsOpen == true)
             {
-                bglib.SendCommand(hComDev, bglib.BLECommandGAPDiscover(1));
+                bglib.SendCommand(comDev, bglib.BLECommandGAPDiscover(1));
             }
             else
             {
@@ -636,9 +643,9 @@ namespace ToolSet
         {
             // send gap_end_procedure()
             //serialAPI.Write(new Byte[] { 0, 0, 6, 4 }, 0, 4);
-            if (hComDev.IsOpen == true)
+            if (comDev.IsOpen == true)
             {
-                bglib.SendCommand(hComDev, bglib.BLECommandGAPEndProcedure());
+                bglib.SendCommand(comDev, bglib.BLECommandGAPEndProcedure());
             }
             else
             {
@@ -648,12 +655,17 @@ namespace ToolSet
 
         private void btConnect_Click(object sender, EventArgs e)
         {
-            if (hComDev.IsOpen == false)
+            if (comDev.IsOpen == false)
             {
                 MessageBox.Show("请先打开串口", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            bglib.SendCommand(hComDev, bglib.BLECommandGAPConnectDirect(gMacAddr, gAddrType, 0x20, 0x30, 0x100, 0));
+            Byte[] cmd = bglib.BLECommandGAPConnectDirect(gMacAddr, gAddrType, 0x20, 0x30, 0x100, 0);
+            bglib.SendCommand(comDev, cmd);// 125ms interval, 125ms window, active scanning
+            //while(bglib.IsBusy();
+
+            // update state
+            app_state = STATE_CONNECTING;
         }
 
         private void lvScanDev_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
@@ -667,7 +679,7 @@ namespace ToolSet
 
         private void btDisconnect_Click(object sender, EventArgs e)
         {
-            bglib.SendCommand(hComDev, bglib.BLECommandConnectionDisconnect(gConnectID));
+            bglib.SendCommand(comDev, bglib.BLECommandConnectionDisconnect(gConnectID));
         }
     }
 }
