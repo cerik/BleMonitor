@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Management;
 using Microsoft.Win32;
 using System.IO.Ports;
 using System.Runtime.InteropServices;
@@ -14,25 +15,7 @@ namespace ToolSet
 {
     public partial class frmMain : Form
     {
-        //波特率;
-        readonly int[] M_BAUNDRATE = { 300, 600, 1200, 2400, 4800, 9600, 19200, 38400, 43000, 56000, 57600, 115200 };
-
-        //数据位;
-        // NOPARITY            0
-        // ODDPARITY           1
-        // EVENPARITY          2
-        readonly int[] M_PARITY = { 0, 1, 2 };
-
-        //数据位;
-        readonly int[] M_DATABITS = { 8, 7, 6 };
-
-        // ONESTOPBIT          1
-        // ONE5STOPBITS        3
-        // TWOSTOPBITS         2
-        readonly byte[] M_STOPBITS = { 1, 3, 2 };
-
-        //定义端口类
-        //private SerialPort comDev = new SerialPort();
+        public Dictionary<string, string> portDict = new Dictionary<string, string>();
 
         [StructLayout(LayoutKind.Explicit, Size=8)]
         struct mSysCfg{
@@ -65,7 +48,6 @@ namespace ToolSet
         /* ================================================================ */
         /*                BEGIN MAIN EVENT-DRIVEN APP LOGIC                 */
         /* ================================================================ */
-
         public const UInt16 STATE_STANDBY = 0;
         public const UInt16 STATE_SCANNING = 1;
         public const UInt16 STATE_CONNECTING = 2;
@@ -443,16 +425,17 @@ namespace ToolSet
             InitializeComponent();
         }
 
-        //列表系统所有串口;
-        private void EnumAllComPort()
-        {
-            cmbComPort.Items.AddRange(SerialPort.GetPortNames());
-        }
-
         private void frmMain_Load(object sender, EventArgs e)
         {
-            EnumAllComPort();
-            if (cmbComPort.Items.Count > 0) cmbComPort.SelectedIndex = 0;
+            cmbComPort_DropDown(sender, e);
+            // initialize COM port combobox with list of ports
+            cmbComPort.DataSource = new BindingSource(portDict, null);
+            cmbComPort.DisplayMember = "Value";
+            cmbComPort.ValueMember = "Key";
+
+            // initialize serial port with all of the normal values (should work with BLED112 on USB)
+            comDev.Handshake = System.IO.Ports.Handshake.RequestToSend;
+
             cmbComBaud.SelectedIndex = 5;
             cmbComParity.SelectedIndex = 0;
             cmbComDatabit.SelectedIndex = 0;
@@ -498,12 +481,13 @@ namespace ToolSet
 
             if (comDev.IsOpen == false)
             {
-                comDev.PortName = cmbComPort.SelectedItem.ToString();
-                comDev.BaudRate = Convert.ToInt32(cmbComBaud.SelectedItem.ToString());
-                comDev.Parity = (Parity)M_PARITY[cmbComParity.SelectedIndex];
-                comDev.DataBits = M_DATABITS[cmbComDatabit.SelectedIndex];
-                comDev.StopBits = (StopBits)M_STOPBITS[cmbComStopbit.SelectedIndex];
-                try{
+                comDev.PortName = cmbComPort.SelectedValue.ToString();
+                comDev.BaudRate = int.Parse(cmbComBaud.Text);
+                comDev.DataBits = int.Parse(cmbComDatabit.Text);
+                comDev.StopBits = (StopBits)(cmbComStopbit.SelectedIndex+1);
+                comDev.Parity = (Parity)cmbComStopbit.SelectedIndex;
+                try
+                {
                     comDev.Open();
                     btOpenCom.Text = "关闭串口";
                     picOpenCom.Image = Properties.Resources.BMP_GREEN;
@@ -680,6 +664,25 @@ namespace ToolSet
         private void btDisconnect_Click(object sender, EventArgs e)
         {
             bglib.SendCommand(comDev, bglib.BLECommandConnectionDisconnect(gConnectID));
+        }
+
+        private void cmbComPort_DropDown(object sender, EventArgs e)
+        {
+            // get a list of all available ports on the system
+            portDict.Clear();
+            try
+            {
+                ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_SerialPort");
+                //string[] ports = System.IO.Ports.SerialPort.GetPortNames();
+                foreach (ManagementObject queryObj in searcher.Get())
+                {
+                    portDict.Add(String.Format("{0}", queryObj["DeviceID"]), String.Format("{0} - {1}", queryObj["DeviceID"], queryObj["Caption"]));
+                }
+            }
+            catch (ManagementException ex)
+            {
+                portDict.Add("0", "Error " + ex.Message);
+            }
         }
     }
 }

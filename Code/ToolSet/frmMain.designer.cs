@@ -58,11 +58,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.btDisconnect = new System.Windows.Forms.Button();
-            this.btConnect = new System.Windows.Forms.Button();
-            this.btScanStop = new System.Windows.Forms.Button();
-            this.btScanStart = new System.Windows.Forms.Button();
+            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.lvScanDev = new System.Windows.Forms.ListView();
             this.cName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.cRssi = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -70,9 +66,13 @@
             this.cMacAddr = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.mAdrTye = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.cBond = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.btDisconnect = new System.Windows.Forms.Button();
+            this.btConnect = new System.Windows.Forms.Button();
+            this.btScanStop = new System.Windows.Forms.Button();
+            this.btScanStart = new System.Windows.Forms.Button();
             this.txtLog = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.comDev = new System.IO.Ports.SerialPort(this.components);
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -85,11 +85,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.picOpenCom)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -98,22 +98,22 @@
             this.toolStripStatusLabel1,
             this.toolStripStatusLabel2,
             this.tslbRxMsg});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 566);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 568);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1087, 24);
+            this.statusStrip1.Size = new System.Drawing.Size(1087, 22);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(71, 19);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(62, 17);
             this.toolStripStatusLabel1.Text = "tslbComCnt";
             // 
             // toolStripStatusLabel2
             // 
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(66, 19);
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(60, 17);
             this.toolStripStatusLabel2.Text = "tslbCanCnt";
             // 
             // tslbRxMsg
@@ -124,7 +124,7 @@
             | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
             this.tslbRxMsg.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenOuter;
             this.tslbRxMsg.Name = "tslbRxMsg";
-            this.tslbRxMsg.Size = new System.Drawing.Size(65, 19);
+            this.tslbRxMsg.Size = new System.Drawing.Size(60, 17);
             this.tslbRxMsg.Text = "tslbRxMsg";
             // 
             // menuStrip1
@@ -148,7 +148,7 @@
             // 编辑ToolStripMenuItem
             // 
             this.编辑ToolStripMenuItem.Name = "编辑ToolStripMenuItem";
-            this.编辑ToolStripMenuItem.Size = new System.Drawing.Size(45, 20);
+            this.编辑ToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
             this.编辑ToolStripMenuItem.Text = "编辑";
             // 
             // 工具ToolStripMenuItem
@@ -209,7 +209,7 @@
             // 
             this.splitContainer1.Panel2.AutoScroll = true;
             this.splitContainer1.Panel2.Controls.Add(this.tabControl1);
-            this.splitContainer1.Size = new System.Drawing.Size(1087, 517);
+            this.splitContainer1.Size = new System.Drawing.Size(1087, 519);
             this.splitContainer1.SplitterDistance = 170;
             this.splitContainer1.TabIndex = 4;
             // 
@@ -273,8 +273,8 @@
             this.cmbComStopbit.FormattingEnabled = true;
             this.cmbComStopbit.Items.AddRange(new object[] {
             "1",
-            "1.5",
-            "2"});
+            "2",
+            "1.5"});
             this.cmbComStopbit.Location = new System.Drawing.Point(64, 135);
             this.cmbComStopbit.Name = "cmbComStopbit";
             this.cmbComStopbit.Size = new System.Drawing.Size(79, 21);
@@ -362,12 +362,14 @@
             // cmbComPort
             // 
             this.cmbComPort.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbComPort.DropDownWidth = 260;
             this.cmbComPort.FormattingEnabled = true;
             this.cmbComPort.Location = new System.Drawing.Point(64, 27);
             this.cmbComPort.Name = "cmbComPort";
-            this.cmbComPort.Size = new System.Drawing.Size(79, 21);
+            this.cmbComPort.Size = new System.Drawing.Size(78, 21);
             this.cmbComPort.Sorted = true;
             this.cmbComPort.TabIndex = 1;
+            this.cmbComPort.DropDown += new System.EventHandler(this.cmbComPort_DropDown);
             // 
             // label1
             // 
@@ -386,7 +388,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(913, 517);
+            this.tabControl1.Size = new System.Drawing.Size(913, 519);
             this.tabControl1.TabIndex = 0;
             // 
             // tabPage1
@@ -396,9 +398,73 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(905, 491);
+            this.tabPage1.Size = new System.Drawing.Size(905, 493);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
+            // 
+            // splitContainer2
+            // 
+            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer2.Location = new System.Drawing.Point(3, 3);
+            this.splitContainer2.Name = "splitContainer2";
+            this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer2.Panel1
+            // 
+            this.splitContainer2.Panel1.Controls.Add(this.lvScanDev);
+            this.splitContainer2.Panel1.Controls.Add(this.panel1);
+            // 
+            // splitContainer2.Panel2
+            // 
+            this.splitContainer2.Panel2.Controls.Add(this.txtLog);
+            this.splitContainer2.Size = new System.Drawing.Size(899, 487);
+            this.splitContainer2.SplitterDistance = 355;
+            this.splitContainer2.TabIndex = 5;
+            // 
+            // lvScanDev
+            // 
+            this.lvScanDev.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.cName,
+            this.cRssi,
+            this.cPacketType,
+            this.cMacAddr,
+            this.mAdrTye,
+            this.cBond});
+            this.lvScanDev.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lvScanDev.HideSelection = false;
+            this.lvScanDev.Location = new System.Drawing.Point(0, 0);
+            this.lvScanDev.Name = "lvScanDev";
+            this.lvScanDev.Size = new System.Drawing.Size(899, 332);
+            this.lvScanDev.TabIndex = 3;
+            this.lvScanDev.UseCompatibleStateImageBehavior = false;
+            this.lvScanDev.View = System.Windows.Forms.View.Details;
+            this.lvScanDev.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.lvScanDev_ItemSelectionChanged);
+            // 
+            // cName
+            // 
+            this.cName.Text = "Name";
+            this.cName.Width = 100;
+            // 
+            // cRssi
+            // 
+            this.cRssi.Text = "RSSI";
+            // 
+            // cPacketType
+            // 
+            this.cPacketType.Text = "PacketType";
+            // 
+            // cMacAddr
+            // 
+            this.cMacAddr.Text = "MacAddress";
+            this.cMacAddr.Width = 120;
+            // 
+            // mAdrTye
+            // 
+            this.mAdrTye.Text = "AddressType";
+            // 
+            // cBond
+            // 
+            this.cBond.Text = "Bond";
             // 
             // panel1
             // 
@@ -407,7 +473,7 @@
             this.panel1.Controls.Add(this.btScanStop);
             this.panel1.Controls.Add(this.btScanStart);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 331);
+            this.panel1.Location = new System.Drawing.Point(0, 332);
             this.panel1.MaximumSize = new System.Drawing.Size(0, 23);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(899, 23);
@@ -456,51 +522,6 @@
             this.btScanStart.UseVisualStyleBackColor = true;
             this.btScanStart.Click += new System.EventHandler(this.btScanStart_Click);
             // 
-            // lvScanDev
-            // 
-            this.lvScanDev.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.cName,
-            this.cRssi,
-            this.cPacketType,
-            this.cMacAddr,
-            this.mAdrTye,
-            this.cBond});
-            this.lvScanDev.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lvScanDev.HideSelection = false;
-            this.lvScanDev.Location = new System.Drawing.Point(0, 0);
-            this.lvScanDev.Name = "lvScanDev";
-            this.lvScanDev.Size = new System.Drawing.Size(899, 331);
-            this.lvScanDev.TabIndex = 3;
-            this.lvScanDev.UseCompatibleStateImageBehavior = false;
-            this.lvScanDev.View = System.Windows.Forms.View.Details;
-            this.lvScanDev.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.lvScanDev_ItemSelectionChanged);
-            // 
-            // cName
-            // 
-            this.cName.Text = "Name";
-            this.cName.Width = 100;
-            // 
-            // cRssi
-            // 
-            this.cRssi.Text = "RSSI";
-            // 
-            // cPacketType
-            // 
-            this.cPacketType.Text = "PacketType";
-            // 
-            // cMacAddr
-            // 
-            this.cMacAddr.Text = "MacAddress";
-            this.cMacAddr.Width = 120;
-            // 
-            // mAdrTye
-            // 
-            this.mAdrTye.Text = "AddressType";
-            // 
-            // cBond
-            // 
-            this.cBond.Text = "Bond";
-            // 
             // txtLog
             // 
             this.txtLog.AcceptsReturn = true;
@@ -510,7 +531,7 @@
             this.txtLog.Name = "txtLog";
             this.txtLog.ReadOnly = true;
             this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtLog.Size = new System.Drawing.Size(899, 127);
+            this.txtLog.Size = new System.Drawing.Size(899, 128);
             this.txtLog.TabIndex = 0;
             // 
             // tabPage2
@@ -518,29 +539,10 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(611, 389);
+            this.tabPage2.Size = new System.Drawing.Size(905, 493);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // splitContainer2
-            // 
-            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.Location = new System.Drawing.Point(3, 3);
-            this.splitContainer2.Name = "splitContainer2";
-            this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // splitContainer2.Panel1
-            // 
-            this.splitContainer2.Panel1.Controls.Add(this.lvScanDev);
-            this.splitContainer2.Panel1.Controls.Add(this.panel1);
-            // 
-            // splitContainer2.Panel2
-            // 
-            this.splitContainer2.Panel2.Controls.Add(this.txtLog);
-            this.splitContainer2.Size = new System.Drawing.Size(899, 485);
-            this.splitContainer2.SplitterDistance = 354;
-            this.splitContainer2.TabIndex = 5;
             // 
             // frmMain
             // 
@@ -571,12 +573,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.picOpenCom)).EndInit();
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
             this.splitContainer2.Panel2.ResumeLayout(false);
             this.splitContainer2.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
