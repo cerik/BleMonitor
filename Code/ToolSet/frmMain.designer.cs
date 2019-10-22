@@ -34,9 +34,9 @@
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tslbRxMsg = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.文件ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.编辑ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.工具ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.m_File = new System.Windows.Forms.ToolStripMenuItem();
+            this.m_Edit = new System.Windows.Forms.ToolStripMenuItem();
+            this.m_Tool = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
@@ -98,22 +98,22 @@
             this.toolStripStatusLabel1,
             this.toolStripStatusLabel2,
             this.tslbRxMsg});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 568);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 566);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1087, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1087, 24);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(62, 17);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(71, 19);
             this.toolStripStatusLabel1.Text = "tslbComCnt";
             // 
             // toolStripStatusLabel2
             // 
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(60, 17);
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(66, 19);
             this.toolStripStatusLabel2.Text = "tslbCanCnt";
             // 
             // tslbRxMsg
@@ -124,38 +124,38 @@
             | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
             this.tslbRxMsg.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenOuter;
             this.tslbRxMsg.Name = "tslbRxMsg";
-            this.tslbRxMsg.Size = new System.Drawing.Size(60, 17);
+            this.tslbRxMsg.Size = new System.Drawing.Size(65, 19);
             this.tslbRxMsg.Text = "tslbRxMsg";
             // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.文件ToolStripMenuItem,
-            this.编辑ToolStripMenuItem,
-            this.工具ToolStripMenuItem});
+            this.m_File,
+            this.m_Edit,
+            this.m_Tool});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1087, 24);
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
             // 
-            // 文件ToolStripMenuItem
+            // m_File
             // 
-            this.文件ToolStripMenuItem.Name = "文件ToolStripMenuItem";
-            this.文件ToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
-            this.文件ToolStripMenuItem.Text = "文件";
+            this.m_File.Name = "m_File";
+            this.m_File.Size = new System.Drawing.Size(37, 20);
+            this.m_File.Text = "&File";
             // 
-            // 编辑ToolStripMenuItem
+            // m_Edit
             // 
-            this.编辑ToolStripMenuItem.Name = "编辑ToolStripMenuItem";
-            this.编辑ToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
-            this.编辑ToolStripMenuItem.Text = "编辑";
+            this.m_Edit.Name = "m_Edit";
+            this.m_Edit.Size = new System.Drawing.Size(39, 20);
+            this.m_Edit.Text = "&Edit";
             // 
-            // 工具ToolStripMenuItem
+            // m_Tool
             // 
-            this.工具ToolStripMenuItem.Name = "工具ToolStripMenuItem";
-            this.工具ToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
-            this.工具ToolStripMenuItem.Text = "工具";
+            this.m_Tool.Name = "m_Tool";
+            this.m_Tool.Size = new System.Drawing.Size(42, 20);
+            this.m_Tool.Text = "&Tool";
             // 
             // toolStrip1
             // 
@@ -209,7 +209,7 @@
             // 
             this.splitContainer1.Panel2.AutoScroll = true;
             this.splitContainer1.Panel2.Controls.Add(this.tabControl1);
-            this.splitContainer1.Size = new System.Drawing.Size(1087, 519);
+            this.splitContainer1.Size = new System.Drawing.Size(1087, 517);
             this.splitContainer1.SplitterDistance = 170;
             this.splitContainer1.TabIndex = 4;
             // 
@@ -218,9 +218,9 @@
             this.cbSaveLog.AutoSize = true;
             this.cbSaveLog.Location = new System.Drawing.Point(3, 219);
             this.cbSaveLog.Name = "cbSaveLog";
-            this.cbSaveLog.Size = new System.Drawing.Size(74, 17);
+            this.cbSaveLog.Size = new System.Drawing.Size(69, 17);
             this.cbSaveLog.TabIndex = 6;
-            this.cbSaveLog.Text = "保存日志";
+            this.cbSaveLog.Text = "SaveLog";
             this.cbSaveLog.UseVisualStyleBackColor = true;
             // 
             // groupBox1
@@ -244,7 +244,7 @@
             this.groupBox1.Size = new System.Drawing.Size(153, 210);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "RS232配置";
+            this.groupBox1.Text = "RS232 Config";
             // 
             // btOpenCom
             // 
@@ -252,7 +252,7 @@
             this.btOpenCom.Name = "btOpenCom";
             this.btOpenCom.Size = new System.Drawing.Size(75, 32);
             this.btOpenCom.TabIndex = 3;
-            this.btOpenCom.Text = "打开COM";
+            this.btOpenCom.Text = "Open";
             this.btOpenCom.UseVisualStyleBackColor = true;
             this.btOpenCom.Click += new System.EventHandler(this.btOpenCom_Click);
             // 
@@ -283,11 +283,11 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(18, 139);
+            this.label5.Location = new System.Drawing.Point(17, 139);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(43, 13);
+            this.label5.Size = new System.Drawing.Size(44, 13);
             this.label5.TabIndex = 0;
-            this.label5.Text = "停止位";
+            this.label5.Text = "StopBit:";
             // 
             // cmbComDatabit
             // 
@@ -305,11 +305,11 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(18, 112);
+            this.label4.Location = new System.Drawing.Point(16, 112);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(43, 13);
+            this.label4.Size = new System.Drawing.Size(45, 13);
             this.label4.TabIndex = 0;
-            this.label4.Text = "数据位";
+            this.label4.Text = "DataBit:";
             // 
             // cmbComParity
             // 
@@ -328,11 +328,11 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(18, 85);
+            this.label3.Location = new System.Drawing.Point(25, 85);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(43, 13);
+            this.label3.Size = new System.Drawing.Size(36, 13);
             this.label3.TabIndex = 0;
-            this.label3.Text = "校验位";
+            this.label3.Text = "Parity:";
             // 
             // cmbComBaud
             // 
@@ -353,11 +353,11 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(18, 58);
+            this.label2.Location = new System.Drawing.Point(2, 57);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(43, 13);
+            this.label2.Size = new System.Drawing.Size(59, 13);
             this.label2.TabIndex = 0;
-            this.label2.Text = "波特率";
+            this.label2.Text = "Baundrate:";
             // 
             // cmbComPort
             // 
@@ -374,11 +374,11 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(18, 31);
+            this.label1.Location = new System.Drawing.Point(32, 31);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(43, 13);
+            this.label1.Size = new System.Drawing.Size(29, 13);
             this.label1.TabIndex = 0;
-            this.label1.Text = "串口号";
+            this.label1.Text = "Port:";
             // 
             // tabControl1
             // 
@@ -388,7 +388,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(913, 519);
+            this.tabControl1.Size = new System.Drawing.Size(913, 517);
             this.tabControl1.TabIndex = 0;
             // 
             // tabPage1
@@ -398,7 +398,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(905, 493);
+            this.tabPage1.Size = new System.Drawing.Size(905, 491);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             // 
@@ -417,8 +417,8 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.txtLog);
-            this.splitContainer2.Size = new System.Drawing.Size(899, 487);
-            this.splitContainer2.SplitterDistance = 355;
+            this.splitContainer2.Size = new System.Drawing.Size(899, 485);
+            this.splitContainer2.SplitterDistance = 353;
             this.splitContainer2.TabIndex = 5;
             // 
             // lvScanDev
@@ -434,7 +434,7 @@
             this.lvScanDev.HideSelection = false;
             this.lvScanDev.Location = new System.Drawing.Point(0, 0);
             this.lvScanDev.Name = "lvScanDev";
-            this.lvScanDev.Size = new System.Drawing.Size(899, 332);
+            this.lvScanDev.Size = new System.Drawing.Size(899, 330);
             this.lvScanDev.TabIndex = 3;
             this.lvScanDev.UseCompatibleStateImageBehavior = false;
             this.lvScanDev.View = System.Windows.Forms.View.Details;
@@ -473,7 +473,7 @@
             this.panel1.Controls.Add(this.btScanStop);
             this.panel1.Controls.Add(this.btScanStart);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 332);
+            this.panel1.Location = new System.Drawing.Point(0, 330);
             this.panel1.MaximumSize = new System.Drawing.Size(0, 23);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(899, 23);
@@ -539,7 +539,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(905, 493);
+            this.tabPage2.Size = new System.Drawing.Size(905, 491);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -588,9 +588,9 @@
 
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem 文件ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 编辑ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 工具ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem m_File;
+        private System.Windows.Forms.ToolStripMenuItem m_Edit;
+        private System.Windows.Forms.ToolStripMenuItem m_Tool;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
         private System.Windows.Forms.ToolStripButton toolStripButton2;
