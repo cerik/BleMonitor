@@ -13,106 +13,83 @@ using System.Windows.Forms;
 
 namespace ToolSet
 {
+    public enum ATTR_TYPE_BIT_POS{
+        TYPE_READ =1,       //value was read;
+        TYPE_NOTIFY =2,     //value was notified.
+        TYPE_INDICATE =3,   //vqalue was indicated.
+        TYPE_READ_BY_TYPE =4,    //value was read.
+        TYPE_READ_BLOB =5,       //value was part of a long attribute.
+        TYPE_INDICATE_RSP_REQ =6 //value was indicated and the remote device is waiting for a confirmation.
+    };
+    
+
+    //
+    //广播消息帧格式定义;
+    //
+    public struct tPkg
+    {
+        
+        private Byte m_Byte0;
+        private Byte m_LengthLow;
+        private Byte m_ClassID;
+        private Byte m_CmdID;
+        public Byte[] m_Payload;//max 2048 bytes;
+
+        #region interface
+
+        public Byte MsgType
+        {//0=Cmd | response; 0x80:event from statck to host.
+            get { return (Byte)(m_Byte0 >> 7); }
+            set { m_Byte0 = (Byte)(m_Byte0 | (value << 7)); }
+        }
+        public Byte TechType
+        {
+            get { return (Byte)((m_Byte0 >> 3) & 0x7); }
+            set { m_Byte0 = (Byte)((m_Byte0 & 0x87) | (value << 3)); }
+        }
+        public UInt16 Length
+        {
+            get { return (UInt16)(((m_Byte0 & 0x3) << 8) + m_LengthLow); }
+            set { m_Byte0 = (Byte)((m_Byte0 & 0xFC) | ((value & 0x300) >> 8)); m_LengthLow = (Byte)(value & 0xFF); }
+        }
+
+        public Byte ClassID
+        {
+            set { m_ClassID = value; }
+            get { return m_ClassID; }
+        }
+        public Byte CmdID
+        {
+            set { m_CmdID = value; }
+            get { return m_CmdID; }
+        }
+
+        #endregion
+    };
+
     public partial class frmMain : Form
     {
+        public readonly string[] AttrType = { "Read", "Notify", "Indicate", "ReadByType", "ReadBlob", "IndicateRspReq" };
+
         public Dictionary<string, string> portDict = new Dictionary<string, string>();
-
-        [StructLayout(LayoutKind.Explicit, Size = 8)]
-        struct mSysCfg {
-            [FieldOffset(0)]
-            ushort U16Val;
-        }
-
-        //
-        //遥测消息帧格式定义;
-        //
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct tDataMsg {
-            Byte m_Header;//0x55AA
-            Byte m_Frame;
-            Byte m_Tag;   //消息计数,0~255循环,可用于统计消息丢包或误码率;
-        }
-
-        //
-        //广播消息帧格式定义;
-        //
-        [StructLayout(LayoutKind.Explicit, Size = 1, CharSet = CharSet.Ansi, Pack = 1)]
-        public struct tAdvData {
-            [FieldOffset(0)]
-            public Byte m_MsgType;//bit.7=MessageType,0=Cmd/Response,1=Event; bit.6:3=TechnologyType,0000=BluetoothSmart,0001=Wi-Fi;bit.2:0=LengthHigh,PlayloadLength;
-            [FieldOffset(0)]
-            public Byte m_TechType;
-            [FieldOffset(1)]
-            public Byte m_Length;
-            [FieldOffset(2)]
-            public Byte m_LLDFS;
-            [FieldOffset(3)]
-            public Byte m_DatLen;
-            [FieldOffset(4)]
-
-            public Byte[] m_UserDat;
-        }
-
-        public struct tPkg {
-            private Byte m_Byte0;
-            private Byte m_LengthLow;
-            private Byte m_ClassID;
-            private Byte m_CmdID;
-            public Byte[] m_Payload;//max 2048 bytes;
-
-            #region interface
-
-            public Byte MsgType
-            {//0=Cmd | response; 0x80:event from statck to host.
-                get { return (Byte)(m_Byte0 >> 7); }
-                set { m_Byte0 = (Byte)(m_Byte0 | (value << 7)); }
-            }
-            public Byte TechType
-            {
-                get { return (Byte)((m_Byte0 >> 3) & 0x7); }
-                set { m_Byte0 = (Byte)((m_Byte0 & 0x87) | (value << 3)); }
-            }
-            public UInt16 Length
-            {
-                get { return (UInt16)(((m_Byte0 & 0x3) << 8) + m_LengthLow); }
-                set { m_Byte0 = (Byte)((m_Byte0 & 0xFC) | ((value & 0x300) >> 8)); m_LengthLow = (Byte)(value & 0xFF); }
-            }
-
-            public Byte ClassID
-            {
-                set { m_ClassID = value; }
-                get { return m_ClassID; }
-            }
-            public Byte CmdID
-            {
-                set { m_CmdID = value; }
-                get { return m_CmdID; }
-            }
-
-            #endregion
-        };
 
         /* ================================================================ */
         /*                BEGIN MAIN EVENT-DRIVEN APP LOGIC                 */
         /* ================================================================ */
-        public const UInt16 STATE_STANDBY = 0;
-        public const UInt16 STATE_SCANNING = 1;
-        public const UInt16 STATE_CONNECTING = 2;
-        public const UInt16 STATE_FINDING_SERVICES = 3;
-        public const UInt16 STATE_FINDING_ATTRIBUTES = 4;
-        public const UInt16 STATE_LISTENING_MEASUREMENTS = 5;
+        public const Byte STATE_STANDBY = 0;
+        public const Byte STATE_SCANNING = 1;
+        public const Byte STATE_CONNECTING = 2;
+        public const Byte STATE_FINDING_SERVICES = 3;
+        public const Byte STATE_FINDING_ATTRIBUTES = 4;
+        public const Byte STATE_LISTENING_MEASUREMENTS = 5;
 
-        public bool gScanEnable = false;
-        public UInt16 gApp_state = STATE_STANDBY;       // current application state
-        public Byte gConnection_Handle = 0;           // connection handle (will always be 0 if only one connection happens at a time)
-        public Byte[] gConnection_MacAddr;
+        public Byte gApp_state = STATE_STANDBY;       // current application state
+        public Byte gConnectionID = 0;           // connection handle (will always be 0 if only one connection happens at a time)
+        //public Byte[] gConnection_MacAddr;
         public UInt16 att_handlesearch_start = 0;       // "start" handle holder during search
         public UInt16 att_handlesearch_end = 0;         // "end" handle holder during search
         public UInt16 att_handle_measurement = 0;       // heart rate measurement attribute handle
         public UInt16 att_handle_measurement_ccc = 0;   // heart rate measurement client characteristic configuration handle (to enable notifications)
-
-        public byte[] gMacAddr;
-        public byte gAddrType;
 
         public Bluegiga.BGLib bglib = new Bluegiga.BGLib();
 
@@ -233,6 +210,8 @@ namespace ToolSet
                         lv.SubItems.Add(ByteArrayToHexString(e.sender));//[3]
                         lv.SubItems.Add(e.address_type.ToString());//[4]
                         listScanDev.Items.Add(lv);
+
+                        AutoResizeColumnWidth(listScanDev);
                     }
                 });
             }
@@ -275,8 +254,8 @@ namespace ToolSet
             if ((e.flags & 0x05) == 0x05)
             {
                 // connected, now perform service discovery
-                gConnection_Handle = e.connection;
-                gConnection_MacAddr = e.address;// strToHexByte(listScanDev.SelectedItems[0].SubItems[3].Text);
+                gConnectionID = e.connection;
+                //gConnection_MacAddr = e.address;// strToHexByte(listScanDev.SelectedItems[0].SubItems[3].Text);
                 ThreadSafeDelegate(delegate 
                 {
                     txtLog.AppendText(String.Format("Connected to {0}", ByteArrayToHexString(e.address)) + Environment.NewLine);
@@ -372,7 +351,13 @@ namespace ToolSet
                 e.chrhandle
                 );
             Console.Write(log);
-            ThreadSafeDelegate(delegate { txtLog.AppendText(log); });
+
+            ThreadSafeDelegate(delegate
+            {
+                txtLog.AppendText(log);
+                AutoResizeColumnWidth(listPrimSrv);
+                AutoResizeColumnWidth(listAttribute);
+            });
 
             // check if we just finished searching for services
             if (gApp_state == STATE_FINDING_SERVICES)
@@ -441,7 +426,7 @@ namespace ToolSet
             //ThreadSafeDelegate(delegate { txtLog.AppendText(log); });
 
             // check for a new value from the connected peripheral's heart rate measurement attribute
-            if (e.connection == gConnection_Handle)
+            if (e.connection == gConnectionID)
             {
                 ThreadSafeDelegate(delegate
                 {
@@ -450,10 +435,11 @@ namespace ToolSet
                     ListViewItem lv = new ListViewItem();
                     lv.Text = e.connection.ToString();//column[0];
                     lv.SubItems.Add(e.atthandle.ToString());//column[1];
-                    lv.SubItems.Add(e.type.ToString());//column[2];
+                    lv.SubItems.Add(AttrType[e.type]);//column[2];
                     lv.SubItems.Add(ByteArrayToHexString(e.value));//column[3];
-
+                    
                     listAttribute.Items.Add(lv);
+                    listAttribute.Width = -1;
                 });
 
                 //Byte hr_flags = e.value[0];
@@ -475,20 +461,10 @@ namespace ToolSet
         {
             ushort a = e.result;
         }
+
         public void ProcedureCompleted(object sender, Bluegiga.BLE.Events.ATTClient.ProcedureCompletedEventArgs e)
         {
             ushort a = e.result;
-        }
-
-        public void AttributeWriteEvent(object sender, Bluegiga.BLE.Responses.ATTClient.AttributeWriteEventArgs e)
-        {
-            bglib.BLEEventATTClientProcedureCompleted += new Bluegiga.BLE.Events.ATTClient.ProcedureCompletedEventHandler(ProcedureCompleted);
-        }
-
-        public void ConnectionEvent(object sender, Bluegiga.BLE.Events.Connection.StatusEventArgs e)
-        {
-            //gConnectID = e.connection;
-            //gConnectFlag = e.flags;
         }
 
         public void ConnectDirect(object sender, Bluegiga.BLE.Responses.GAP.ConnectDirectEventArgs e)
@@ -496,11 +472,16 @@ namespace ToolSet
             ushort a = e.result;
             bglib.BLEEventConnectionStatus += new Bluegiga.BLE.Events.Connection.StatusEventHandler(ConnectionEvent);
         }
-
-        ushort handel = 0;
-        byte Serverconnection2;
+        public void ConnectionEvent(object sender, Bluegiga.BLE.Events.Connection.StatusEventArgs e)
+        {
+            //gConnectID = e.connection;
+            //gConnectFlag = e.flags;
+        }
         public void AttributeValue(object sender, Bluegiga.BLE.Events.ATTClient.AttributeValueEventArgs e)
         {
+            ushort handel = 0;
+            byte Serverconnection2;
+
             StringBuilder n = new StringBuilder();
             Serverconnection2 = e.connection;
             byte[] f = e.value;
@@ -519,6 +500,12 @@ namespace ToolSet
                     bglib.BLEEventATTClientProcedureCompleted += new Bluegiga.BLE.Events.ATTClient.ProcedureCompletedEventHandler(ProcedureCompleted);
                 }
             }
+        }
+
+#if false
+        public void AttributeWriteEvent(object sender, Bluegiga.BLE.Responses.ATTClient.AttributeWriteEventArgs e)
+        {
+            bglib.BLEEventATTClientProcedureCompleted += new Bluegiga.BLE.Events.ATTClient.ProcedureCompletedEventHandler(ProcedureCompleted);
         }
 
         public void AttributeValueFirmWare(object sender, Bluegiga.BLE.Events.ATTClient.AttributeValueEventArgs e)
@@ -544,8 +531,10 @@ namespace ToolSet
 
         public void ATTClientProcedureCompleted(object sender, Bluegiga.BLE.Events.ATTClient.AttributeValueEventArgs e)
         {
-
+            
         }
+#endif
+
         /* ================================================================ */
         /*                 END MAIN EVENT-DRIVEN APP LOGIC                  */
         /* ================================================================ */
@@ -663,6 +652,8 @@ namespace ToolSet
 
             splitTab1_Main.Panel2Collapsed = true;
             splitTab1_Sub.Panel2Collapsed = true;
+
+            SetEnableByComSts(false);
         }
 
 
@@ -723,6 +714,11 @@ namespace ToolSet
             {
                 try
                 {
+                    if (gApp_state != STATE_STANDBY)
+                    {
+                        btScanStart_Click(sender, e);
+                    }
+
                     comDev.Close();
                     toolBtOpenCom.Text = "Open";
                     toolBtOpenCom.Image = Properties.Resources.BMP_GRAY;
@@ -733,8 +729,7 @@ namespace ToolSet
                     return;
                 }
             }
-            toolCmbPort.Enabled = !comDev.IsOpen;
-            toolCmbBaudrate.Enabled = !comDev.IsOpen;
+            SetEnableByComSts(comDev.IsOpen);
         }
 
         /// <summary>
@@ -771,11 +766,6 @@ namespace ToolSet
                 hex = data[i];
                 sb.AppendFormat("{0}", Char.ConvertFromUtf32(data[i]));
             }
-
-            this.Invoke((EventHandler)(delegate
-            {
-                //tbCom.Text += sb + "\n\r";
-            }));
         }
 
         /// <summary>
@@ -833,7 +823,7 @@ namespace ToolSet
             //serialAPI.Write(new Byte[] { 0, 1, 6, 2, 1 }, 0, 5);
             if (comDev.IsOpen == true)
             {
-                if (gScanEnable)
+                if (btScanStart.Text == "StopScan")
                 {
                     // update state
                     btScanStart.Text = "StartScan";
@@ -842,7 +832,6 @@ namespace ToolSet
                     // stop scanning if scanning
                     bglib.SendCommand(comDev, bglib.BLECommandGAPEndProcedure());
 
-                    gScanEnable = false;
                     gApp_state = STATE_STANDBY;
                 }
                 else
@@ -857,7 +846,6 @@ namespace ToolSet
 
                     btScanStart.Text = "StopScan";
                     btScanStart.Image = Properties.Resources.BMP_GREEN;
-                    gScanEnable = true;
                     bglib.SendCommand(comDev, bglib.BLECommandGAPDiscover(1));
                     gApp_state = STATE_SCANNING;
                 }
@@ -877,7 +865,7 @@ namespace ToolSet
         {
             btConnect.Image = Properties.Resources.BMP_GRAY;
             stsLb_ConnSts.Image = Properties.Resources.BMP_GRAY;
-            bglib.SendCommand(comDev, bglib.BLECommandConnectionDisconnect(gAddrType));
+            bglib.SendCommand(comDev, bglib.BLECommandConnectionDisconnect(gConnectionID));
 
             gApp_state = STATE_STANDBY;
         }
@@ -916,6 +904,9 @@ namespace ToolSet
 
         private void listScanDev_DoubleClick(object sender, EventArgs e)
         {
+            byte[] gMacAddr;
+            byte gAddrType;
+
             if (comDev.IsOpen == false)
             {
                 MessageBox.Show("请先打开串口", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -953,6 +944,48 @@ namespace ToolSet
             { 
                 splitTab1_Main.Panel1Collapsed = true;
                 splitTab1_Main.Panel2Collapsed = false;
+            }
+        }
+        
+        //
+        //Auto adjust the cloumn width both for contents and header.
+        //
+        private void AutoResizeColumnWidth(ListView lv)
+        {
+            for (int i = 0; i < lv.Columns.Count; i++)
+            {
+                lv.Columns[i].Width = -1;
+                lv.Columns[i].Width = -2;
+            }
+        }
+
+        private void frmMain_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (comDev.IsOpen && (gApp_state != STATE_STANDBY))
+            {
+                btScanStart_Click(sender, e);
+            }
+        }
+
+        private void SetEnableByComSts(bool enable)
+        {
+            if (enable)
+            {
+                btScanStart.Enabled = true;
+                btConnect.Enabled = true;
+                btDisconnect.Enabled = true;
+
+                toolCmbPort.Enabled = false;
+                toolCmbBaudrate.Enabled = false;
+            }
+            else
+            {
+                btScanStart.Enabled = false;
+                btConnect.Enabled = false;
+                btDisconnect.Enabled = false;
+
+                toolCmbPort.Enabled = true;
+                toolCmbBaudrate.Enabled = false;
             }
         }
     }
