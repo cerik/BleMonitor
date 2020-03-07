@@ -263,7 +263,6 @@ namespace ToolSet
                     stsLb_ConnSts.Image = Properties.Resources.BMP_GREEN;
                 });
 
-
                 //
                 Byte[] cmd = bglib.BLECommandATTClientReadByGroupType(e.connection, 0x0001, 0xFFFF, new Byte[] { 0x00, 0x28 }); // "find primary service" UUID is 0x2800 (little-endian for UUID uint8array)
                 // DEBUG: display bytes written
@@ -325,8 +324,46 @@ namespace ToolSet
                 ByteArrayToHexString(e.uuid)
                 );
             Console.Write(log);
-            ThreadSafeDelegate(delegate { txtLog.AppendText(log); });
+            //ThreadSafeDelegate(delegate { txtLog.AppendText(log); });
+            if (e.connection == gConnectionID)
+            {
+                if (e.uuid.SequenceEqual(new Byte[] { 0x00, 0x28 }))
+                {
+                }
+                else if (e.uuid.SequenceEqual(new Byte[] { 0x03, 0x28 }))
+                {
+                }
+                else if (e.uuid.SequenceEqual(new Byte[] { 0x02, 0x29 }))
+                {//ClientCharacteristicConfiguration
+                }
+                else if (e.uuid.SequenceEqual(new Byte[] { 0x01, 0x29 }))
+                {//Characteristic User Description
+                }
+                else
+                {//charactestic attribute
+                }
 
+                ThreadSafeDelegate(delegate
+                {
+                    txtLog.AppendText(log);
+
+                    ListViewItem lv = new ListViewItem();
+                    lv.Text = e.connection.ToString();//column[0];
+                    lv.SubItems.Add(e.chrhandle.ToString());//column[1];
+                    lv.SubItems.Add("");//column[2];
+                    lv.SubItems.Add(ByteArrayToHexString(e.uuid));//column[3];
+
+                    listAttribute.Items.Add(lv);
+                    listAttribute.Width = -1;
+                });
+
+                //Byte hr_flags = e.value[0];
+                //int hr_measurement = e.value[1];
+
+                // display actual measurement
+                //ThreadSafeDelegate(delegate { txtLog.AppendText(String.Format("Heart rate: {0} bpm", hr_measurement) + Environment.NewLine); });
+            }
+#if false
             // check for heart rate measurement characteristic (UUID=0x2A37)
             if (e.uuid.SequenceEqual(new Byte[] { 0x01, 0x14 }))
             {
@@ -339,6 +376,7 @@ namespace ToolSet
                 ThreadSafeDelegate(delegate { txtLog.AppendText(String.Format("Found attribute w/UUID=0x1402: handle={0}", e.chrhandle) + Environment.NewLine); });
                 att_handle_measurement_ccc = e.chrhandle;
             }
+#endif
         }
 
         public void ATTClientProcedureCompletedEvent(object sender, Bluegiga.BLE.Events.ATTClient.ProcedureCompletedEventArgs e)
@@ -362,7 +400,7 @@ namespace ToolSet
             // check if we just finished searching for services
             if (gApp_state == STATE_FINDING_SERVICES)
             {
-#if false
+#if true
                 if (att_handlesearch_end > 0)
                 {
                     //print "Found 'Heart Rate' service with UUID 0x180D"
@@ -477,14 +515,23 @@ namespace ToolSet
             //gConnectID = e.connection;
             //gConnectFlag = e.flags;
         }
+
+
         public void AttributeValue(object sender, Bluegiga.BLE.Events.ATTClient.AttributeValueEventArgs e)
         {
+
+            if (e.atthandle == 25)
+            {
+                //tbBatLevel.Text = e.value[0].ToString();
+            }
+#if false
             ushort handel = 0;
             byte Serverconnection2;
 
             StringBuilder n = new StringBuilder();
             Serverconnection2 = e.connection;
             byte[] f = e.value;
+
             if (f.Length > 3)
             {
                 if (f[f.Length - 1] == 0x60 & f[f.Length - 2] == 0x74 & f[f.Length - 3] == 0xef)
@@ -500,15 +547,29 @@ namespace ToolSet
                     bglib.BLEEventATTClientProcedureCompleted += new Bluegiga.BLE.Events.ATTClient.ProcedureCompletedEventHandler(ProcedureCompleted);
                 }
             }
+#endif
         }
 
+        //Attribute read response event
+        ////response data:
+        //  [4~5] : uint16, handle; handle of the attribute which was read;
+        //  [6~7] : uint16, offset; Offset read from;
+        //  [8~9] : uint16, result; 0: the read was successfull; Non-zero:An error occurred.
+        //  [10..]: uint8array; value; maximum of 32 bytes can be read at a time.
+        public void AttributesReadResponseEvent(object sender, Bluegiga.BLE.Responses.Attributes.ReadEventArgs e)
+        {
+            if(e.result==0)
+            {
+                tbBatLevel.Text = e.value[0].ToString();
+            }
+        }
 #if false
         public void AttributeWriteEvent(object sender, Bluegiga.BLE.Responses.ATTClient.AttributeWriteEventArgs e)
         {
             bglib.BLEEventATTClientProcedureCompleted += new Bluegiga.BLE.Events.ATTClient.ProcedureCompletedEventHandler(ProcedureCompleted);
         }
 
-        public void AttributeValueFirmWare(object sender, Bluegiga.BLE.Events.ATTClient.AttributeValueEventArgs e)
+        public void AttributeValueFirmware(object sender, Bluegiga.BLE.Events.ATTClient.AttributeValueEventArgs e)
         {
 
             if (e.value.Length == 4)
@@ -646,6 +707,14 @@ namespace ToolSet
             //is indicated or notified by the remote device.
             bglib.BLEEventATTClientAttributeValue += new Bluegiga.BLE.Events.ATTClient.AttributeValueEventHandler(this.ATTClientAttributeValueEvent);
 
+            //Attribute read response event
+            ////response data:
+            //  [4~5] : uint16, handle; handle of the attribute which was read;
+            //  [6~7] : uint16, offset; Offset read from;
+            //  [8~9] : uint16, result; 0: the read was successfull; Non-zero:An error occurred.
+            //  [10..]: uint8array; value; maximum of 32 bytes can be read at a time.
+            bglib.BLEResponseAttributesRead += new Bluegiga.BLE.Responses.Attributes.ReadEventHandler(this.AttributesReadResponseEvent);
+
             //Indicated --attclient
             //This event is produced at the GATT server side when an attribute is successfully indicated to the GATT client.
             //This means the event is only produced at the GATT server if the indication is acknowledged by the GATT client(the removte device).
@@ -748,7 +817,7 @@ namespace ToolSet
 
             // DEBUG: display bytes read
             //Console.WriteLine("<= RX ({0}) [ {1}]", ReDatas.Length, ByteArrayToHexString(ReDatas));
-            tslbRxMsg.Text = string.Format("<= RX ({0}) [ {1}]", ReDatas.Length, ByteArrayToHexString(ReDatas));
+            //tslbRxMsg.Text = string.Format("<= RX ({0}) [ {1}]", ReDatas.Length, ByteArrayToHexString(ReDatas));
             // parse all bytes read through BGLib parser
             for (int i = 0; i < ReDatas.Length; i++)
             {
@@ -890,10 +959,19 @@ namespace ToolSet
                 connHandle = Byte.Parse(listPrimSrv.SelectedItems[0].SubItems[0].Text);// strToHexByte(listPrimSrv.SelectedItems[0].SubItems[0].Text);
                 start = UInt16.Parse(listPrimSrv.SelectedItems[0].SubItems[1].Text);
                 end = UInt16.Parse(listPrimSrv.SelectedItems[0].SubItems[2].Text);
-                //Byte[] uuid = strToHexByte(listPrimSrv.SelectedItems[0].SubItems[3].Text);
+                Byte[] uuid = strToHexByte(listPrimSrv.SelectedItems[0].SubItems[3].Text);
 
+                if (uuid[0] == 0x0F && uuid[1] == 0x18)
+                {
+                    tabPgBat.Show();
+                }
+                else
+                {
+                    tabPgBat.Hide();
+                }
                 //
-                Byte[] cmd = bglib.BLECommandATTClientReadByType(connHandle, start, end, new Byte[] { 0x03, 0x28 });
+                //Byte[] cmd = bglib.BLECommandATTClientReadByType(connHandle, start, end, new Byte[] { 0x03, 0x28 });
+                Byte[] cmd = bglib.BLECommandATTClientFindInformation(connHandle, start, end);
                 bglib.SendCommand(comDev, cmd);
                 //while (bglib.IsBusy()) ;
 
@@ -987,6 +1065,27 @@ namespace ToolSet
                 toolCmbPort.Enabled = true;
                 toolCmbBaudrate.Enabled = false;
             }
+        }
+
+        private void btBatLevRead_Click(object sender, EventArgs e)
+        {
+            Byte[] cmd = bglib.BLECommandAttributesRead(19,0);
+            //Byte[] cmd = bglib.BLECommandATTClientReadByHandle(gConnectionID, 25);
+            //Byte[] cmd = bglib.BLECommandATTClientReadByType(gConnectionID,)
+            bglib.SendCommand(comDev, cmd);
+
+            //print "Found 'Heart Rate' measurement attribute with UUID 0x2A37"
+
+            // found the measurement + client characteristic configuration, so enable notifications
+            // (this is done by writing 0x0001 to the client characteristic configuration attribute)
+            //Byte[] cmd = bglib.BLECommandATTClientAttributeWrite(e.connection, att_handle_measurement_ccc, new Byte[] { 0x01, 0x00 });
+            // DEBUG: display bytes written
+            //ThreadSafeDelegate(delegate { txtLog.AppendText(String.Format("=> TX ({0}) [ {1}]", cmd.Length, ByteArrayToHexString(cmd)) + Environment.NewLine); });
+            //bglib.SendCommand(serialAPI, cmd);
+            //while (bglib.IsBusy()) ;
+
+            // update state
+            //app_state = STATE_LISTENING_MEASUREMENTS;
         }
     }
 }
