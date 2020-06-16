@@ -1353,7 +1353,6 @@ namespace Bluegiga {
             
             }
         }
-
     }
 
     public class BGLib
@@ -3246,7 +3245,6 @@ namespace Bluegiga {
             port.Write(cmd, 0, cmd.Length);
             return 0; // no error handling yet
         }
-
     }
 
 }

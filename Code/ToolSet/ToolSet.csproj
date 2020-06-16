@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BGLib.cs" />
+    <Compile Include="BleService.cs" />
     <Compile Include="frmMain.cs">
       <SubType>Form</SubType>
     </Compile>

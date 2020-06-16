@@ -10,9 +10,11 @@ using Microsoft.Win32;
 using System.IO.Ports;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace ToolSet
 {
+#if false
     public enum ATTR_TYPE_BIT_POS{
         TYPE_READ =1,       //value was read;
         TYPE_NOTIFY =2,     //value was notified.
@@ -35,7 +37,7 @@ namespace ToolSet
         private Byte m_CmdID;
         public Byte[] m_Payload;//max 2048 bytes;
 
-        #region interface
+#region interface
 
         public Byte MsgType
         {//0=Cmd | response; 0x80:event from statck to host.
@@ -64,8 +66,9 @@ namespace ToolSet
             get { return m_CmdID; }
         }
 
-        #endregion
+#endregion
     };
+#endif
 
     public partial class frmMain : Form
     {
@@ -76,22 +79,18 @@ namespace ToolSet
         /* ================================================================ */
         /*                BEGIN MAIN EVENT-DRIVEN APP LOGIC                 */
         /* ================================================================ */
-        public const Byte STATE_STANDBY = 0;
-        public const Byte STATE_SCANNING = 1;
-        public const Byte STATE_CONNECTING = 2;
-        public const Byte STATE_FINDING_SERVICES = 3;
-        public const Byte STATE_FINDING_ATTRIBUTES = 4;
-        public const Byte STATE_LISTENING_MEASUREMENTS = 5;
+        public static Byte gConnectID = 0xFF;                // connection handle (will always be 0 if only one connection happens at a time)
+        public static ushort gChrHandle = 0xFF;
 
-        public Byte gApp_state = STATE_STANDBY;       // current application state
-        public Byte gConnectionID = 0;           // connection handle (will always be 0 if only one connection happens at a time)
-        //public Byte[] gConnection_MacAddr;
-        public UInt16 att_handlesearch_start = 0;       // "start" handle holder during search
-        public UInt16 att_handlesearch_end = 0;         // "end" handle holder during search
-        public UInt16 att_handle_measurement = 0;       // heart rate measurement attribute handle
-        public UInt16 att_handle_measurement_ccc = 0;   // heart rate measurement client characteristic configuration handle (to enable notifications)
+        private Thread m_ScanThread = null;
+        public  bool m_ProcCompleted = false;
+        public bool m_ReadDone = true;
+        private Byte[] m_AttrReadData = null;
+        private bool m_CheckUserDesc = false;
 
-        public Bluegiga.BGLib bglib = new Bluegiga.BGLib();
+        private static BleService c_BleService = new BleService();
+
+        public static Bluegiga.BGLib bglib = new Bluegiga.BGLib();
 
         public void SystemBootEvent(object sender, Bluegiga.BLE.Events.System.BootEventArgs e)
         {
@@ -134,13 +133,14 @@ namespace ToolSet
             string mName = "(No Name)";
 
             // pull all advertised service info from ad packet
-            List<Byte[]> ad_services = new List<Byte[]>();
+            //List<Byte[]> ad_services = new List<Byte[]>();
 
             Byte[] this_field = { };
             int bytes_left = 0;
             int field_offset = 0;
             for (int i = 0; i < e.data.Length; i++)
             {
+                //提取设备名称;
                 if (bytes_left == 0)
                 {
                     bytes_left = e.data[i];
@@ -153,6 +153,7 @@ namespace ToolSet
                     bytes_left--;
                     if (bytes_left == 0)
                     {
+#if false
                         if (this_field[0] == 0x02 || this_field[0] == 0x03)
                         {// partial or complete list of 16-bit UUIDs
                             ad_services.Add(this_field.Skip(1).Take(2).Reverse().ToArray());
@@ -169,52 +170,41 @@ namespace ToolSet
                         {//Full name
                             mName = System.Text.Encoding.ASCII.GetString(this_field.Skip(1).ToArray());
                         }
+#else
+                        if (this_field[0] == 0x09)
+                        {//Full name
+                            mName = System.Text.Encoding.ASCII.GetString(this_field.Skip(1).ToArray());
+                        }
+#endif
                     }
                 }
-
-                //ASCii码转换
-                //String log = String.Format("ble_evt_gap_scan_response:" + Environment.NewLine + "\trssi={0}, packet_type={1}, bd_addr=[ {2}], address_type={3}, bond={4}, data=[ {5}], convert={6}" + Environment.NewLine,
-                //    (SByte)e.rssi,
-                //    (SByte)e.packet_type,
-                //    ByteArrayToHexString(e.sender),
-                //    (SByte)e.address_type,
-                //    (SByte)e.bond,
-                //    ByteArrayToHexString(e.data),
-                //    mName
-                //    );
-                //Console.Write(log); //to slow ,waste lots of time.
-
-                int a = Math.Abs(e.rssi);
-                string macaddr = ByteArrayToHexString(e.sender);
-
-                ThreadSafeDelegate(delegate
-                {
-                    //
-                    //check whether this dev is already displayed in the list.
-                    //if it is not, we add it to the listbox,otherwise, just update.
-                    //
-                    ListViewItem lvS = listScanDev.FindItemWithText(macaddr);
-                    if (lvS != null)
-                    {
-                        lvS.SubItems[0].Text = mName;
-                        lvS.SubItems[1].Text = a.ToString();
-                        lvS.SubItems[2].Text = e.packet_type.ToString();
-                        lvS.SubItems[3].Text = ByteArrayToHexString(e.sender);
-                        lvS.SubItems[4].Text = e.address_type.ToString();
-                    }
-                    else
-                    {
-                        ListViewItem lv = new ListViewItem(mName);//[0];
-                        lv.SubItems.Add(a.ToString());//[1]
-                        lv.SubItems.Add(e.packet_type.ToString());//[2]
-                        lv.SubItems.Add(ByteArrayToHexString(e.sender));//[3]
-                        lv.SubItems.Add(e.address_type.ToString());//[4]
-                        listScanDev.Items.Add(lv);
-
-                        AutoResizeColumnWidth(listScanDev);
-                    }
-                });
             }
+
+            //添加扫描信息到列表中;
+            int rssi = Math.Abs(e.rssi);
+            string macaddr = ByteArrayToHexString(e.sender);
+            ThreadSafeDelegate(delegate
+            {
+                //
+                //check whether this dev is already displayed in the list.
+                //if it is not, we add it to the listbox,otherwise, just update.
+                //
+                ListViewItem lvS = listScanDev.FindItemWithText(macaddr);//查找列表中是否有重复设备;
+                if (lvS != null)
+                {
+                    lvS.SubItems[0].Text = mName;
+                    lvS.SubItems[1].Text = rssi.ToString();
+                    lvS.SubItems[2].Text = ByteArrayToHexString(e.sender);
+                }
+                else
+                {
+                    ListViewItem lv = new ListViewItem(mName);//[0];
+                    lv.SubItems.Add(rssi.ToString());//[1]
+                    lv.SubItems.Add(ByteArrayToHexString(e.sender));//[2]
+                    lv.SubItems.Add(e.address_type.ToString());//[3]
+                    listScanDev.Items.Add(lv);
+                }
+            });
         }
 
         // the "connection_status" event occurs when a new connection is established
@@ -229,7 +219,7 @@ namespace ToolSet
         //[15~16]=uint16,timeout; Current supervision timeout(units of 10ms);
         //[17~18]=uint16,latency; Slave latency which tells how many connection intervals the slave may skip.
         //[19]=uint8,bonding; Bonding handle if the device has been bonded with. Otherwise:0xFF;
-        public void ConnectionStatusEvent(object sender, Bluegiga.BLE.Events.Connection.StatusEventArgs e)
+        public void ConnectEvent(object sender, Bluegiga.BLE.Events.Connection.StatusEventArgs e)
         {
             if (comDev.IsOpen == false) return;
 
@@ -254,7 +244,7 @@ namespace ToolSet
             if ((e.flags & 0x05) == 0x05)
             {
                 // connected, now perform service discovery
-                gConnectionID = e.connection;
+                gConnectID = e.connection;
                 //gConnection_MacAddr = e.address;// strToHexByte(listScanDev.SelectedItems[0].SubItems[3].Text);
                 ThreadSafeDelegate(delegate 
                 {
@@ -271,13 +261,14 @@ namespace ToolSet
                     txtLog.AppendText(String.Format("=> TX ({0}) [ {1}]", cmd.Length, ByteArrayToHexString(cmd)) + Environment.NewLine);
                     listPrimSrv.Items.Clear();
                 });
-
+                m_ProcCompleted = false;
                 bglib.SendCommand(comDev, cmd);
-                //while (bglib.IsBusy()) ;
-
-                // update state
-                gApp_state = STATE_FINDING_SERVICES;
             }
+        }
+
+        public void DisconnectEvent(object sender, Bluegiga.BLE.Events.Connection.DisconnectedEventArgs e)
+        {
+            gConnectID = 0xFF;
         }
 
         //This event is produced when an attributed group(a service) is found. Typically this event is produced after Read by Group Type command.
@@ -288,266 +279,91 @@ namespace ToolSet
         // [9..] = uint8array, uuid; UUID os a service; Length is 0 if no service are found.
         public void ATTClientGroupFoundEvent(object sender, Bluegiga.BLE.Events.ATTClient.GroupFoundEventArgs e)
         {
-            String log = String.Format("ble_evt_attclient_group_found: connection={0}, start={1}, end={2}, uuid=[ {3}]" + Environment.NewLine,
-                e.connection,
-                e.start,
-                e.end,
-                ByteArrayToHexString(e.uuid)
-                );
-            //Console.Write(log);
             ThreadSafeDelegate(delegate
             {
-                txtLog.AppendText(log);
-
                 ListViewItem lv = new ListViewItem();
-                lv.Text = e.connection.ToString();//column[0];
+                lv.Text = c_BleService.ServiceNameByUUID(e.uuid.ToArray());//column[0];
                 lv.SubItems.Add(e.start.ToString());//column[1];
                 lv.SubItems.Add(e.end.ToString());//column[2];
-                lv.SubItems.Add(ByteArrayToHexString(e.uuid));//column[3];
+                lv.SubItems.Add(ByteArrayToHexString(e.uuid.ToArray()));//column[3];
                 listPrimSrv.Items.Add(lv);
             });
-
-            // found "service" attribute groups (UUID=0x2800), check for heart rate measurement service
-            if (e.uuid.SequenceEqual(new Byte[] { 0xF3, 0x64, 0x14, 0x00 }))
-            {
-                ThreadSafeDelegate(delegate { txtLog.AppendText(String.Format("Found attribute group for service w/UUID=0x140D: start={0}, end=%d", e.start, e.end) + Environment.NewLine); });
-                att_handlesearch_start = e.start;
-                att_handlesearch_end = e.end;
-            }
         }
 
+
+        //
+        //查找子服务的应答事件,从中提取子服务内容;
+        //
         public void ATTClientFindInformationFoundEvent(object sender, Bluegiga.BLE.Events.ATTClient.FindInformationFoundEventArgs e)
         {
-            String log = String.Format("ble_evt_attclient_find_information_found: connection={0}, chrhandle={1}, uuid=[ {2}]" + Environment.NewLine,
-                e.connection,
-                e.chrhandle,
-                ByteArrayToHexString(e.uuid)
-                );
-            Console.Write(log);
+            String name = "";
             //ThreadSafeDelegate(delegate { txtLog.AppendText(log); });
-            if (e.connection == gConnectionID)
+            if (e.connection == gConnectID)
             {
-                if (e.uuid.SequenceEqual(new Byte[] { 0x00, 0x28 }))
+                if (c_BleService.IsDeclarePrimaryService(e.uuid))//e.uuid.SequenceEqual(new Byte[] { 0x00, 0x28 }))
                 {
                 }
-                else if (e.uuid.SequenceEqual(new Byte[] { 0x03, 0x28 }))
+                else if ( c_BleService.IsDeclareAttribute(e.uuid))//e.uuid.SequenceEqual(new Byte[] { 0x03, 0x28 }))
                 {
                 }
-                else if (e.uuid.SequenceEqual(new Byte[] { 0x02, 0x29 }))
+                else if (c_BleService.IsDescClientConfig(e.uuid))
                 {//ClientCharacteristicConfiguration
                 }
-                else if (e.uuid.SequenceEqual(new Byte[] { 0x01, 0x29 }))
+                else if (c_BleService.IsDescUserAttribute(e.uuid))
                 {//Characteristic User Description
                 }
-                else
+                //else
                 {//charactestic attribute
+                    ThreadSafeDelegate(delegate
+                    {
+                        ListViewItem lv = new ListViewItem();
+                        lv.Text = name;//column[0];
+                        lv.SubItems.Add(e.connection.ToString());//column[1];
+                        lv.SubItems.Add(e.chrhandle.ToString());//column[2];attribute handle
+                        lv.SubItems.Add(ByteArrayToHexString(e.uuid));//column[3];
+
+                        listAttribute.Items.Add(lv);
+                        listAttribute.Width = -1;
+                    });
                 }
-
-                ThreadSafeDelegate(delegate
-                {
-                    txtLog.AppendText(log);
-
-                    ListViewItem lv = new ListViewItem();
-                    lv.Text = e.connection.ToString();//column[0];
-                    lv.SubItems.Add(e.chrhandle.ToString());//column[1];
-                    lv.SubItems.Add("");//column[2];
-                    lv.SubItems.Add(ByteArrayToHexString(e.uuid));//column[3];
-
-                    listAttribute.Items.Add(lv);
-                    listAttribute.Width = -1;
-                });
-
-                //Byte hr_flags = e.value[0];
-                //int hr_measurement = e.value[1];
-
-                // display actual measurement
-                //ThreadSafeDelegate(delegate { txtLog.AppendText(String.Format("Heart rate: {0} bpm", hr_measurement) + Environment.NewLine); });
             }
-#if false
-            // check for heart rate measurement characteristic (UUID=0x2A37)
-            if (e.uuid.SequenceEqual(new Byte[] { 0x01, 0x14 }))
-            {
-                ThreadSafeDelegate(delegate { txtLog.AppendText(String.Format("Found attribute w/UUID=0x1401: handle={0}", e.chrhandle) + Environment.NewLine); });
-                att_handle_measurement = e.chrhandle;
-            }
-            // check for subsequent client characteristic configuration (UUID=0x2902)
-            else if (e.uuid.SequenceEqual(new Byte[] { 0x02, 0x14 }) && att_handle_measurement > 0)
-            {
-                ThreadSafeDelegate(delegate { txtLog.AppendText(String.Format("Found attribute w/UUID=0x1402: handle={0}", e.chrhandle) + Environment.NewLine); });
-                att_handle_measurement_ccc = e.chrhandle;
-            }
-#endif
         }
 
         public void ATTClientProcedureCompletedEvent(object sender, Bluegiga.BLE.Events.ATTClient.ProcedureCompletedEventArgs e)
         {
             if (comDev.IsOpen == false) return;
 
-            String log = String.Format("ble_evt_attclient_procedure_completed: connection={0}, result={1}, chrhandle={2}" + Environment.NewLine,
-                e.connection,
-                e.result,
-                e.chrhandle
-                );
-            Console.Write(log);
-
-            ThreadSafeDelegate(delegate
-            {
-                txtLog.AppendText(log);
-                AutoResizeColumnWidth(listPrimSrv);
-                AutoResizeColumnWidth(listAttribute);
-            });
-
-            // check if we just finished searching for services
-            if (gApp_state == STATE_FINDING_SERVICES)
-            {
-#if true
-                if (att_handlesearch_end > 0)
-                {
-                    //print "Found 'Heart Rate' service with UUID 0x180D"
-
-                    // found the Heart Rate service, so now search for the attributes inside
-                    Byte[] cmd = bglib.BLECommandATTClientFindInformation(e.connection, att_handlesearch_start, att_handlesearch_end);
-                    // DEBUG: display bytes written
-                    ThreadSafeDelegate(delegate { txtLog.AppendText(String.Format("=> TX ({0}) [ {1}]", cmd.Length, ByteArrayToHexString(cmd)) + Environment.NewLine); });
-                    bglib.SendCommand(comDev, cmd);
-                    //while (bglib.IsBusy()) ;
-
-                    // update state
-                    gApp_state = STATE_FINDING_ATTRIBUTES;
-                }
-                else
-                {
-                    ThreadSafeDelegate(delegate { txtLog.AppendText("Could not find 'Heart Rate' service with UUID 0x180D" + Environment.NewLine); });
-                }
-#else
-                ThreadSafeDelegate(delegate { txtLog.AppendText("<<<-ATTClientProcedureCompletedEvent-service" + Environment.NewLine); });
-#endif
-            }
-            // check if we just finished searching for attributes within the heart rate service
-            else if (gApp_state == STATE_FINDING_ATTRIBUTES)
-            {
-#if false
-                if (att_handle_measurement_ccc > 0)
-                {
-                    //print "Found 'Heart Rate' measurement attribute with UUID 0x2A37"
-
-                    // found the measurement + client characteristic configuration, so enable notifications
-                    // (this is done by writing 0x0001 to the client characteristic configuration attribute)
-                    Byte[] cmd = bglib.BLECommandATTClientAttributeWrite(e.connection, att_handle_measurement_ccc, new Byte[] { 0x01, 0x00 });
-                    // DEBUG: display bytes written
-                    ThreadSafeDelegate(delegate { txtLog.AppendText(String.Format("=> TX ({0}) [ {1}]", cmd.Length, ByteArrayToHexString(cmd)) + Environment.NewLine); });
-                    bglib.SendCommand(comDev, cmd);
-                    //while (bglib.IsBusy()) ;
-
-                    // update state
-                    gApp_state = STATE_LISTENING_MEASUREMENTS;
-                }
-                else
-                {
-                    ThreadSafeDelegate(delegate { txtLog.AppendText("Could not find 'Heart Rate' measurement attribute with UUID 0x2A37" + Environment.NewLine); });
-                }
-#else
-                ThreadSafeDelegate(delegate { txtLog.AppendText("<<<-ATTClientProcedureCompletedEvent-attribute" + Environment.NewLine); });
-#endif
-            }
+            m_ProcCompleted = true;
         }
 
         public void ATTClientAttributeValueEvent(object sender, Bluegiga.BLE.Events.ATTClient.AttributeValueEventArgs e)
         {
-            String log = String.Format("ble_evt_attclient_attribute_value: connection={0}, atthandle={1}, type={2}, value=[ {3}]" + Environment.NewLine,
-                e.connection,
-                e.atthandle,
-                e.type,
-                ByteArrayToHexString(e.value)
-                );
-            Console.Write(log);
-            //ThreadSafeDelegate(delegate { txtLog.AppendText(log); });
-
             // check for a new value from the connected peripheral's heart rate measurement attribute
-            if (e.connection == gConnectionID)
+            if (e.connection == gConnectID)// && e.atthandle == gChrHandle)
             {
+                m_AttrReadData = e.value;
+                m_ReadDone = true;
                 ThreadSafeDelegate(delegate
                 {
-                    txtLog.AppendText(log);
-
-                    ListViewItem lv = new ListViewItem();
-                    lv.Text = e.connection.ToString();//column[0];
-                    lv.SubItems.Add(e.atthandle.ToString());//column[1];
-                    lv.SubItems.Add(AttrType[e.type]);//column[2];
-                    lv.SubItems.Add(ByteArrayToHexString(e.value));//column[3];
-                    
-                    listAttribute.Items.Add(lv);
-                    listAttribute.Width = -1;
+                    if (rbChar.Checked)
+                    {
+                        tbAttrData.Text = Encoding.UTF8.GetString(e.value);
+                    }
+                    else if (rbHex.Checked)
+                    {
+                        tbAttrData.Text = ByteArrayToHexString(e.value);
+                    }
+                    else
+                    {
+                        tbAttrData.Text = ByteArrayToDecString(e.value);
+                    }
                 });
-
-                //Byte hr_flags = e.value[0];
-                //int hr_measurement = e.value[1];
-
-                // display actual measurement
-                //ThreadSafeDelegate(delegate { txtLog.AppendText(String.Format("Heart rate: {0} bpm", hr_measurement) + Environment.NewLine); });
             }
-        }
-
-        public void ATTClientReadByTypeEvent(object sender, Bluegiga.BLE.Responses.ATTClient.ReadByTypeEventArgs e)
-        {
-            byte a = e.connection;
-            ushort b = e.result;
-            bglib.BLEEventATTClientAttributeValue += new Bluegiga.BLE.Events.ATTClient.AttributeValueEventHandler(AttributeValue);
         }
 
         public void WriteCommandEvent(object sender, Bluegiga.BLE.Responses.ATTClient.WriteCommandEventArgs e)
         {
             ushort a = e.result;
-        }
-
-        public void ProcedureCompleted(object sender, Bluegiga.BLE.Events.ATTClient.ProcedureCompletedEventArgs e)
-        {
-            ushort a = e.result;
-        }
-
-        public void ConnectDirect(object sender, Bluegiga.BLE.Responses.GAP.ConnectDirectEventArgs e)
-        {
-            ushort a = e.result;
-            bglib.BLEEventConnectionStatus += new Bluegiga.BLE.Events.Connection.StatusEventHandler(ConnectionEvent);
-        }
-        public void ConnectionEvent(object sender, Bluegiga.BLE.Events.Connection.StatusEventArgs e)
-        {
-            //gConnectID = e.connection;
-            //gConnectFlag = e.flags;
-        }
-
-
-        public void AttributeValue(object sender, Bluegiga.BLE.Events.ATTClient.AttributeValueEventArgs e)
-        {
-
-            if (e.atthandle == 25)
-            {
-                //tbBatLevel.Text = e.value[0].ToString();
-            }
-#if false
-            ushort handel = 0;
-            byte Serverconnection2;
-
-            StringBuilder n = new StringBuilder();
-            Serverconnection2 = e.connection;
-            byte[] f = e.value;
-
-            if (f.Length > 3)
-            {
-                if (f[f.Length - 1] == 0x60 & f[f.Length - 2] == 0x74 & f[f.Length - 3] == 0xef)
-                {
-                    for (int i = 0; i < f.Length; i++)
-                    {
-                        int aa = Convert.ToInt32(f[i]);
-                        string hexOutput = String.Format("{0:X}", aa);
-                        n.Append(hexOutput + "|");
-                    }
-                    MessageBox.Show(n.ToString());
-                    handel = e.atthandle;
-                    bglib.BLEEventATTClientProcedureCompleted += new Bluegiga.BLE.Events.ATTClient.ProcedureCompletedEventHandler(ProcedureCompleted);
-                }
-            }
-#endif
         }
 
         //Attribute read response event
@@ -556,13 +372,6 @@ namespace ToolSet
         //  [6~7] : uint16, offset; Offset read from;
         //  [8~9] : uint16, result; 0: the read was successfull; Non-zero:An error occurred.
         //  [10..]: uint8array; value; maximum of 32 bytes can be read at a time.
-        public void AttributesReadResponseEvent(object sender, Bluegiga.BLE.Responses.Attributes.ReadEventArgs e)
-        {
-            if(e.result==0)
-            {
-                tbBatLevel.Text = e.value[0].ToString();
-            }
-        }
 #if false
         public void AttributeWriteEvent(object sender, Bluegiga.BLE.Responses.ATTClient.AttributeWriteEventArgs e)
         {
@@ -608,6 +417,65 @@ namespace ToolSet
                 BeginInvoke(method);
             else
                 method.Invoke();
+        }
+        private string GetAttrBoxID(int row)
+        {
+            if (listAttribute.InvokeRequired)
+            {
+                string str = string.Empty;
+                this.listAttribute.Invoke(new MethodInvoker(delegate { str = listAttribute.Items[row].SubItems[2].Text; }));
+                return str;
+            }
+            else
+            {
+            }
+            return null;
+        }
+        private void SetAttrUserDesc(int rowIdx,string str)
+        {
+            listAttribute.Invoke(new Action<String>(p => { listAttribute.Items[rowIdx].SubItems[0].Text = str; }), listAttribute.Items[rowIdx].SubItems[0].Text);
+        }
+
+        private void ScanThread()
+        {
+            ushort attrid = 0;
+            Byte[] cmd;
+            string str = null;
+
+            while (true)
+            { 
+                if (m_CheckUserDesc == true)
+                {
+                    if(m_ReadDone)
+                    {
+                        int idx = 0;
+                        while (idx < listAttribute.Items.Count)
+                        {
+                            str = GetAttrBoxID(idx);// listAttribute.Items[idx].SubItems[2].Text;
+                            attrid = ushort.Parse(str);
+                            attrid = (ushort)(attrid +1);
+                            m_ReadDone = false;
+                            cmd = bglib.BLECommandATTClientReadByHandle(gConnectID, attrid);
+                            //do
+                            {
+                                bglib.SendCommand(comDev, cmd);
+                                //Thread.Sleep(1000);
+                            };// 
+                            while (m_ReadDone == false);
+                            str = Encoding.UTF8.GetString(m_AttrReadData);
+                            ThreadSafeDelegate(delegate
+                            {
+                                listAttribute.Items[idx].SubItems[0].Text = str;
+                                idx++;
+                             });
+                            //SetAttrUserDesc(idx, str);
+                            //idx++;
+                        }
+                        m_CheckUserDesc = false;
+                    }
+                }
+                Thread.Sleep(100);
+            }
         }
 
         public frmMain()
@@ -665,7 +533,7 @@ namespace ToolSet
             // [15~16]:uint16, timeout;
             // [17~18]:uint16,latency;
             // [19]:uint8, bonding.
-            bglib.BLEResponseGAPConnectDirect += new Bluegiga.BLE.Responses.GAP.ConnectDirectEventHandler(ConnectDirect);
+            //bglib.BLEResponseGAPConnectDirect += new Bluegiga.BLE.Responses.GAP.ConnectDirectEventHandler(ConnectDirect);
 
             //连接事件
             //This event indicates the connection status and parameters.
@@ -678,7 +546,10 @@ namespace ToolSet
             //[15~16]=uint16,timeout; Current supervision timeout(units of 10ms);
             //[17~18]=uint16,latency; Slave latency which tells how many connection intervals the slave may skip.
             //[19]=uint8,bonding; Bonding handle if the device has been bonded with. Otherwise:0xFF;
-            bglib.BLEEventConnectionStatus += new Bluegiga.BLE.Events.Connection.StatusEventHandler(this.ConnectionStatusEvent);
+            bglib.BLEEventConnectionStatus += new Bluegiga.BLE.Events.Connection.StatusEventHandler(this.ConnectEvent);
+
+            bglib.BLEEventConnectionDisconnected += new Bluegiga.BLE.Events.Connection.DisconnectedEventHandler(this.DisconnectEvent);
+
 
             //查找一级服务
             //This event is produced when an attributed group(a service) is found. Typically this event is produced after Read by Group Type command.
@@ -690,7 +561,7 @@ namespace ToolSet
             bglib.BLEEventATTClientGroupFound += new Bluegiga.BLE.Events.ATTClient.GroupFoundEventHandler(this.ATTClientGroupFoundEvent);
 
             //查找二级服务
-            bglib.BLEResponseATTClientReadByType += new Bluegiga.BLE.Responses.ATTClient.ReadByTypeEventHandler(ATTClientReadByTypeEvent);
+            //bglib.BLEResponseATTClientReadByType += new Bluegiga.BLE.Responses.ATTClient.ReadByTypeEventHandler(ATTClientReadByTypeEvent);
 
             //This event is generated when characteristics type mappings are found. This happens typically after Find Information command
             //has been issued to discover all attributes of a service.
@@ -713,16 +584,20 @@ namespace ToolSet
             //  [6~7] : uint16, offset; Offset read from;
             //  [8~9] : uint16, result; 0: the read was successfull; Non-zero:An error occurred.
             //  [10..]: uint8array; value; maximum of 32 bytes can be read at a time.
-            bglib.BLEResponseAttributesRead += new Bluegiga.BLE.Responses.Attributes.ReadEventHandler(this.AttributesReadResponseEvent);
+            //bglib.BLEResponseAttributesRead += new Bluegiga.BLE.Responses.Attributes.ReadEventHandler(this.AttributesReadResponseEvent);
 
             //Indicated --attclient
             //This event is produced at the GATT server side when an attribute is successfully indicated to the GATT client.
             //This means the event is only produced at the GATT server if the indication is acknowledged by the GATT client(the removte device).
 
-            splitTab1_Main.Panel2Collapsed = true;
-            splitTab1_Sub.Panel2Collapsed = true;
+            //splitTab1_Main.Panel2Collapsed = true;
+            //splitTab1_Sub.Panel2Collapsed = true;
 
             SetEnableByComSts(false);
+
+            m_ScanThread = new Thread(new ThreadStart(ScanThread));
+            m_ScanThread.IsBackground = true;
+            ///m_ScanThread.Start();
         }
 
 
@@ -772,6 +647,7 @@ namespace ToolSet
                     comDev.Open();
                     toolBtOpenCom.Text = "Close";
                     toolBtOpenCom.Image = Properties.Resources.BMP_GREEN;
+                    timPeridic.Start();
                 }
                 catch (Exception ex)
                 {
@@ -783,14 +659,10 @@ namespace ToolSet
             {
                 try
                 {
-                    if (gApp_state != STATE_STANDBY)
-                    {
-                        btScanStart_Click(sender, e);
-                    }
-
                     comDev.Close();
                     toolBtOpenCom.Text = "Open";
                     toolBtOpenCom.Image = Properties.Resources.BMP_GRAY;
+                    timPeridic.Stop();
                 }
                 catch (Exception ex)
                 {
@@ -885,11 +757,15 @@ namespace ToolSet
                 hex.AppendFormat("{0:x2} ", b);
             return hex.ToString();
         }
-
+        public string ByteArrayToDecString(Byte[] ba)
+        {
+            StringBuilder hex = new StringBuilder(ba.Length * 2);
+            foreach (byte b in ba)
+                hex.AppendFormat("{0:D} ", b);
+            return hex.ToString();
+        }
         private void btScanStart_Click(object sender, EventArgs e)
         {
-            // send gap_discover(mode: 1)
-            //serialAPI.Write(new Byte[] { 0, 1, 6, 2, 1 }, 0, 5);
             if (comDev.IsOpen == true)
             {
                 if (btScanStart.Text == "StopScan")
@@ -900,23 +776,18 @@ namespace ToolSet
 
                     // stop scanning if scanning
                     bglib.SendCommand(comDev, bglib.BLECommandGAPEndProcedure());
-
-                    gApp_state = STATE_STANDBY;
                 }
                 else
                 {
-                    btDisconnect_Click(sender, e);
+                    listScanDev.Items.Clear();
 
                     // disconnect if connected
                     bglib.SendCommand(comDev, bglib.BLECommandConnectionDisconnect(0));
 
-                    // stop advertising if advertising
-                    //bglib.SendCommand(comDev, bglib.BLECommandGAPSetMode(0, 0));
-
+                    m_ProcCompleted = false;
                     btScanStart.Text = "StopScan";
                     btScanStart.Image = Properties.Resources.BMP_GREEN;
-                    bglib.SendCommand(comDev, bglib.BLECommandGAPDiscover(1));
-                    gApp_state = STATE_SCANNING;
+                    bglib.SendCommand(comDev, bglib.BLECommandGAPDiscover(1));//gap_discover_generic:
                 }
             }
             else
@@ -924,19 +795,12 @@ namespace ToolSet
                 MessageBox.Show("请先打开串口", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-        private void btConnect_Click(object sender, EventArgs e)
-        {
-            listScanDev_DoubleClick(sender, e);
-        }
-
         private void btDisconnect_Click(object sender, EventArgs e)
         {
+            m_ProcCompleted = false;
             btConnect.Image = Properties.Resources.BMP_GRAY;
             stsLb_ConnSts.Image = Properties.Resources.BMP_GRAY;
-            bglib.SendCommand(comDev, bglib.BLECommandConnectionDisconnect(gConnectionID));
-
-            gApp_state = STATE_STANDBY;
+            bglib.SendCommand(comDev, bglib.BLECommandConnectionDisconnect(gConnectID));
         }
 
         private void listPrimSrv_DoubleClick(object sender, EventArgs e)
@@ -956,12 +820,12 @@ namespace ToolSet
 
                 listAttribute.Items.Clear();
 
-                connHandle = Byte.Parse(listPrimSrv.SelectedItems[0].SubItems[0].Text);// strToHexByte(listPrimSrv.SelectedItems[0].SubItems[0].Text);
+                connHandle = gConnectID;// Byte.Parse(listPrimSrv.SelectedItems[0].SubItems[0].Text);// strToHexByte(listPrimSrv.SelectedItems[0].SubItems[0].Text);
                 start = UInt16.Parse(listPrimSrv.SelectedItems[0].SubItems[1].Text);
                 end = UInt16.Parse(listPrimSrv.SelectedItems[0].SubItems[2].Text);
                 Byte[] uuid = strToHexByte(listPrimSrv.SelectedItems[0].SubItems[3].Text);
 
-                if (uuid[0] == 0x0F && uuid[1] == 0x18)
+                if (true)//uuid[0] == 0x0F && uuid[1] == 0x18)
                 {
                     tabPgBat.Show();
                 }
@@ -969,17 +833,17 @@ namespace ToolSet
                 {
                     tabPgBat.Hide();
                 }
-                //
-                //Byte[] cmd = bglib.BLECommandATTClientReadByType(connHandle, start, end, new Byte[] { 0x03, 0x28 });
+
+                m_ProcCompleted = false;
                 Byte[] cmd = bglib.BLECommandATTClientFindInformation(connHandle, start, end);
                 bglib.SendCommand(comDev, cmd);
-                //while (bglib.IsBusy()) ;
-
-                // update state
-                gApp_state = STATE_FINDING_ATTRIBUTES;
+                //m_CheckUserDesc = true;
             }
         }
-
+        private void btConnect_Click(object sender, EventArgs e)
+        {
+            listScanDev_DoubleClick(sender, e);
+        }
         private void listScanDev_DoubleClick(object sender, EventArgs e)
         {
             byte[] gMacAddr;
@@ -993,22 +857,30 @@ namespace ToolSet
 
             if (listScanDev.SelectedIndices != null && listScanDev.SelectedItems.Count > 0)
             {
-                splitTab1_Main.Panel1Collapsed = true;
+                //splitTab1_Main.Panel1Collapsed = true;
 
-                gMacAddr = strToHexByte(listScanDev.SelectedItems[0].SubItems[3].Text);
-                gAddrType = byte.Parse(listScanDev.SelectedItems[0].SubItems[4].Text);
+                gMacAddr = strToHexByte(listScanDev.SelectedItems[0].SubItems[2].Text);
+                gAddrType = byte.Parse(listScanDev.SelectedItems[0].SubItems[3].Text);
 
+                stsLb_ConnSts.Text = listScanDev.SelectedItems[0].SubItems[0].Text;
+                stsLb_ConnMac.Text = "MacAddr=" + listScanDev.SelectedItems[0].SubItems[2].Text;
+
+                m_ProcCompleted = false;
                 Byte[] cmd = bglib.BLECommandGAPConnectDirect(gMacAddr, gAddrType, 0x20, 0x30, 0x100, 0);
                 bglib.SendCommand(comDev, cmd);// 125ms interval, 125ms window, active scanning
                                                //while(bglib.IsBusy();
-
-                stsLb_ConnSts.Text = listScanDev.SelectedItems[0].SubItems[0].Text;
-                stsLb_ConnMac.Text = "MacAddr=" + listScanDev.SelectedItems[0].SubItems[3].Text;
-                // update state
-                gApp_state = STATE_CONNECTING;
             }
         }
 
+        private void listAttribute_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listAttribute.SelectedIndices != null && listAttribute.SelectedIndices.Count > 0)
+            {
+                gChrHandle = ushort.Parse(listAttribute.SelectedItems[0].SubItems[2].Text);
+                tbAttrID.Text = gChrHandle.ToString("D");
+                tbConnID.Text = gConnectID.ToString("D");
+            }
+        }
         private void toolBtDevPanel_Click(object sender, EventArgs e)
         {
             splitTab1_Main.Panel1Collapsed = false;
@@ -1018,11 +890,11 @@ namespace ToolSet
         private void toolBtPrimSrvPanel_Click(object sender, EventArgs e)
         {
             //splitTab1_Sub.Panel1Collapsed = !splitTab1_Sub.Panel1Collapsed;
-            if(gApp_state != STATE_STANDBY)
-            { 
-                splitTab1_Main.Panel1Collapsed = true;
-                splitTab1_Main.Panel2Collapsed = false;
-            }
+            //if(gApp_state != STATE_STANDBY)
+            //{ 
+            //    splitTab1_Main.Panel1Collapsed = true;
+            //    splitTab1_Main.Panel2Collapsed = false;
+            //}
         }
         
         //
@@ -1039,9 +911,9 @@ namespace ToolSet
 
         private void frmMain_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (comDev.IsOpen && (gApp_state != STATE_STANDBY))
+            if (comDev.IsOpen)
             {
-                btScanStart_Click(sender, e);
+                //btScanStart_Click(sender, e);
             }
         }
 
@@ -1067,25 +939,53 @@ namespace ToolSet
             }
         }
 
-        private void btBatLevRead_Click(object sender, EventArgs e)
+        private void timPeridic_Tick(object sender, EventArgs e)
         {
-            Byte[] cmd = bglib.BLECommandAttributesRead(19,0);
-            //Byte[] cmd = bglib.BLECommandATTClientReadByHandle(gConnectionID, 25);
-            //Byte[] cmd = bglib.BLECommandATTClientReadByType(gConnectionID,)
-            bglib.SendCommand(comDev, cmd);
+            if (bglib.IsBusy()) tsLabelScan.Text = "Busy";
+            else tsLabelScan.Text = "Ready";
 
-            //print "Found 'Heart Rate' measurement attribute with UUID 0x2A37"
+            if (m_CheckUserDesc == true)
+            {
+                if (m_ProcCompleted == true)
+                {
+                    UpdateUserDesc();
+                    m_CheckUserDesc = false;
+                }
+            }
+        }
 
-            // found the measurement + client characteristic configuration, so enable notifications
-            // (this is done by writing 0x0001 to the client characteristic configuration attribute)
-            //Byte[] cmd = bglib.BLECommandATTClientAttributeWrite(e.connection, att_handle_measurement_ccc, new Byte[] { 0x01, 0x00 });
-            // DEBUG: display bytes written
-            //ThreadSafeDelegate(delegate { txtLog.AppendText(String.Format("=> TX ({0}) [ {1}]", cmd.Length, ByteArrayToHexString(cmd)) + Environment.NewLine); });
-            //bglib.SendCommand(serialAPI, cmd);
-            //while (bglib.IsBusy()) ;
+        private void btAttrRead_Click(object sender, EventArgs e)
+        {
+            m_ProcCompleted = false;
+            Byte[] cmd = bglib.BLECommandATTClientReadByHandle(gConnectID,gChrHandle);
+            bglib.SendCommand(comDev,cmd);
+        }
 
-            // update state
-            //app_state = STATE_LISTENING_MEASUREMENTS;
+        private void UpdateUserDesc()
+        {
+            ushort attrid = 0;
+            Byte[] cmd;
+            string str = null;
+
+            int idx = 0;
+            while (idx < listAttribute.Items.Count)
+            {
+                //str = GetAttrBoxID(idx);// 
+                str = listAttribute.Items[idx].SubItems[2].Text;
+                attrid = ushort.Parse(str);
+                attrid = (ushort)(attrid + 1);
+                m_ReadDone = false;
+                cmd = bglib.BLECommandATTClientReadByHandle(gConnectID, attrid);
+
+                bglib.SendCommand(comDev, cmd);
+                while (m_ReadDone == false) ;
+                str = Encoding.UTF8.GetString(m_AttrReadData);
+                ThreadSafeDelegate(delegate
+                {
+                    listAttribute.Items[idx].SubItems[0].Text = str;
+                    idx++;
+                });
+            }
         }
     }
 }
