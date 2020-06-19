@@ -5,6 +5,106 @@ using System.Text;
 
 namespace ToolSet
 {
+    class CAttribute
+    {
+        private byte m_AttHandle = 0;
+        private string m_DescStr = string.Empty;
+        
+        private List<byte> m_AttUUID = new List<byte>();
+        private List<byte> m_SrvUUID = new List<byte>();
+
+        public CAttribute()
+        {
+            m_SrvUUID.Capacity = 16;
+            m_AttUUID.Capacity = 16;
+        }
+
+        public byte AttrHandle { get { return m_AttHandle; } set { m_AttHandle = value; } }
+        public string Description { get { return m_DescStr; } set { m_DescStr = value; } }
+        public byte[] AttrUUID { get { return m_AttUUID.ToArray(); } set { m_AttUUID.Clear(); m_AttUUID.AddRange(value); } }
+        public byte[] ServiceUUID { get { return m_SrvUUID.ToArray(); } set { m_SrvUUID.AddRange(value); } }
+    }
+
+    class CPrimService
+    {
+        private List<byte> m_PrimUUID = new List<byte>();
+        private string m_SrvDescription = string.Empty;
+
+        List<CAttribute> m_AttrList= new List<CAttribute>();
+
+        public byte[] UUID { get { return m_PrimUUID.ToArray(); } set { m_PrimUUID.Clear(); m_PrimUUID.AddRange(value); } }
+        public string Description { get { return m_SrvDescription; } set { m_SrvDescription = value; } }
+
+        public CPrimService()
+        {
+            m_PrimUUID.Capacity = 16;
+        }
+
+        public void AppendAttribute(CAttribute attrib)
+        {
+            m_AttrList.Add(attrib);
+        }
+
+        public void RemoveAttribute(byte[] uuid)
+        {
+            foreach (CAttribute item in m_AttrList.ToArray())
+            {
+                if (uuid.ToString() == item.AttrUUID.ToString())
+                {
+                    m_AttrList.Remove(item);
+                }
+            }
+        }
+        public void RemoveAttribute(byte attHandle)
+        {
+            foreach (CAttribute item in m_AttrList.ToArray())
+            {
+                if (attHandle == item.AttrHandle)
+                {
+                    m_AttrList.Remove(item);
+                }
+            }
+        }
+        public CAttribute GetAttribute(byte[] uuid)
+        {
+            CAttribute mAttribute = null;
+            foreach (CAttribute item in m_AttrList.ToArray())
+            {
+                if (uuid.ToString() == item.AttrUUID.ToString())
+                {
+                    mAttribute = item;
+                    break;
+                }
+            }
+            return mAttribute;
+        }
+
+        public CAttribute GetAttribute(byte attHandle)
+        {
+            CAttribute mAttribute = null;
+            foreach (CAttribute item in m_AttrList.ToArray())
+            {
+                if (attHandle == item.AttrHandle)
+                {
+                    mAttribute = item;
+                    break;
+                }
+            }
+            return mAttribute;
+        }
+
+        public CAttribute GetAttritubeByIndex(int idx)
+        {
+            if (idx >= m_AttrList.Count) return null;
+
+            return m_AttrList[idx];
+        }
+
+        public int GetAttributeCount()
+        {
+            return m_AttrList.Count;
+        }
+     }
     class BleService
     {
         //all uuid are defined in little endian.
@@ -41,6 +141,9 @@ namespace ToolSet
 
         readonly byte[] m_TonePlayUUID = new byte[] { 0xf7, 0x35, 0xa0, 0x8e, 0xac, 0xea, 0xbb, 0xa6, 0xcb, 0x4e, 0x2a, 0x50, 0xF2, 0x49, 0x74, 0x60 };
         readonly byte[] m_VolumeKnobUUID = new byte[] { 0xf7, 0x35, 0xa0, 0x8e, 0xac, 0xea, 0xbb, 0xa6, 0xcb, 0x4e, 0x2a, 0x50, 0xBD, 0x9E, 0x74, 0x60 };
+
+
+        List<CAttribute> m_Attr = new List<CAttribute>();
 
         private bool IsByteArrayEqual(byte[] arry1, byte[] arry2)
         {

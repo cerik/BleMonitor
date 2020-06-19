@@ -66,23 +66,62 @@
             this.attrDesc = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ConnHandle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.attrHandle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.attrType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.attrUUID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.attrUserDescHandle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabCharacter = new System.Windows.Forms.TabControl();
-            this.tabPgBat = new System.Windows.Forms.TabPage();
-            this.rbChar = new System.Windows.Forms.RadioButton();
-            this.rbDec = new System.Windows.Forms.RadioButton();
-            this.rbHex = new System.Windows.Forms.RadioButton();
-            this.label2 = new System.Windows.Forms.Label();
-            this.tbAttrData = new System.Windows.Forms.TextBox();
+            this.tabPgRW = new System.Windows.Forms.TabPage();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.cmbSetType = new System.Windows.Forms.ComboBox();
+            this.cmbSetFormat = new System.Windows.Forms.ComboBox();
+            this.btAttrSet = new System.Windows.Forms.Button();
+            this.tbAttrSet = new System.Windows.Forms.TextBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.cmbGetType = new System.Windows.Forms.ComboBox();
+            this.cmbGetFormat = new System.Windows.Forms.ComboBox();
+            this.cmbGetEndian = new System.Windows.Forms.ComboBox();
+            this.tbAttrGet = new System.Windows.Forms.TextBox();
+            this.btAttrGet = new System.Windows.Forms.Button();
             this.tbAttrID = new System.Windows.Forms.TextBox();
             this.tbConnID = new System.Windows.Forms.TextBox();
-            this.btAttrRead = new System.Windows.Forms.Button();
             this.lbAttrHandle = new System.Windows.Forms.Label();
             this.lbConnHandle = new System.Windows.Forms.Label();
-            this.cbBatLevNotify = new System.Windows.Forms.CheckBox();
-            this.tbBatLevel = new System.Windows.Forms.TextBox();
+            this.tabPgCalib = new System.Windows.Forms.TabPage();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.btCalibMicConstRead = new System.Windows.Forms.Button();
+            this.tbCalibConstOR = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.tbCalibConstOL = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.tbCalibConstIR = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.tbCalibConstIL = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.btCalibStart = new System.Windows.Forms.Button();
+            this.btCalibSetDBSPL = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.btCalibSetFreq = new System.Windows.Forms.Button();
+            this.tbCalibDBSPL = new System.Windows.Forms.TextBox();
+            this.tbCalibFreq = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.tbMicMaskAttrID = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.tbCalibMicGet = new System.Windows.Forms.TextBox();
+            this.btCalibMicSet = new System.Windows.Forms.Button();
+            this.cbCalibMicIL = new System.Windows.Forms.CheckBox();
+            this.cbCalibMicOR = new System.Windows.Forms.CheckBox();
+            this.cbCalibMicIR = new System.Windows.Forms.CheckBox();
+            this.cbCalibMicOL = new System.Windows.Forms.CheckBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.comDev = new System.IO.Ports.SerialPort(this.components);
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
@@ -97,6 +136,18 @@
             this.toolBtDevPanel = new System.Windows.Forms.ToolStripButton();
             this.toolBtPrimSrvPanel = new System.Windows.Forms.ToolStripButton();
             this.timPeridic = new System.Windows.Forms.Timer(this.components);
+            this.tbAttrGetCvt = new System.Windows.Forms.TextBox();
+            this.btStrCvt = new System.Windows.Forms.Button();
+            this.tabTonePlay = new System.Windows.Forms.TabPage();
+            this.label15 = new System.Windows.Forms.Label();
+            this.tbTonePlayFreq = new System.Windows.Forms.TextBox();
+            this.label16 = new System.Windows.Forms.Label();
+            this.tbTonePlayAmp = new System.Windows.Forms.TextBox();
+            this.btTonePlaySet = new System.Windows.Forms.Button();
+            this.btTonePlayStart = new System.Windows.Forms.Button();
+            this.tbTonePlayCfgHandle = new System.Windows.Forms.TextBox();
+            this.tbTonePlayStartHandle = new System.Windows.Forms.TextBox();
+            this.btTonePlayStop = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tabMain.SuspendLayout();
@@ -119,11 +170,18 @@
             this.splitTab1_Attr.Panel2.SuspendLayout();
             this.splitTab1_Attr.SuspendLayout();
             this.tabCharacter.SuspendLayout();
-            this.tabPgBat.SuspendLayout();
+            this.tabPgRW.SuspendLayout();
+            this.groupBox3.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            this.tabPgCalib.SuspendLayout();
+            this.groupBox5.SuspendLayout();
+            this.groupBox4.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
             this.toolStripTop.SuspendLayout();
+            this.tabTonePlay.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -139,7 +197,7 @@
             this.statusStrip1.Location = new System.Drawing.Point(0, 541);
             this.statusStrip1.Margin = new System.Windows.Forms.Padding(10);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(998, 25);
+            this.statusStrip1.Size = new System.Drawing.Size(828, 25);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -202,7 +260,7 @@
             this.m_Tool});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(998, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(828, 24);
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -232,7 +290,7 @@
             this.tabMain.Location = new System.Drawing.Point(0, 0);
             this.tabMain.Name = "tabMain";
             this.tabMain.SelectedIndex = 0;
-            this.tabMain.Size = new System.Drawing.Size(998, 492);
+            this.tabMain.Size = new System.Drawing.Size(828, 492);
             this.tabMain.TabIndex = 0;
             // 
             // tabPage1
@@ -242,7 +300,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(990, 466);
+            this.tabPage1.Size = new System.Drawing.Size(820, 466);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             // 
@@ -260,8 +318,8 @@
             // splitTab1_Main.Panel2
             // 
             this.splitTab1_Main.Panel2.Controls.Add(this.splitTab1_Sub);
-            this.splitTab1_Main.Size = new System.Drawing.Size(984, 460);
-            this.splitTab1_Main.SplitterDistance = 268;
+            this.splitTab1_Main.Size = new System.Drawing.Size(814, 460);
+            this.splitTab1_Main.SplitterDistance = 220;
             this.splitTab1_Main.TabIndex = 1;
             // 
             // splitContainer1
@@ -279,7 +337,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.txtLog);
             this.splitContainer1.Panel2.Controls.Add(this.panel1);
-            this.splitContainer1.Size = new System.Drawing.Size(266, 458);
+            this.splitContainer1.Size = new System.Drawing.Size(218, 458);
             this.splitContainer1.SplitterDistance = 229;
             this.splitContainer1.TabIndex = 5;
             // 
@@ -299,7 +357,7 @@
             this.listScanDev.MultiSelect = false;
             this.listScanDev.Name = "listScanDev";
             this.listScanDev.ShowGroups = false;
-            this.listScanDev.Size = new System.Drawing.Size(266, 229);
+            this.listScanDev.Size = new System.Drawing.Size(218, 229);
             this.listScanDev.TabIndex = 3;
             this.listScanDev.UseCompatibleStateImageBehavior = false;
             this.listScanDev.View = System.Windows.Forms.View.Details;
@@ -332,7 +390,7 @@
             this.txtLog.Name = "txtLog";
             this.txtLog.ReadOnly = true;
             this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtLog.Size = new System.Drawing.Size(266, 202);
+            this.txtLog.Size = new System.Drawing.Size(218, 202);
             this.txtLog.TabIndex = 0;
             // 
             // panel1
@@ -345,14 +403,15 @@
             this.panel1.Margin = new System.Windows.Forms.Padding(10, 0, 0, 0);
             this.panel1.MaximumSize = new System.Drawing.Size(0, 23);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(266, 23);
+            this.panel1.Size = new System.Drawing.Size(218, 23);
             this.panel1.TabIndex = 4;
             // 
             // btDisconnect
             // 
-            this.btDisconnect.Location = new System.Drawing.Point(179, 0);
+            this.btDisconnect.Location = new System.Drawing.Point(145, 0);
+            this.btDisconnect.Margin = new System.Windows.Forms.Padding(0);
             this.btDisconnect.Name = "btDisconnect";
-            this.btDisconnect.Size = new System.Drawing.Size(75, 23);
+            this.btDisconnect.Size = new System.Drawing.Size(69, 23);
             this.btDisconnect.TabIndex = 4;
             this.btDisconnect.Text = "Disconnect";
             this.btDisconnect.UseVisualStyleBackColor = true;
@@ -362,10 +421,10 @@
             // 
             this.btConnect.Image = global::ToolSet.Properties.Resources.BMP_GRAY;
             this.btConnect.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btConnect.Location = new System.Drawing.Point(88, 0);
-            this.btConnect.Margin = new System.Windows.Forms.Padding(10, 3, 3, 3);
+            this.btConnect.Location = new System.Drawing.Point(77, 0);
+            this.btConnect.Margin = new System.Windows.Forms.Padding(0);
             this.btConnect.Name = "btConnect";
-            this.btConnect.Size = new System.Drawing.Size(75, 23);
+            this.btConnect.Size = new System.Drawing.Size(68, 23);
             this.btConnect.TabIndex = 3;
             this.btConnect.Text = "Connect";
             this.btConnect.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -378,6 +437,7 @@
             this.btScanStart.Image = global::ToolSet.Properties.Resources.BMP_GRAY;
             this.btScanStart.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btScanStart.Location = new System.Drawing.Point(0, 0);
+            this.btScanStart.Margin = new System.Windows.Forms.Padding(0);
             this.btScanStart.Name = "btScanStart";
             this.btScanStart.Size = new System.Drawing.Size(75, 23);
             this.btScanStart.TabIndex = 1;
@@ -400,8 +460,8 @@
             // splitTab1_Sub.Panel2
             // 
             this.splitTab1_Sub.Panel2.Controls.Add(this.splitTab1_Attr);
-            this.splitTab1_Sub.Size = new System.Drawing.Size(712, 460);
-            this.splitTab1_Sub.SplitterDistance = 250;
+            this.splitTab1_Sub.Size = new System.Drawing.Size(590, 460);
+            this.splitTab1_Sub.SplitterDistance = 172;
             this.splitTab1_Sub.TabIndex = 5;
             // 
             // listPrimSrv
@@ -420,7 +480,7 @@
             this.listPrimSrv.MultiSelect = false;
             this.listPrimSrv.Name = "listPrimSrv";
             this.listPrimSrv.ShowGroups = false;
-            this.listPrimSrv.Size = new System.Drawing.Size(248, 458);
+            this.listPrimSrv.Size = new System.Drawing.Size(170, 458);
             this.listPrimSrv.TabIndex = 0;
             this.listPrimSrv.UseCompatibleStateImageBehavior = false;
             this.listPrimSrv.View = System.Windows.Forms.View.Details;
@@ -455,8 +515,8 @@
             // splitTab1_Attr.Panel2
             // 
             this.splitTab1_Attr.Panel2.Controls.Add(this.tabCharacter);
-            this.splitTab1_Attr.Size = new System.Drawing.Size(456, 458);
-            this.splitTab1_Attr.SplitterDistance = 214;
+            this.splitTab1_Attr.Size = new System.Drawing.Size(412, 458);
+            this.splitTab1_Attr.SplitterDistance = 146;
             this.splitTab1_Attr.TabIndex = 2;
             // 
             // listAttribute
@@ -466,15 +526,17 @@
             this.attrDesc,
             this.ConnHandle,
             this.attrHandle,
-            this.attrType});
+            this.attrUUID,
+            this.attrUserDescHandle});
             this.listAttribute.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listAttribute.FullRowSelect = true;
             this.listAttribute.GridLines = true;
             this.listAttribute.HideSelection = false;
             this.listAttribute.Location = new System.Drawing.Point(0, 0);
+            this.listAttribute.MultiSelect = false;
             this.listAttribute.Name = "listAttribute";
             this.listAttribute.ShowGroups = false;
-            this.listAttribute.Size = new System.Drawing.Size(214, 458);
+            this.listAttribute.Size = new System.Drawing.Size(146, 458);
             this.listAttribute.TabIndex = 1;
             this.listAttribute.UseCompatibleStateImageBehavior = false;
             this.listAttribute.View = System.Windows.Forms.View.Details;
@@ -492,123 +554,250 @@
             // 
             this.attrHandle.Text = "AttrHandle";
             // 
-            // attrType
+            // attrUUID
             // 
-            this.attrType.Text = "Type";
+            this.attrUUID.Text = "UUID";
+            // 
+            // attrUserDescHandle
+            // 
+            this.attrUserDescHandle.Text = "DescHandle";
             // 
             // tabCharacter
             // 
-            this.tabCharacter.Controls.Add(this.tabPgBat);
-            this.tabCharacter.Controls.Add(this.tabPage4);
+            this.tabCharacter.Controls.Add(this.tabPgRW);
+            this.tabCharacter.Controls.Add(this.tabPgCalib);
+            this.tabCharacter.Controls.Add(this.tabTonePlay);
             this.tabCharacter.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabCharacter.Location = new System.Drawing.Point(0, 0);
             this.tabCharacter.Name = "tabCharacter";
             this.tabCharacter.SelectedIndex = 0;
-            this.tabCharacter.Size = new System.Drawing.Size(238, 458);
+            this.tabCharacter.Size = new System.Drawing.Size(262, 458);
             this.tabCharacter.TabIndex = 0;
             // 
-            // tabPgBat
+            // tabPgRW
             // 
-            this.tabPgBat.Controls.Add(this.rbChar);
-            this.tabPgBat.Controls.Add(this.rbDec);
-            this.tabPgBat.Controls.Add(this.rbHex);
-            this.tabPgBat.Controls.Add(this.label2);
-            this.tabPgBat.Controls.Add(this.tbAttrData);
-            this.tabPgBat.Controls.Add(this.tbAttrID);
-            this.tabPgBat.Controls.Add(this.tbConnID);
-            this.tabPgBat.Controls.Add(this.btAttrRead);
-            this.tabPgBat.Controls.Add(this.lbAttrHandle);
-            this.tabPgBat.Controls.Add(this.lbConnHandle);
-            this.tabPgBat.Controls.Add(this.cbBatLevNotify);
-            this.tabPgBat.Controls.Add(this.tbBatLevel);
-            this.tabPgBat.Controls.Add(this.label1);
-            this.tabPgBat.Location = new System.Drawing.Point(4, 22);
-            this.tabPgBat.Name = "tabPgBat";
-            this.tabPgBat.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPgBat.Size = new System.Drawing.Size(230, 432);
-            this.tabPgBat.TabIndex = 0;
-            this.tabPgBat.Text = "Battery";
-            this.tabPgBat.UseVisualStyleBackColor = true;
+            this.tabPgRW.Controls.Add(this.groupBox3);
+            this.tabPgRW.Controls.Add(this.groupBox2);
+            this.tabPgRW.Controls.Add(this.tbAttrID);
+            this.tabPgRW.Controls.Add(this.tbConnID);
+            this.tabPgRW.Controls.Add(this.lbAttrHandle);
+            this.tabPgRW.Controls.Add(this.lbConnHandle);
+            this.tabPgRW.Location = new System.Drawing.Point(4, 22);
+            this.tabPgRW.Name = "tabPgRW";
+            this.tabPgRW.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPgRW.Size = new System.Drawing.Size(254, 432);
+            this.tabPgRW.TabIndex = 0;
+            this.tabPgRW.Text = "Read&Write";
+            this.tabPgRW.UseVisualStyleBackColor = true;
             // 
-            // rbChar
+            // groupBox3
             // 
-            this.rbChar.AutoSize = true;
-            this.rbChar.Location = new System.Drawing.Point(140, 247);
-            this.rbChar.Name = "rbChar";
-            this.rbChar.Size = new System.Drawing.Size(47, 17);
-            this.rbChar.TabIndex = 11;
-            this.rbChar.TabStop = true;
-            this.rbChar.Text = "Char";
-            this.rbChar.UseVisualStyleBackColor = true;
+            this.groupBox3.Controls.Add(this.label13);
+            this.groupBox3.Controls.Add(this.label14);
+            this.groupBox3.Controls.Add(this.cmbSetType);
+            this.groupBox3.Controls.Add(this.cmbSetFormat);
+            this.groupBox3.Controls.Add(this.btAttrSet);
+            this.groupBox3.Controls.Add(this.tbAttrSet);
+            this.groupBox3.Location = new System.Drawing.Point(8, 201);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(240, 198);
+            this.groupBox3.TabIndex = 18;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Write";
             // 
-            // rbDec
+            // label13
             // 
-            this.rbDec.AutoSize = true;
-            this.rbDec.Location = new System.Drawing.Point(89, 247);
-            this.rbDec.Name = "rbDec";
-            this.rbDec.Size = new System.Drawing.Size(45, 17);
-            this.rbDec.TabIndex = 10;
-            this.rbDec.TabStop = true;
-            this.rbDec.Text = "Dec";
-            this.rbDec.UseVisualStyleBackColor = true;
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(8, 97);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(42, 13);
+            this.label13.TabIndex = 19;
+            this.label13.Text = "Format:";
             // 
-            // rbHex
+            // label14
             // 
-            this.rbHex.AutoSize = true;
-            this.rbHex.Checked = true;
-            this.rbHex.Location = new System.Drawing.Point(37, 247);
-            this.rbHex.Name = "rbHex";
-            this.rbHex.Size = new System.Drawing.Size(44, 17);
-            this.rbHex.TabIndex = 9;
-            this.rbHex.TabStop = true;
-            this.rbHex.Text = "Hex";
-            this.rbHex.UseVisualStyleBackColor = true;
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(16, 70);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(34, 13);
+            this.label14.TabIndex = 18;
+            this.label14.Text = "Type:";
             // 
-            // label2
+            // cmbSetType
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(15, 197);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(66, 13);
-            this.label2.TabIndex = 8;
-            this.label2.Text = "AttributeDat:";
+            this.cmbSetType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbSetType.FormattingEnabled = true;
+            this.cmbSetType.Items.AddRange(new object[] {
+            "Hex",
+            "Number",
+            "String"});
+            this.cmbSetType.Location = new System.Drawing.Point(54, 66);
+            this.cmbSetType.Name = "cmbSetType";
+            this.cmbSetType.Size = new System.Drawing.Size(73, 21);
+            this.cmbSetType.TabIndex = 14;
             // 
-            // tbAttrData
+            // cmbSetFormat
             // 
-            this.tbAttrData.Location = new System.Drawing.Point(87, 194);
-            this.tbAttrData.Multiline = true;
-            this.tbAttrData.Name = "tbAttrData";
-            this.tbAttrData.Size = new System.Drawing.Size(100, 47);
-            this.tbAttrData.TabIndex = 7;
+            this.cmbSetFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbSetFormat.FormattingEnabled = true;
+            this.cmbSetFormat.Items.AddRange(new object[] {
+            "INT8",
+            "UINT8",
+            "INT16",
+            "UINT16",
+            "INT32",
+            "UINT32",
+            "FLOAT32"});
+            this.cmbSetFormat.Location = new System.Drawing.Point(54, 93);
+            this.cmbSetFormat.Name = "cmbSetFormat";
+            this.cmbSetFormat.Size = new System.Drawing.Size(73, 21);
+            this.cmbSetFormat.TabIndex = 15;
+            // 
+            // btAttrSet
+            // 
+            this.btAttrSet.Location = new System.Drawing.Point(190, 19);
+            this.btAttrSet.Name = "btAttrSet";
+            this.btAttrSet.Size = new System.Drawing.Size(45, 41);
+            this.btAttrSet.TabIndex = 13;
+            this.btAttrSet.Text = "Write";
+            this.btAttrSet.UseVisualStyleBackColor = true;
+            this.btAttrSet.Click += new System.EventHandler(this.btAttrWrite_Click);
+            // 
+            // tbAttrSet
+            // 
+            this.tbAttrSet.Location = new System.Drawing.Point(5, 19);
+            this.tbAttrSet.Multiline = true;
+            this.tbAttrSet.Name = "tbAttrSet";
+            this.tbAttrSet.Size = new System.Drawing.Size(183, 41);
+            this.tbAttrSet.TabIndex = 12;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.btStrCvt);
+            this.groupBox2.Controls.Add(this.tbAttrGetCvt);
+            this.groupBox2.Controls.Add(this.label12);
+            this.groupBox2.Controls.Add(this.label11);
+            this.groupBox2.Controls.Add(this.label10);
+            this.groupBox2.Controls.Add(this.cmbGetType);
+            this.groupBox2.Controls.Add(this.cmbGetFormat);
+            this.groupBox2.Controls.Add(this.cmbGetEndian);
+            this.groupBox2.Controls.Add(this.tbAttrGet);
+            this.groupBox2.Controls.Add(this.btAttrGet);
+            this.groupBox2.Location = new System.Drawing.Point(8, 39);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(240, 156);
+            this.groupBox2.TabIndex = 17;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Read";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(8, 97);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(42, 13);
+            this.label12.TabIndex = 11;
+            this.label12.Text = "Format:";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(16, 70);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(34, 13);
+            this.label11.TabIndex = 10;
+            this.label11.Text = "Type:";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(8, 124);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(43, 13);
+            this.label10.TabIndex = 9;
+            this.label10.Text = "Endian:";
+            // 
+            // cmbGetType
+            // 
+            this.cmbGetType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbGetType.FormattingEnabled = true;
+            this.cmbGetType.Items.AddRange(new object[] {
+            "Hex",
+            "Number",
+            "String"});
+            this.cmbGetType.Location = new System.Drawing.Point(54, 66);
+            this.cmbGetType.Name = "cmbGetType";
+            this.cmbGetType.Size = new System.Drawing.Size(73, 21);
+            this.cmbGetType.TabIndex = 8;
+            // 
+            // cmbGetFormat
+            // 
+            this.cmbGetFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbGetFormat.FormattingEnabled = true;
+            this.cmbGetFormat.Items.AddRange(new object[] {
+            "INT8",
+            "UINT8",
+            "INT16",
+            "UINT16",
+            "INT32",
+            "UINT32",
+            "FLOAT32",
+            "MORE"});
+            this.cmbGetFormat.Location = new System.Drawing.Point(54, 93);
+            this.cmbGetFormat.Name = "cmbGetFormat";
+            this.cmbGetFormat.Size = new System.Drawing.Size(73, 21);
+            this.cmbGetFormat.TabIndex = 8;
+            // 
+            // cmbGetEndian
+            // 
+            this.cmbGetEndian.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbGetEndian.FormattingEnabled = true;
+            this.cmbGetEndian.Items.AddRange(new object[] {
+            "Little Endian",
+            "Big Endian"});
+            this.cmbGetEndian.Location = new System.Drawing.Point(54, 120);
+            this.cmbGetEndian.Name = "cmbGetEndian";
+            this.cmbGetEndian.Size = new System.Drawing.Size(73, 21);
+            this.cmbGetEndian.TabIndex = 8;
+            // 
+            // tbAttrGet
+            // 
+            this.tbAttrGet.Location = new System.Drawing.Point(5, 19);
+            this.tbAttrGet.Multiline = true;
+            this.tbAttrGet.Name = "tbAttrGet";
+            this.tbAttrGet.Size = new System.Drawing.Size(183, 41);
+            this.tbAttrGet.TabIndex = 7;
+            // 
+            // btAttrGet
+            // 
+            this.btAttrGet.Location = new System.Drawing.Point(190, 19);
+            this.btAttrGet.Name = "btAttrGet";
+            this.btAttrGet.Size = new System.Drawing.Size(45, 41);
+            this.btAttrGet.TabIndex = 6;
+            this.btAttrGet.Text = "Read";
+            this.btAttrGet.UseVisualStyleBackColor = true;
+            this.btAttrGet.Click += new System.EventHandler(this.btAttrRead_Click);
             // 
             // tbAttrID
             // 
-            this.tbAttrID.Location = new System.Drawing.Point(87, 166);
+            this.tbAttrID.Location = new System.Drawing.Point(197, 12);
             this.tbAttrID.Name = "tbAttrID";
-            this.tbAttrID.Size = new System.Drawing.Size(49, 20);
+            this.tbAttrID.Size = new System.Drawing.Size(47, 20);
             this.tbAttrID.TabIndex = 7;
+            this.tbAttrID.Text = "0";
             // 
             // tbConnID
             // 
-            this.tbConnID.Location = new System.Drawing.Point(87, 138);
+            this.tbConnID.Location = new System.Drawing.Point(74, 13);
             this.tbConnID.Name = "tbConnID";
-            this.tbConnID.Size = new System.Drawing.Size(49, 20);
+            this.tbConnID.Size = new System.Drawing.Size(46, 20);
             this.tbConnID.TabIndex = 7;
-            // 
-            // btAttrRead
-            // 
-            this.btAttrRead.Location = new System.Drawing.Point(32, 218);
-            this.btAttrRead.Name = "btAttrRead";
-            this.btAttrRead.Size = new System.Drawing.Size(49, 23);
-            this.btAttrRead.TabIndex = 6;
-            this.btAttrRead.Text = "Read";
-            this.btAttrRead.UseVisualStyleBackColor = true;
-            this.btAttrRead.Click += new System.EventHandler(this.btAttrRead_Click);
+            this.tbConnID.Text = "0";
             // 
             // lbAttrHandle
             // 
             this.lbAttrHandle.AutoSize = true;
-            this.lbAttrHandle.Location = new System.Drawing.Point(21, 173);
+            this.lbAttrHandle.Location = new System.Drawing.Point(135, 16);
             this.lbAttrHandle.Name = "lbAttrHandle";
             this.lbAttrHandle.Size = new System.Drawing.Size(60, 13);
             this.lbAttrHandle.TabIndex = 5;
@@ -617,57 +806,324 @@
             // lbConnHandle
             // 
             this.lbConnHandle.AutoSize = true;
-            this.lbConnHandle.Location = new System.Drawing.Point(20, 145);
+            this.lbConnHandle.Location = new System.Drawing.Point(9, 17);
             this.lbConnHandle.Name = "lbConnHandle";
             this.lbConnHandle.Size = new System.Drawing.Size(61, 13);
             this.lbConnHandle.TabIndex = 4;
             this.lbConnHandle.Text = "ConnectID:";
             // 
-            // cbBatLevNotify
+            // tabPgCalib
             // 
-            this.cbBatLevNotify.AutoSize = true;
-            this.cbBatLevNotify.Location = new System.Drawing.Point(52, 25);
-            this.cbBatLevNotify.Name = "cbBatLevNotify";
-            this.cbBatLevNotify.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.cbBatLevNotify.Size = new System.Drawing.Size(53, 17);
-            this.cbBatLevNotify.TabIndex = 3;
-            this.cbBatLevNotify.Text = "Notify";
-            this.cbBatLevNotify.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.cbBatLevNotify.UseVisualStyleBackColor = true;
+            this.tabPgCalib.Controls.Add(this.groupBox5);
+            this.tabPgCalib.Controls.Add(this.groupBox4);
+            this.tabPgCalib.Controls.Add(this.groupBox1);
+            this.tabPgCalib.Location = new System.Drawing.Point(4, 22);
+            this.tabPgCalib.Name = "tabPgCalib";
+            this.tabPgCalib.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPgCalib.Size = new System.Drawing.Size(254, 432);
+            this.tabPgCalib.TabIndex = 1;
+            this.tabPgCalib.Text = "MicCalibration";
+            this.tabPgCalib.UseVisualStyleBackColor = true;
             // 
-            // tbBatLevel
+            // groupBox5
             // 
-            this.tbBatLevel.Location = new System.Drawing.Point(92, 48);
-            this.tbBatLevel.Name = "tbBatLevel";
-            this.tbBatLevel.ReadOnly = true;
-            this.tbBatLevel.Size = new System.Drawing.Size(74, 20);
-            this.tbBatLevel.TabIndex = 1;
+            this.groupBox5.Controls.Add(this.textBox2);
+            this.groupBox5.Controls.Add(this.label9);
+            this.groupBox5.Controls.Add(this.btCalibMicConstRead);
+            this.groupBox5.Controls.Add(this.tbCalibConstOR);
+            this.groupBox5.Controls.Add(this.label7);
+            this.groupBox5.Controls.Add(this.tbCalibConstOL);
+            this.groupBox5.Controls.Add(this.label6);
+            this.groupBox5.Controls.Add(this.tbCalibConstIR);
+            this.groupBox5.Controls.Add(this.label5);
+            this.groupBox5.Controls.Add(this.tbCalibConstIL);
+            this.groupBox5.Controls.Add(this.label4);
+            this.groupBox5.Location = new System.Drawing.Point(6, 268);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(179, 129);
+            this.groupBox5.TabIndex = 4;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "MicConstants";
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(141, 105);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(32, 20);
+            this.textBox2.TabIndex = 9;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(129, 89);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(44, 13);
+            this.label9.TabIndex = 8;
+            this.label9.Text = "Handle:";
+            // 
+            // btCalibMicConstRead
+            // 
+            this.btCalibMicConstRead.Location = new System.Drawing.Point(123, 21);
+            this.btCalibMicConstRead.Name = "btCalibMicConstRead";
+            this.btCalibMicConstRead.Size = new System.Drawing.Size(49, 23);
+            this.btCalibMicConstRead.TabIndex = 2;
+            this.btCalibMicConstRead.Text = "Read";
+            this.btCalibMicConstRead.UseVisualStyleBackColor = true;
+            // 
+            // tbCalibConstOR
+            // 
+            this.tbCalibConstOR.Location = new System.Drawing.Point(55, 101);
+            this.tbCalibConstOR.Name = "tbCalibConstOR";
+            this.tbCalibConstOR.Size = new System.Drawing.Size(62, 20);
+            this.tbCalibConstOR.TabIndex = 1;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 105);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(44, 13);
+            this.label7.TabIndex = 0;
+            this.label7.Text = "OuterR:";
+            // 
+            // tbCalibConstOL
+            // 
+            this.tbCalibConstOL.Location = new System.Drawing.Point(55, 74);
+            this.tbCalibConstOL.Name = "tbCalibConstOL";
+            this.tbCalibConstOL.Size = new System.Drawing.Size(62, 20);
+            this.tbCalibConstOL.TabIndex = 1;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 78);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(42, 13);
+            this.label6.TabIndex = 0;
+            this.label6.Text = "OuterL:";
+            // 
+            // tbCalibConstIR
+            // 
+            this.tbCalibConstIR.Location = new System.Drawing.Point(55, 48);
+            this.tbCalibConstIR.Name = "tbCalibConstIR";
+            this.tbCalibConstIR.Size = new System.Drawing.Size(62, 20);
+            this.tbCalibConstIR.TabIndex = 1;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 52);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(42, 13);
+            this.label5.TabIndex = 0;
+            this.label5.Text = "InnerR:";
+            // 
+            // tbCalibConstIL
+            // 
+            this.tbCalibConstIL.Location = new System.Drawing.Point(55, 22);
+            this.tbCalibConstIL.Name = "tbCalibConstIL";
+            this.tbCalibConstIL.Size = new System.Drawing.Size(62, 20);
+            this.tbCalibConstIL.TabIndex = 1;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 26);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(40, 13);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "InnerL:";
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.textBox1);
+            this.groupBox4.Controls.Add(this.label8);
+            this.groupBox4.Controls.Add(this.btCalibStart);
+            this.groupBox4.Controls.Add(this.btCalibSetDBSPL);
+            this.groupBox4.Controls.Add(this.label3);
+            this.groupBox4.Controls.Add(this.btCalibSetFreq);
+            this.groupBox4.Controls.Add(this.tbCalibDBSPL);
+            this.groupBox4.Controls.Add(this.tbCalibFreq);
+            this.groupBox4.Controls.Add(this.label2);
+            this.groupBox4.Location = new System.Drawing.Point(6, 135);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(179, 117);
+            this.groupBox4.TabIndex = 3;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Frequency";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(147, 90);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(32, 20);
+            this.textBox1.TabIndex = 7;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(101, 93);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(44, 13);
+            this.label8.TabIndex = 6;
+            this.label8.Text = "Handle:";
+            // 
+            // btCalibStart
+            // 
+            this.btCalibStart.Location = new System.Drawing.Point(6, 88);
+            this.btCalibStart.Name = "btCalibStart";
+            this.btCalibStart.Size = new System.Drawing.Size(65, 23);
+            this.btCalibStart.TabIndex = 7;
+            this.btCalibStart.Text = "StartCalib";
+            this.btCalibStart.UseVisualStyleBackColor = true;
+            // 
+            // btCalibSetDBSPL
+            // 
+            this.btCalibSetDBSPL.Location = new System.Drawing.Point(114, 50);
+            this.btCalibSetDBSPL.Name = "btCalibSetDBSPL";
+            this.btCalibSetDBSPL.Size = new System.Drawing.Size(32, 23);
+            this.btCalibSetDBSPL.TabIndex = 6;
+            this.btCalibSetDBSPL.Text = "Set";
+            this.btCalibSetDBSPL.UseVisualStyleBackColor = true;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 59);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(43, 13);
+            this.label3.TabIndex = 5;
+            this.label3.Text = "dBSPL:";
+            // 
+            // btCalibSetFreq
+            // 
+            this.btCalibSetFreq.Location = new System.Drawing.Point(113, 25);
+            this.btCalibSetFreq.Name = "btCalibSetFreq";
+            this.btCalibSetFreq.Size = new System.Drawing.Size(33, 23);
+            this.btCalibSetFreq.TabIndex = 4;
+            this.btCalibSetFreq.Text = "Set";
+            this.btCalibSetFreq.UseVisualStyleBackColor = true;
+            // 
+            // tbCalibDBSPL
+            // 
+            this.tbCalibDBSPL.Location = new System.Drawing.Point(55, 52);
+            this.tbCalibDBSPL.Name = "tbCalibDBSPL";
+            this.tbCalibDBSPL.Size = new System.Drawing.Size(53, 20);
+            this.tbCalibDBSPL.TabIndex = 1;
+            // 
+            // tbCalibFreq
+            // 
+            this.tbCalibFreq.Location = new System.Drawing.Point(55, 25);
+            this.tbCalibFreq.Name = "tbCalibFreq";
+            this.tbCalibFreq.Size = new System.Drawing.Size(53, 20);
+            this.tbCalibFreq.TabIndex = 1;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 28);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(31, 13);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "Freq:";
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.tbMicMaskAttrID);
+            this.groupBox1.Controls.Add(this.label1);
+            this.groupBox1.Controls.Add(this.tbCalibMicGet);
+            this.groupBox1.Controls.Add(this.btCalibMicSet);
+            this.groupBox1.Controls.Add(this.cbCalibMicIL);
+            this.groupBox1.Controls.Add(this.cbCalibMicOR);
+            this.groupBox1.Controls.Add(this.cbCalibMicIR);
+            this.groupBox1.Controls.Add(this.cbCalibMicOL);
+            this.groupBox1.Location = new System.Drawing.Point(6, 6);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(179, 123);
+            this.groupBox1.TabIndex = 2;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "MIC Mask";
+            // 
+            // tbMicMaskAttrID
+            // 
+            this.tbMicMaskAttrID.Location = new System.Drawing.Point(52, 97);
+            this.tbMicMaskAttrID.Name = "tbMicMaskAttrID";
+            this.tbMicMaskAttrID.Size = new System.Drawing.Size(24, 20);
+            this.tbMicMaskAttrID.TabIndex = 5;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(17, 51);
+            this.label1.Location = new System.Drawing.Point(6, 100);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(69, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "BatteryLevel:";
+            this.label1.Size = new System.Drawing.Size(44, 13);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "Handle:";
             // 
-            // tabPage4
+            // tbCalibMicGet
             // 
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(230, 430);
-            this.tabPage4.TabIndex = 1;
-            this.tabPage4.Text = "tabPage4";
-            this.tabPage4.UseVisualStyleBackColor = true;
+            this.tbCalibMicGet.Location = new System.Drawing.Point(97, 65);
+            this.tbCalibMicGet.Name = "tbCalibMicGet";
+            this.tbCalibMicGet.ReadOnly = true;
+            this.tbCalibMicGet.Size = new System.Drawing.Size(49, 20);
+            this.tbCalibMicGet.TabIndex = 3;
+            // 
+            // btCalibMicSet
+            // 
+            this.btCalibMicSet.Location = new System.Drawing.Point(6, 62);
+            this.btCalibMicSet.Name = "btCalibMicSet";
+            this.btCalibMicSet.Size = new System.Drawing.Size(31, 23);
+            this.btCalibMicSet.TabIndex = 2;
+            this.btCalibMicSet.Text = "Set";
+            this.btCalibMicSet.UseVisualStyleBackColor = true;
+            this.btCalibMicSet.Click += new System.EventHandler(this.btCalibMicSet_Click);
+            // 
+            // cbCalibMicIL
+            // 
+            this.cbCalibMicIL.AutoSize = true;
+            this.cbCalibMicIL.Location = new System.Drawing.Point(6, 19);
+            this.cbCalibMicIL.Name = "cbCalibMicIL";
+            this.cbCalibMicIL.Size = new System.Drawing.Size(68, 17);
+            this.cbCalibMicIL.TabIndex = 0;
+            this.cbCalibMicIL.Text = "InnerLeft";
+            this.cbCalibMicIL.UseVisualStyleBackColor = true;
+            // 
+            // cbCalibMicOR
+            // 
+            this.cbCalibMicOR.AutoSize = true;
+            this.cbCalibMicOR.Location = new System.Drawing.Point(82, 42);
+            this.cbCalibMicOR.Name = "cbCalibMicOR";
+            this.cbCalibMicOR.Size = new System.Drawing.Size(77, 17);
+            this.cbCalibMicOR.TabIndex = 1;
+            this.cbCalibMicOR.Text = "OuterRight";
+            this.cbCalibMicOR.UseVisualStyleBackColor = true;
+            // 
+            // cbCalibMicIR
+            // 
+            this.cbCalibMicIR.AutoSize = true;
+            this.cbCalibMicIR.Location = new System.Drawing.Point(80, 19);
+            this.cbCalibMicIR.Name = "cbCalibMicIR";
+            this.cbCalibMicIR.Size = new System.Drawing.Size(75, 17);
+            this.cbCalibMicIR.TabIndex = 1;
+            this.cbCalibMicIR.Text = "InnerRight";
+            this.cbCalibMicIR.UseVisualStyleBackColor = true;
+            // 
+            // cbCalibMicOL
+            // 
+            this.cbCalibMicOL.AutoSize = true;
+            this.cbCalibMicOL.Location = new System.Drawing.Point(6, 42);
+            this.cbCalibMicOL.Name = "cbCalibMicOL";
+            this.cbCalibMicOL.Size = new System.Drawing.Size(70, 17);
+            this.cbCalibMicOL.TabIndex = 0;
+            this.cbCalibMicOL.Text = "OuterLeft";
+            this.cbCalibMicOL.UseVisualStyleBackColor = true;
             // 
             // tabPage2
             // 
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(990, 464);
+            this.tabPage2.Size = new System.Drawing.Size(820, 464);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -679,11 +1135,11 @@
             // toolStripContainer1.ContentPanel
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this.tabMain);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(998, 492);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(828, 492);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 24);
             this.toolStripContainer1.Name = "toolStripContainer1";
-            this.toolStripContainer1.Size = new System.Drawing.Size(998, 517);
+            this.toolStripContainer1.Size = new System.Drawing.Size(828, 517);
             this.toolStripContainer1.TabIndex = 5;
             this.toolStripContainer1.Text = "toolStripContainer1";
             // 
@@ -706,7 +1162,7 @@
             this.toolBtPrimSrvPanel});
             this.toolStripTop.Location = new System.Drawing.Point(0, 0);
             this.toolStripTop.Name = "toolStripTop";
-            this.toolStripTop.Size = new System.Drawing.Size(998, 25);
+            this.toolStripTop.Size = new System.Drawing.Size(828, 25);
             this.toolStripTop.Stretch = true;
             this.toolStripTop.TabIndex = 5;
             this.toolStripTop.Text = "toolStrip1";
@@ -798,11 +1254,125 @@
             // 
             this.timPeridic.Tick += new System.EventHandler(this.timPeridic_Tick);
             // 
+            // tbAttrGetCvt
+            // 
+            this.tbAttrGetCvt.Location = new System.Drawing.Point(147, 67);
+            this.tbAttrGetCvt.Multiline = true;
+            this.tbAttrGetCvt.Name = "tbAttrGetCvt";
+            this.tbAttrGetCvt.ReadOnly = true;
+            this.tbAttrGetCvt.Size = new System.Drawing.Size(87, 47);
+            this.tbAttrGetCvt.TabIndex = 12;
+            // 
+            // btStrCvt
+            // 
+            this.btStrCvt.Location = new System.Drawing.Point(147, 118);
+            this.btStrCvt.Name = "btStrCvt";
+            this.btStrCvt.Size = new System.Drawing.Size(75, 23);
+            this.btStrCvt.TabIndex = 13;
+            this.btStrCvt.Text = "Convert";
+            this.btStrCvt.UseVisualStyleBackColor = true;
+            this.btStrCvt.Click += new System.EventHandler(this.btStrCvt_Click);
+            // 
+            // tabTonePlay
+            // 
+            this.tabTonePlay.Controls.Add(this.tbTonePlayStartHandle);
+            this.tabTonePlay.Controls.Add(this.tbTonePlayCfgHandle);
+            this.tabTonePlay.Controls.Add(this.btTonePlayStop);
+            this.tabTonePlay.Controls.Add(this.btTonePlayStart);
+            this.tabTonePlay.Controls.Add(this.btTonePlaySet);
+            this.tabTonePlay.Controls.Add(this.label16);
+            this.tabTonePlay.Controls.Add(this.tbTonePlayAmp);
+            this.tabTonePlay.Controls.Add(this.tbTonePlayFreq);
+            this.tabTonePlay.Controls.Add(this.label15);
+            this.tabTonePlay.Location = new System.Drawing.Point(4, 22);
+            this.tabTonePlay.Name = "tabTonePlay";
+            this.tabTonePlay.Padding = new System.Windows.Forms.Padding(3);
+            this.tabTonePlay.Size = new System.Drawing.Size(254, 432);
+            this.tabTonePlay.TabIndex = 2;
+            this.tabTonePlay.Text = "TonePlay";
+            this.tabTonePlay.UseVisualStyleBackColor = true;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(20, 75);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(79, 13);
+            this.label15.TabIndex = 0;
+            this.label15.Text = "Frequency(Hz):";
+            // 
+            // tbTonePlayFreq
+            // 
+            this.tbTonePlayFreq.Location = new System.Drawing.Point(105, 72);
+            this.tbTonePlayFreq.Name = "tbTonePlayFreq";
+            this.tbTonePlayFreq.Size = new System.Drawing.Size(61, 20);
+            this.tbTonePlayFreq.TabIndex = 1;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(24, 100);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(70, 13);
+            this.label16.TabIndex = 2;
+            this.label16.Text = "Amplitude(%):";
+            // 
+            // tbTonePlayAmp
+            // 
+            this.tbTonePlayAmp.Location = new System.Drawing.Point(105, 97);
+            this.tbTonePlayAmp.Name = "tbTonePlayAmp";
+            this.tbTonePlayAmp.Size = new System.Drawing.Size(61, 20);
+            this.tbTonePlayAmp.TabIndex = 1;
+            // 
+            // btTonePlaySet
+            // 
+            this.btTonePlaySet.Location = new System.Drawing.Point(50, 123);
+            this.btTonePlaySet.Name = "btTonePlaySet";
+            this.btTonePlaySet.Size = new System.Drawing.Size(61, 23);
+            this.btTonePlaySet.TabIndex = 3;
+            this.btTonePlaySet.Text = "Set";
+            this.btTonePlaySet.UseVisualStyleBackColor = true;
+            this.btTonePlaySet.Click += new System.EventHandler(this.btTonePlaySet_Click);
+            // 
+            // btTonePlayStart
+            // 
+            this.btTonePlayStart.Location = new System.Drawing.Point(50, 184);
+            this.btTonePlayStart.Name = "btTonePlayStart";
+            this.btTonePlayStart.Size = new System.Drawing.Size(61, 23);
+            this.btTonePlayStart.TabIndex = 3;
+            this.btTonePlayStart.Text = "Start";
+            this.btTonePlayStart.UseVisualStyleBackColor = true;
+            this.btTonePlayStart.Click += new System.EventHandler(this.btTonePlayStart_Click);
+            // 
+            // tbTonePlayCfgHandle
+            // 
+            this.tbTonePlayCfgHandle.Location = new System.Drawing.Point(117, 126);
+            this.tbTonePlayCfgHandle.Name = "tbTonePlayCfgHandle";
+            this.tbTonePlayCfgHandle.Size = new System.Drawing.Size(60, 20);
+            this.tbTonePlayCfgHandle.TabIndex = 4;
+            // 
+            // tbTonePlayStartHandle
+            // 
+            this.tbTonePlayStartHandle.Location = new System.Drawing.Point(117, 186);
+            this.tbTonePlayStartHandle.Name = "tbTonePlayStartHandle";
+            this.tbTonePlayStartHandle.Size = new System.Drawing.Size(60, 20);
+            this.tbTonePlayStartHandle.TabIndex = 4;
+            // 
+            // btTonePlayStop
+            // 
+            this.btTonePlayStop.Location = new System.Drawing.Point(50, 211);
+            this.btTonePlayStop.Name = "btTonePlayStop";
+            this.btTonePlayStop.Size = new System.Drawing.Size(61, 23);
+            this.btTonePlayStop.TabIndex = 3;
+            this.btTonePlayStop.Text = "Stop";
+            this.btTonePlayStop.UseVisualStyleBackColor = true;
+            this.btTonePlayStop.Click += new System.EventHandler(this.btTonePlayStop_Click);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(998, 566);
+            this.ClientSize = new System.Drawing.Size(828, 566);
             this.Controls.Add(this.toolStripContainer1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
@@ -836,8 +1406,19 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitTab1_Attr)).EndInit();
             this.splitTab1_Attr.ResumeLayout(false);
             this.tabCharacter.ResumeLayout(false);
-            this.tabPgBat.ResumeLayout(false);
-            this.tabPgBat.PerformLayout();
+            this.tabPgRW.ResumeLayout(false);
+            this.tabPgRW.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            this.tabPgCalib.ResumeLayout(false);
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.toolStripContainer1.ContentPanel.ResumeLayout(false);
             this.toolStripContainer1.TopToolStripPanel.ResumeLayout(false);
             this.toolStripContainer1.TopToolStripPanel.PerformLayout();
@@ -845,6 +1426,8 @@
             this.toolStripContainer1.PerformLayout();
             this.toolStripTop.ResumeLayout(false);
             this.toolStripTop.PerformLayout();
+            this.tabTonePlay.ResumeLayout(false);
+            this.tabTonePlay.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -886,9 +1469,8 @@
         private System.Windows.Forms.ColumnHeader psrvUUID;
         private System.Windows.Forms.ColumnHeader psrvStart;
         private System.Windows.Forms.ColumnHeader psrvEnd;
-        private System.Windows.Forms.ListView listAttribute;
         private System.Windows.Forms.ColumnHeader attrHandle;
-        private System.Windows.Forms.ColumnHeader attrType;
+        private System.Windows.Forms.ColumnHeader attrUUID;
         private System.Windows.Forms.ColumnHeader ConnHandle;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton toolBtDevPanel;
@@ -898,27 +1480,79 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.SplitContainer splitTab1_Attr;
         private System.Windows.Forms.TabControl tabCharacter;
-        private System.Windows.Forms.TabPage tabPgBat;
-        private System.Windows.Forms.TabPage tabPage4;
-        private System.Windows.Forms.CheckBox cbBatLevNotify;
-        private System.Windows.Forms.TextBox tbBatLevel;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TabPage tabPgRW;
+        private System.Windows.Forms.TabPage tabPgCalib;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.ToolStripProgressBar tsProBarScan;
         private System.Windows.Forms.ToolStripStatusLabel tsLabelScan;
         private System.Windows.Forms.Timer timPeridic;
         private System.Windows.Forms.Label lbAttrHandle;
         private System.Windows.Forms.Label lbConnHandle;
-        private System.Windows.Forms.Button btAttrRead;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox tbAttrData;
+        private System.Windows.Forms.Button btAttrGet;
+        private System.Windows.Forms.TextBox tbAttrGet;
         private System.Windows.Forms.TextBox tbAttrID;
         private System.Windows.Forms.TextBox tbConnID;
-        private System.Windows.Forms.RadioButton rbChar;
-        private System.Windows.Forms.RadioButton rbDec;
-        private System.Windows.Forms.RadioButton rbHex;
         private System.Windows.Forms.ColumnHeader cAddrType;
         private System.Windows.Forms.ColumnHeader attrDesc;
+        private System.Windows.Forms.ColumnHeader attrUserDescHandle;
+        private System.Windows.Forms.ListView listAttribute;
+        private System.Windows.Forms.CheckBox cbCalibMicOR;
+        private System.Windows.Forms.CheckBox cbCalibMicOL;
+        private System.Windows.Forms.CheckBox cbCalibMicIR;
+        private System.Windows.Forms.CheckBox cbCalibMicIL;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button btCalibMicSet;
+        private System.Windows.Forms.TextBox tbCalibMicGet;
+        private System.Windows.Forms.Button btAttrSet;
+        private System.Windows.Forms.TextBox tbAttrSet;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.TextBox tbMicMaskAttrID;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.TextBox tbCalibFreq;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button btCalibSetFreq;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button btCalibSetDBSPL;
+        private System.Windows.Forms.TextBox tbCalibDBSPL;
+        private System.Windows.Forms.Button btCalibStart;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox tbCalibConstOR;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox tbCalibConstOL;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox tbCalibConstIR;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox tbCalibConstIL;
+        private System.Windows.Forms.Button btCalibMicConstRead;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.ComboBox cmbGetEndian;
+        private System.Windows.Forms.ComboBox cmbGetType;
+        private System.Windows.Forms.ComboBox cmbGetFormat;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.ComboBox cmbSetType;
+        private System.Windows.Forms.ComboBox cmbSetFormat;
+        private System.Windows.Forms.TextBox tbAttrGetCvt;
+        private System.Windows.Forms.Button btStrCvt;
+        private System.Windows.Forms.TabPage tabTonePlay;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.TextBox tbTonePlayFreq;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.TextBox tbTonePlayAmp;
+        private System.Windows.Forms.Button btTonePlaySet;
+        private System.Windows.Forms.Button btTonePlayStart;
+        private System.Windows.Forms.TextBox tbTonePlayStartHandle;
+        private System.Windows.Forms.TextBox tbTonePlayCfgHandle;
+        private System.Windows.Forms.Button btTonePlayStop;
     }
 }
 

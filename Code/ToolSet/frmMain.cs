@@ -83,14 +83,14 @@ namespace ToolSet
         public static ushort gChrHandle = 0xFF;
 
         private Thread m_ScanThread = null;
-        public  bool m_ProcCompleted = false;
-        public bool m_ReadDone = true;
+        private bool m_ProcCompleted = false;
+        private bool m_ReadDone = true;
         private Byte[] m_AttrReadData = null;
         private bool m_CheckUserDesc = false;
 
-        private static BleService c_BleService = new BleService();
-
-        public static Bluegiga.BGLib bglib = new Bluegiga.BGLib();
+        private BleService c_BleService = new BleService();
+        private Bluegiga.BGLib bglib = new Bluegiga.BGLib();
+        private List<Attribute> m_AttrList = new List<Attribute>();
 
         public void SystemBootEvent(object sender, Bluegiga.BLE.Events.System.BootEventArgs e)
         {
@@ -182,7 +182,7 @@ namespace ToolSet
 
             //添加扫描信息到列表中;
             int rssi = Math.Abs(e.rssi);
-            string macaddr = ByteArrayToHexString(e.sender);
+            string macaddr = DatConvert.ByteArrayToHexString(e.sender);
             ThreadSafeDelegate(delegate
             {
                 //
@@ -194,13 +194,13 @@ namespace ToolSet
                 {
                     lvS.SubItems[0].Text = mName;
                     lvS.SubItems[1].Text = rssi.ToString();
-                    lvS.SubItems[2].Text = ByteArrayToHexString(e.sender);
+                    lvS.SubItems[2].Text = DatConvert.ByteArrayToHexString(e.sender);
                 }
                 else
                 {
                     ListViewItem lv = new ListViewItem(mName);//[0];
                     lv.SubItems.Add(rssi.ToString());//[1]
-                    lv.SubItems.Add(ByteArrayToHexString(e.sender));//[2]
+                    lv.SubItems.Add(DatConvert.ByteArrayToHexString(e.sender));//[2]
                     lv.SubItems.Add(e.address_type.ToString());//[3]
                     listScanDev.Items.Add(lv);
                 }
@@ -223,19 +223,6 @@ namespace ToolSet
         {
             if (comDev.IsOpen == false) return;
 
-            String log = String.Format("ble_evt_connection_status: connection={0}, flags={1}, address=[ {2}], address_type={3}, conn_interval={4}, timeout={5}, latency={6}, bonding={7}" + Environment.NewLine,
-                e.connection,
-                e.flags,
-                ByteArrayToHexString(e.address),
-                e.address_type,
-                e.conn_interval,
-                e.timeout,
-                e.latency,
-                e.bonding
-                );
-            Console.Write(log);
-            ThreadSafeDelegate(delegate { txtLog.AppendText(log); });
-
             //flags:
             //bit.0 = connection_connected; the connection exists to a remote device.
             //bit.1 = connection_encrypted; the connection is encrypted.
@@ -245,20 +232,18 @@ namespace ToolSet
             {
                 // connected, now perform service discovery
                 gConnectID = e.connection;
-                //gConnection_MacAddr = e.address;// strToHexByte(listScanDev.SelectedItems[0].SubItems[3].Text);
-                ThreadSafeDelegate(delegate 
-                {
-                    txtLog.AppendText(String.Format("Connected to {0}", ByteArrayToHexString(e.address)) + Environment.NewLine);
-                    btConnect.Image = Properties.Resources.BMP_GREEN;
-                    stsLb_ConnSts.Image = Properties.Resources.BMP_GREEN;
-                });
 
                 //
                 Byte[] cmd = bglib.BLECommandATTClientReadByGroupType(e.connection, 0x0001, 0xFFFF, new Byte[] { 0x00, 0x28 }); // "find primary service" UUID is 0x2800 (little-endian for UUID uint8array)
                 // DEBUG: display bytes written
                 ThreadSafeDelegate(delegate
                 {
-                    txtLog.AppendText(String.Format("=> TX ({0}) [ {1}]", cmd.Length, ByteArrayToHexString(cmd)) + Environment.NewLine);
+                    txtLog.AppendText(String.Format("Connected to {0}", DatConvert.ByteArrayToHexString(e.address)) + Environment.NewLine);
+                    btConnect.Image = Properties.Resources.BMP_GREEN;
+                    stsLb_ConnSts.Image = Properties.Resources.BMP_GREEN;
+
+                    splitTab1_Main.Panel1Collapsed = true;
+                    txtLog.AppendText(String.Format("=> TX ({0}) [ {1}]", cmd.Length, DatConvert.ByteArrayToHexString(cmd)) + Environment.NewLine);
                     listPrimSrv.Items.Clear();
                 });
                 m_ProcCompleted = false;
@@ -285,7 +270,7 @@ namespace ToolSet
                 lv.Text = c_BleService.ServiceNameByUUID(e.uuid.ToArray());//column[0];
                 lv.SubItems.Add(e.start.ToString());//column[1];
                 lv.SubItems.Add(e.end.ToString());//column[2];
-                lv.SubItems.Add(ByteArrayToHexString(e.uuid.ToArray()));//column[3];
+                lv.SubItems.Add(DatConvert.ByteArrayToHexString(e.uuid.ToArray()));//column[3];
                 listPrimSrv.Items.Add(lv);
             });
         }
@@ -303,7 +288,7 @@ namespace ToolSet
                 if (c_BleService.IsDeclarePrimaryService(e.uuid))//e.uuid.SequenceEqual(new Byte[] { 0x00, 0x28 }))
                 {
                 }
-                else if ( c_BleService.IsDeclareAttribute(e.uuid))//e.uuid.SequenceEqual(new Byte[] { 0x03, 0x28 }))
+                else if (c_BleService.IsDeclareAttribute(e.uuid))//e.uuid.SequenceEqual(new Byte[] { 0x03, 0x28 }))
                 {
                 }
                 else if (c_BleService.IsDescClientConfig(e.uuid))
@@ -311,16 +296,24 @@ namespace ToolSet
                 }
                 else if (c_BleService.IsDescUserAttribute(e.uuid))
                 {//Characteristic User Description
+                    ThreadSafeDelegate(delegate
+                    {
+                        if(listAttribute.Items.Count>0)
+                        { 
+                            listAttribute.Items[listAttribute.Items.Count - 1].SubItems[4].Text = e.chrhandle.ToString();
+                        }
+                    });
                 }
-                //else
+                else
                 {//charactestic attribute
                     ThreadSafeDelegate(delegate
                     {
                         ListViewItem lv = new ListViewItem();
-                        lv.Text = name;//column[0];
+                        lv.Text = "";//column[0];userDesc
                         lv.SubItems.Add(e.connection.ToString());//column[1];
                         lv.SubItems.Add(e.chrhandle.ToString());//column[2];attribute handle
-                        lv.SubItems.Add(ByteArrayToHexString(e.uuid));//column[3];
+                        lv.SubItems.Add(DatConvert.ByteArrayToHexString(e.uuid));//column[3];
+                        lv.SubItems.Add("0");//colume[4];attrUserDescHandle
 
                         listAttribute.Items.Add(lv);
                         listAttribute.Width = -1;
@@ -343,20 +336,15 @@ namespace ToolSet
             {
                 m_AttrReadData = e.value;
                 m_ReadDone = true;
+                
                 ThreadSafeDelegate(delegate
                 {
-                    if (rbChar.Checked)
-                    {
-                        tbAttrData.Text = Encoding.UTF8.GetString(e.value);
-                    }
-                    else if (rbHex.Checked)
-                    {
-                        tbAttrData.Text = ByteArrayToHexString(e.value);
-                    }
-                    else
-                    {
-                        tbAttrData.Text = ByteArrayToDecString(e.value);
-                    }
+                    //if (cmbGetEndian.SelectedIndex == 1)
+                    //{
+                    //    Array.Reverse(e.value);
+                    //}
+                    tbAttrGet.Text = DatConvert.ByteArrayToHexString(e.value);
+                    btStrCvt_Click(sender, e);
                 });
             }
         }
@@ -372,38 +360,6 @@ namespace ToolSet
         //  [6~7] : uint16, offset; Offset read from;
         //  [8~9] : uint16, result; 0: the read was successfull; Non-zero:An error occurred.
         //  [10..]: uint8array; value; maximum of 32 bytes can be read at a time.
-#if false
-        public void AttributeWriteEvent(object sender, Bluegiga.BLE.Responses.ATTClient.AttributeWriteEventArgs e)
-        {
-            bglib.BLEEventATTClientProcedureCompleted += new Bluegiga.BLE.Events.ATTClient.ProcedureCompletedEventHandler(ProcedureCompleted);
-        }
-
-        public void AttributeValueFirmware(object sender, Bluegiga.BLE.Events.ATTClient.AttributeValueEventArgs e)
-        {
-
-            if (e.value.Length == 4)
-            {
-                byte[] rtc = e.value;
-                //string a = Ten2Hex(rtc[0].ToString());
-                //string b = Ten2Hex(rtc[1].ToString());
-                //string c = Ten2Hex(rtc[2].ToString());
-                //string d = Ten2Hex(rtc[3].ToString());
-                // string time = a + b + c + d;
-                //string tentime = Hex2Ten(time);
-            }
-            else
-            {
-                //ASCii码转换
-                string s = System.Text.Encoding.ASCII.GetString(e.value);
-                MessageBox.Show(s);
-            }
-        }
-
-        public void ATTClientProcedureCompleted(object sender, Bluegiga.BLE.Events.ATTClient.AttributeValueEventArgs e)
-        {
-            
-        }
-#endif
 
         /* ================================================================ */
         /*                 END MAIN EVENT-DRIVEN APP LOGIC                  */
@@ -438,43 +394,12 @@ namespace ToolSet
 
         private void ScanThread()
         {
-            ushort attrid = 0;
-            Byte[] cmd;
-            string str = null;
-
             while (true)
             { 
-                if (m_CheckUserDesc == true)
+                if(m_ReadDone)
                 {
-                    if(m_ReadDone)
-                    {
-                        int idx = 0;
-                        while (idx < listAttribute.Items.Count)
-                        {
-                            str = GetAttrBoxID(idx);// listAttribute.Items[idx].SubItems[2].Text;
-                            attrid = ushort.Parse(str);
-                            attrid = (ushort)(attrid +1);
-                            m_ReadDone = false;
-                            cmd = bglib.BLECommandATTClientReadByHandle(gConnectID, attrid);
-                            //do
-                            {
-                                bglib.SendCommand(comDev, cmd);
-                                //Thread.Sleep(1000);
-                            };// 
-                            while (m_ReadDone == false);
-                            str = Encoding.UTF8.GetString(m_AttrReadData);
-                            ThreadSafeDelegate(delegate
-                            {
-                                listAttribute.Items[idx].SubItems[0].Text = str;
-                                idx++;
-                             });
-                            //SetAttrUserDesc(idx, str);
-                            //idx++;
-                        }
-                        m_CheckUserDesc = false;
-                    }
+                    
                 }
-                Thread.Sleep(100);
             }
         }
 
@@ -590,16 +515,21 @@ namespace ToolSet
             //This event is produced at the GATT server side when an attribute is successfully indicated to the GATT client.
             //This means the event is only produced at the GATT server if the indication is acknowledged by the GATT client(the removte device).
 
-            //splitTab1_Main.Panel2Collapsed = true;
-            //splitTab1_Sub.Panel2Collapsed = true;
+            splitTab1_Main.Panel2Collapsed = true;
+            splitTab1_Sub.Panel2Collapsed = true;
 
             SetEnableByComSts(false);
 
             m_ScanThread = new Thread(new ThreadStart(ScanThread));
             m_ScanThread.IsBackground = true;
-            ///m_ScanThread.Start();
+            //m_ScanThread.Start();
+            //
+            cmbGetEndian.SelectedIndex = 0;
+            cmbGetFormat.SelectedIndex = 0;
+            cmbGetType.SelectedIndex = 0;
+            cmbSetFormat.SelectedIndex = 0;
+            cmbSetType.SelectedIndex = 0;
         }
-
 
         private void toolCmbPort_DropDown(object sender, EventArgs e)
         {
@@ -688,8 +618,6 @@ namespace ToolSet
             AddData(ReDatas);
 
             // DEBUG: display bytes read
-            //Console.WriteLine("<= RX ({0}) [ {1}]", ReDatas.Length, ByteArrayToHexString(ReDatas));
-            //tslbRxMsg.Text = string.Format("<= RX ({0}) [ {1}]", ReDatas.Length, ByteArrayToHexString(ReDatas));
             // parse all bytes read through BGLib parser
             for (int i = 0; i < ReDatas.Length; i++)
             {
@@ -736,34 +664,7 @@ namespace ToolSet
             return false;
         }
 
-        /// <summary>
-        /// 16进制编码
-        /// </summary>
-        /// <param name="hexString"></param>
-        /// <returns></returns>
-        private byte[] strToHexByte(string hexString)
-        {
-            hexString = hexString.Replace(" ", "");
-            if ((hexString.Length % 2) != 0) hexString += " ";
-            byte[] returnBytes = new byte[hexString.Length / 2];
-            for (int i = 0; i < returnBytes.Length; i++)
-                returnBytes[i] = Convert.ToByte(hexString.Substring(i * 2, 2).Replace(" ", ""), 16);
-            return returnBytes;
-        }
-        public string ByteArrayToHexString(Byte[] ba)
-        {
-            StringBuilder hex = new StringBuilder(ba.Length * 2);
-            foreach (byte b in ba)
-                hex.AppendFormat("{0:x2} ", b);
-            return hex.ToString();
-        }
-        public string ByteArrayToDecString(Byte[] ba)
-        {
-            StringBuilder hex = new StringBuilder(ba.Length * 2);
-            foreach (byte b in ba)
-                hex.AppendFormat("{0:D} ", b);
-            return hex.ToString();
-        }
+        
         private void btScanStart_Click(object sender, EventArgs e)
         {
             if (comDev.IsOpen == true)
@@ -823,21 +724,21 @@ namespace ToolSet
                 connHandle = gConnectID;// Byte.Parse(listPrimSrv.SelectedItems[0].SubItems[0].Text);// strToHexByte(listPrimSrv.SelectedItems[0].SubItems[0].Text);
                 start = UInt16.Parse(listPrimSrv.SelectedItems[0].SubItems[1].Text);
                 end = UInt16.Parse(listPrimSrv.SelectedItems[0].SubItems[2].Text);
-                Byte[] uuid = strToHexByte(listPrimSrv.SelectedItems[0].SubItems[3].Text);
+                Byte[] uuid = DatConvert.strToHexByte(listPrimSrv.SelectedItems[0].SubItems[3].Text);
 
                 if (true)//uuid[0] == 0x0F && uuid[1] == 0x18)
                 {
-                    tabPgBat.Show();
+                    tabPgRW.Show();
                 }
                 else
                 {
-                    tabPgBat.Hide();
+                    tabPgRW.Hide();
                 }
 
                 m_ProcCompleted = false;
                 Byte[] cmd = bglib.BLECommandATTClientFindInformation(connHandle, start, end);
                 bglib.SendCommand(comDev, cmd);
-                //m_CheckUserDesc = true;
+                m_CheckUserDesc = true;
             }
         }
         private void btConnect_Click(object sender, EventArgs e)
@@ -859,7 +760,7 @@ namespace ToolSet
             {
                 //splitTab1_Main.Panel1Collapsed = true;
 
-                gMacAddr = strToHexByte(listScanDev.SelectedItems[0].SubItems[2].Text);
+                gMacAddr = DatConvert.strToHexByte(listScanDev.SelectedItems[0].SubItems[2].Text);
                 gAddrType = byte.Parse(listScanDev.SelectedItems[0].SubItems[3].Text);
 
                 stsLb_ConnSts.Text = listScanDev.SelectedItems[0].SubItems[0].Text;
@@ -889,12 +790,9 @@ namespace ToolSet
 
         private void toolBtPrimSrvPanel_Click(object sender, EventArgs e)
         {
-            //splitTab1_Sub.Panel1Collapsed = !splitTab1_Sub.Panel1Collapsed;
-            //if(gApp_state != STATE_STANDBY)
-            //{ 
-            //    splitTab1_Main.Panel1Collapsed = true;
-            //    splitTab1_Main.Panel2Collapsed = false;
-            //}
+            splitTab1_Sub.Panel1Collapsed = !splitTab1_Sub.Panel1Collapsed;
+            splitTab1_Main.Panel1Collapsed = true;
+            splitTab1_Main.Panel2Collapsed = false;
         }
         
         //
@@ -954,38 +852,227 @@ namespace ToolSet
             }
         }
 
-        private void btAttrRead_Click(object sender, EventArgs e)
-        {
-            m_ProcCompleted = false;
-            Byte[] cmd = bglib.BLECommandATTClientReadByHandle(gConnectID,gChrHandle);
-            bglib.SendCommand(comDev,cmd);
-        }
-
         private void UpdateUserDesc()
         {
             ushort attrid = 0;
-            Byte[] cmd;
             string str = null;
+            DateTime dtStart, dtNow;
+            TimeSpan ts;
+            bool timeout = false;
 
             int idx = 0;
             while (idx < listAttribute.Items.Count)
             {
-                //str = GetAttrBoxID(idx);// 
-                str = listAttribute.Items[idx].SubItems[2].Text;
+                str = listAttribute.Items[idx].SubItems[4].Text;
                 attrid = ushort.Parse(str);
-                attrid = (ushort)(attrid + 1);
                 m_ReadDone = false;
-                cmd = bglib.BLECommandATTClientReadByHandle(gConnectID, attrid);
-
+                Byte[] cmd = bglib.BLECommandATTClientReadByHandle(gConnectID, attrid);
                 bglib.SendCommand(comDev, cmd);
-                while (m_ReadDone == false) ;
-                str = Encoding.UTF8.GetString(m_AttrReadData);
-                ThreadSafeDelegate(delegate
+                dtStart = DateTime.Now;
+
+                while (m_ReadDone == false)
                 {
-                    listAttribute.Items[idx].SubItems[0].Text = str;
+                    dtNow = DateTime.Now;
+                    ts = dtNow.Subtract(dtStart);
+                    if (ts.Milliseconds > 200)
+                    {
+                        timeout = true;
+                        break;
+                    }
+                }
+                if (m_AttrReadData != null && timeout == false)
+                {
+                    str = Encoding.UTF8.GetString(m_AttrReadData);
+                    ThreadSafeDelegate(delegate
+                    {
+                        listAttribute.Items[idx].SubItems[0].Text = str;
+                        idx++;
+                    });
+                }
+                else
+                {
                     idx++;
-                });
+                }
             }
+        }
+
+        private void btAttrRead_Click(object sender, EventArgs e)
+        {
+            m_ProcCompleted = false;
+            byte mConnectID = byte.Parse(tbConnID.Text);
+            byte mAttrID = byte.Parse(tbAttrID.Text);
+            Byte[] cmd = bglib.BLECommandATTClientReadByHandle(mConnectID, mAttrID);
+            bglib.SendCommand(comDev,cmd);
+        }
+        private void btAttrWrite_Click(object sender, EventArgs e)
+        {
+            m_ProcCompleted = false;
+            byte mConnectID = byte.Parse(tbConnID.Text);
+            byte mAttrID = byte.Parse(tbAttrID.Text);
+
+            if (comDev.IsOpen == false)
+            {
+                MessageBox.Show("请先打开串口", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            List<byte> byteList = new List<byte>();
+            switch (cmbSetType.SelectedIndex)
+            {
+            case 0://hex
+                {
+                    byte[] v = DatConvert.strToHexByte(tbAttrSet.Text);
+                    byteList.AddRange(v);
+                }
+                break;
+            case 1://Number
+                switch (cmbSetFormat.SelectedIndex)
+                {
+                case 0://I8
+                case 1://U8
+                    byteList.Add(byte.Parse(tbAttrSet.Text));
+                    break;
+                case 2://I16
+                    {
+                        Int16 val = Int16.Parse(tbAttrSet.Text);
+                        byte[] b = BitConverter.GetBytes(val);
+                        byteList.AddRange(b);
+                    }
+                    break;
+                case 3://U16
+                    { 
+                        UInt16 val = UInt16.Parse(tbAttrSet.Text);
+                        byte[] b = BitConverter.GetBytes(val);
+                        byteList.AddRange(b);
+                    }
+                    break;
+                case 4://I32
+                    {
+                        Int32 val = Int32.Parse(tbAttrSet.Text);
+                        byte[] b = BitConverter.GetBytes(val);
+                        byteList.AddRange(b);
+                    }
+                    break;
+                case 5://U32
+                    {
+                        UInt32 val = UInt32.Parse(tbAttrSet.Text);
+                        byte[] b = BitConverter.GetBytes(val);
+                        byteList.AddRange(b);
+                    }
+                    break;
+                case 6://F32
+                    {
+                        float val = float.Parse(tbAttrSet.Text);
+                        byte[] b = BitConverter.GetBytes(val);
+                        byteList.AddRange(b);
+                    }
+                    break;
+                default:
+                    break;
+                }
+                break;
+            case 2://String
+                {
+                    byte[] v = System.Text.Encoding.Default.GetBytes(tbAttrSet.Text);
+                    byteList.AddRange(v);
+                }
+                break;
+            }
+            Byte[] cmd = bglib.BLECommandATTClientAttributeWrite(mConnectID, mAttrID, byteList.ToArray());
+            bglib.SendCommand(comDev, cmd);
+        }
+        private void btCalibMicSet_Click(object sender, EventArgs e)
+        {
+            UInt16 micMask = 0;
+            UInt16 maskID;
+            if (cbCalibMicIL.Checked) micMask |= 0x01;
+            if (cbCalibMicIR.Checked) micMask |= 0x02;
+            if (cbCalibMicOL.Checked) micMask |= 0x04;
+            if (cbCalibMicOR.Checked) micMask |= 0x08;
+            maskID = UInt16.Parse(tbMicMaskAttrID.Text);
+            m_ProcCompleted = false;
+            byte[] data = new byte[2] { (byte)micMask,(byte)(micMask >> 8)};
+            Byte[] cmd = bglib.BLECommandATTClientAttributeWrite(gConnectID, maskID, data);
+            bglib.SendCommand(comDev, cmd);
+        }
+
+        private void btStrCvt_Click(object sender, EventArgs e)
+        {
+            byte[] hexDat = DatConvert.strToHexByte(tbAttrGet.Text);
+            switch (cmbGetType.SelectedIndex )
+            {
+            case 0://Hex
+                tbAttrGetCvt.Text = DatConvert.ByteArrayToHexString(hexDat);
+                break;
+            case 1://Number
+                { 
+                    if (cmbGetEndian.SelectedIndex == 1)
+                    {
+                        Array.Reverse(hexDat);
+                    }
+                    switch (cmbGetFormat.SelectedIndex)
+                    {
+                    case 0://INT8
+                    case 1://UINT8
+                        tbAttrGetCvt.Text = BitConverter.ToChar(hexDat, 0).ToString();
+                        break;
+                    case 2://INT16;
+                        tbAttrGetCvt.Text = BitConverter.ToInt16(hexDat, 0).ToString();//Int16.Parse(tbAttrGet.Text).ToString();
+                        break;
+                    case 3://UINT16
+                        tbAttrGetCvt.Text = BitConverter.ToUInt16(hexDat, 0).ToString();// UInt16.Parse(tbAttrGet.Text).ToString();
+                        //tbAttrGet.Text = ByteArrayToDecString(e.value);
+                        break;
+                    case 4://INT32;
+                        tbAttrGetCvt.Text = BitConverter.ToInt32(hexDat, 0).ToString();
+                        break;
+                    case 5://UINT32;
+                        tbAttrGetCvt.Text = BitConverter.ToUInt32(hexDat, 0).ToString();
+                        break;
+                    case 6://float
+                        tbAttrGetCvt.Text = BitConverter.ToSingle(hexDat, 0).ToString();
+                        break;
+                    default:
+                        break;
+                    }
+                }
+                break;
+            case 2://String
+                tbAttrGetCvt.Text = DatConvert.HexArrayToString(hexDat);
+                break;
+            }
+        }
+
+        private void btTonePlaySet_Click(object sender, EventArgs e)
+        {
+            byte mAttrID = byte.Parse(tbTonePlayCfgHandle.Text);
+
+            byte[] cfg = new byte[3];
+            cfg[0] = byte.Parse(tbTonePlayAmp.Text);
+
+            UInt16 val = UInt16.Parse(tbTonePlayFreq.Text);
+            cfg[1] = (byte)(val);
+            cfg[2] = (byte)(val >> 8);
+
+            Byte[] cmd = bglib.BLECommandATTClientAttributeWrite(gConnectID, mAttrID, cfg);
+            bglib.SendCommand(comDev, cmd);
+        }
+
+        private void btTonePlayStart_Click(object sender, EventArgs e)
+        {
+            byte mAttrID = byte.Parse(tbTonePlayStartHandle.Text);
+
+            byte[] val = new byte[] { 1 };
+            Byte[] cmd = bglib.BLECommandATTClientAttributeWrite(gConnectID, mAttrID, val);
+            bglib.SendCommand(comDev, cmd);
+        }
+
+        private void btTonePlayStop_Click(object sender, EventArgs e)
+        {
+            byte mAttrID = byte.Parse(tbTonePlayStartHandle.Text);
+
+            byte[] val = new byte[] { 0 };
+            Byte[] cmd = bglib.BLECommandATTClientAttributeWrite(gConnectID, mAttrID, val);
+            bglib.SendCommand(comDev, cmd);
         }
     }
 }

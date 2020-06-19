@@ -54,8 +54,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attribute.cs" />
     <Compile Include="BGLib.cs" />
     <Compile Include="BleService.cs" />
+    <Compile Include="DatConvert.cs" />
     <Compile Include="frmMain.cs">
       <SubType>Form</SubType>
     </Compile>

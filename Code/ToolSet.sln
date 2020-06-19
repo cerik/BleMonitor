@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolSet", "ToolSet\ToolSet.csproj", "{5E15D0FC-12A6-4595-8D2E-BC286564569B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{74F397B0-7E71-4228-97C1-A84B1034461F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
