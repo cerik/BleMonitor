@@ -88,7 +88,7 @@ namespace ToolSet
         private Byte[] m_AttrReadData = null;
         private bool m_CheckUserDesc = false;
 
-        private BleService c_BleService = new BleService();
+        private GhpBle c_BleService = new GhpBle();
         private Bluegiga.BGLib bglib = new Bluegiga.BGLib();
         private List<Attribute> m_AttrList = new List<Attribute>();
 
