@@ -78,6 +78,8 @@
             this.btAttrSet = new System.Windows.Forms.Button();
             this.tbAttrSet = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.btStrCvt = new System.Windows.Forms.Button();
+            this.tbAttrGetCvt = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
@@ -122,6 +124,16 @@
             this.cbCalibMicOR = new System.Windows.Forms.CheckBox();
             this.cbCalibMicIR = new System.Windows.Forms.CheckBox();
             this.cbCalibMicOL = new System.Windows.Forms.CheckBox();
+            this.tabTonePlay = new System.Windows.Forms.TabPage();
+            this.tbTonePlayStartHandle = new System.Windows.Forms.TextBox();
+            this.tbTonePlayCfgHandle = new System.Windows.Forms.TextBox();
+            this.btTonePlayStop = new System.Windows.Forms.Button();
+            this.btTonePlayStart = new System.Windows.Forms.Button();
+            this.btTonePlaySet = new System.Windows.Forms.Button();
+            this.label16 = new System.Windows.Forms.Label();
+            this.tbTonePlayAmp = new System.Windows.Forms.TextBox();
+            this.tbTonePlayFreq = new System.Windows.Forms.TextBox();
+            this.label15 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.comDev = new System.IO.Ports.SerialPort(this.components);
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
@@ -136,18 +148,7 @@
             this.toolBtDevPanel = new System.Windows.Forms.ToolStripButton();
             this.toolBtPrimSrvPanel = new System.Windows.Forms.ToolStripButton();
             this.timPeridic = new System.Windows.Forms.Timer(this.components);
-            this.tbAttrGetCvt = new System.Windows.Forms.TextBox();
-            this.btStrCvt = new System.Windows.Forms.Button();
-            this.tabTonePlay = new System.Windows.Forms.TabPage();
-            this.label15 = new System.Windows.Forms.Label();
-            this.tbTonePlayFreq = new System.Windows.Forms.TextBox();
-            this.label16 = new System.Windows.Forms.Label();
-            this.tbTonePlayAmp = new System.Windows.Forms.TextBox();
-            this.btTonePlaySet = new System.Windows.Forms.Button();
-            this.btTonePlayStart = new System.Windows.Forms.Button();
-            this.tbTonePlayCfgHandle = new System.Windows.Forms.TextBox();
-            this.tbTonePlayStartHandle = new System.Windows.Forms.TextBox();
-            this.btTonePlayStop = new System.Windows.Forms.Button();
+            this.srvTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tabMain.SuspendLayout();
@@ -177,11 +178,11 @@
             this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.tabTonePlay.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
             this.toolStripTop.SuspendLayout();
-            this.tabTonePlay.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -278,6 +279,8 @@
             // 
             // m_Tool
             // 
+            this.m_Tool.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.srvTreeToolStripMenuItem});
             this.m_Tool.Name = "m_Tool";
             this.m_Tool.Size = new System.Drawing.Size(42, 20);
             this.m_Tool.Text = "&Tool";
@@ -690,6 +693,25 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Read";
             // 
+            // btStrCvt
+            // 
+            this.btStrCvt.Location = new System.Drawing.Point(147, 118);
+            this.btStrCvt.Name = "btStrCvt";
+            this.btStrCvt.Size = new System.Drawing.Size(75, 23);
+            this.btStrCvt.TabIndex = 13;
+            this.btStrCvt.Text = "Convert";
+            this.btStrCvt.UseVisualStyleBackColor = true;
+            this.btStrCvt.Click += new System.EventHandler(this.btStrCvt_Click);
+            // 
+            // tbAttrGetCvt
+            // 
+            this.tbAttrGetCvt.Location = new System.Drawing.Point(147, 67);
+            this.tbAttrGetCvt.Multiline = true;
+            this.tbAttrGetCvt.Name = "tbAttrGetCvt";
+            this.tbAttrGetCvt.ReadOnly = true;
+            this.tbAttrGetCvt.Size = new System.Drawing.Size(87, 47);
+            this.tbAttrGetCvt.TabIndex = 12;
+            // 
             // label12
             // 
             this.label12.AutoSize = true;
@@ -820,7 +842,7 @@
             this.tabPgCalib.Location = new System.Drawing.Point(4, 22);
             this.tabPgCalib.Name = "tabPgCalib";
             this.tabPgCalib.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPgCalib.Size = new System.Drawing.Size(254, 432);
+            this.tabPgCalib.Size = new System.Drawing.Size(254, 430);
             this.tabPgCalib.TabIndex = 1;
             this.tabPgCalib.Text = "MicCalibration";
             this.tabPgCalib.UseVisualStyleBackColor = true;
@@ -1118,6 +1140,101 @@
             this.cbCalibMicOL.Text = "OuterLeft";
             this.cbCalibMicOL.UseVisualStyleBackColor = true;
             // 
+            // tabTonePlay
+            // 
+            this.tabTonePlay.Controls.Add(this.tbTonePlayStartHandle);
+            this.tabTonePlay.Controls.Add(this.tbTonePlayCfgHandle);
+            this.tabTonePlay.Controls.Add(this.btTonePlayStop);
+            this.tabTonePlay.Controls.Add(this.btTonePlayStart);
+            this.tabTonePlay.Controls.Add(this.btTonePlaySet);
+            this.tabTonePlay.Controls.Add(this.label16);
+            this.tabTonePlay.Controls.Add(this.tbTonePlayAmp);
+            this.tabTonePlay.Controls.Add(this.tbTonePlayFreq);
+            this.tabTonePlay.Controls.Add(this.label15);
+            this.tabTonePlay.Location = new System.Drawing.Point(4, 22);
+            this.tabTonePlay.Name = "tabTonePlay";
+            this.tabTonePlay.Padding = new System.Windows.Forms.Padding(3);
+            this.tabTonePlay.Size = new System.Drawing.Size(254, 432);
+            this.tabTonePlay.TabIndex = 2;
+            this.tabTonePlay.Text = "TonePlay";
+            this.tabTonePlay.UseVisualStyleBackColor = true;
+            // 
+            // tbTonePlayStartHandle
+            // 
+            this.tbTonePlayStartHandle.Location = new System.Drawing.Point(103, 98);
+            this.tbTonePlayStartHandle.Name = "tbTonePlayStartHandle";
+            this.tbTonePlayStartHandle.Size = new System.Drawing.Size(60, 20);
+            this.tbTonePlayStartHandle.TabIndex = 4;
+            // 
+            // tbTonePlayCfgHandle
+            // 
+            this.tbTonePlayCfgHandle.Location = new System.Drawing.Point(103, 54);
+            this.tbTonePlayCfgHandle.Name = "tbTonePlayCfgHandle";
+            this.tbTonePlayCfgHandle.Size = new System.Drawing.Size(60, 20);
+            this.tbTonePlayCfgHandle.TabIndex = 4;
+            // 
+            // btTonePlayStop
+            // 
+            this.btTonePlayStop.Location = new System.Drawing.Point(36, 123);
+            this.btTonePlayStop.Name = "btTonePlayStop";
+            this.btTonePlayStop.Size = new System.Drawing.Size(61, 23);
+            this.btTonePlayStop.TabIndex = 3;
+            this.btTonePlayStop.Text = "Stop";
+            this.btTonePlayStop.UseVisualStyleBackColor = true;
+            this.btTonePlayStop.Click += new System.EventHandler(this.btTonePlayStop_Click);
+            // 
+            // btTonePlayStart
+            // 
+            this.btTonePlayStart.Location = new System.Drawing.Point(36, 96);
+            this.btTonePlayStart.Name = "btTonePlayStart";
+            this.btTonePlayStart.Size = new System.Drawing.Size(61, 23);
+            this.btTonePlayStart.TabIndex = 3;
+            this.btTonePlayStart.Text = "Start";
+            this.btTonePlayStart.UseVisualStyleBackColor = true;
+            this.btTonePlayStart.Click += new System.EventHandler(this.btTonePlayStart_Click);
+            // 
+            // btTonePlaySet
+            // 
+            this.btTonePlaySet.Location = new System.Drawing.Point(36, 51);
+            this.btTonePlaySet.Name = "btTonePlaySet";
+            this.btTonePlaySet.Size = new System.Drawing.Size(61, 23);
+            this.btTonePlaySet.TabIndex = 3;
+            this.btTonePlaySet.Text = "Set";
+            this.btTonePlaySet.UseVisualStyleBackColor = true;
+            this.btTonePlaySet.Click += new System.EventHandler(this.btTonePlaySet_Click);
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(10, 28);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(70, 13);
+            this.label16.TabIndex = 2;
+            this.label16.Text = "Amplitude(%):";
+            // 
+            // tbTonePlayAmp
+            // 
+            this.tbTonePlayAmp.Location = new System.Drawing.Point(91, 25);
+            this.tbTonePlayAmp.Name = "tbTonePlayAmp";
+            this.tbTonePlayAmp.Size = new System.Drawing.Size(61, 20);
+            this.tbTonePlayAmp.TabIndex = 1;
+            // 
+            // tbTonePlayFreq
+            // 
+            this.tbTonePlayFreq.Location = new System.Drawing.Point(91, 0);
+            this.tbTonePlayFreq.Name = "tbTonePlayFreq";
+            this.tbTonePlayFreq.Size = new System.Drawing.Size(61, 20);
+            this.tbTonePlayFreq.TabIndex = 1;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(6, 3);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(79, 13);
+            this.label15.TabIndex = 0;
+            this.label15.Text = "Frequency(Hz):";
+            // 
             // tabPage2
             // 
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
@@ -1254,119 +1371,12 @@
             // 
             this.timPeridic.Tick += new System.EventHandler(this.timPeridic_Tick);
             // 
-            // tbAttrGetCvt
+            // srvTreeToolStripMenuItem
             // 
-            this.tbAttrGetCvt.Location = new System.Drawing.Point(147, 67);
-            this.tbAttrGetCvt.Multiline = true;
-            this.tbAttrGetCvt.Name = "tbAttrGetCvt";
-            this.tbAttrGetCvt.ReadOnly = true;
-            this.tbAttrGetCvt.Size = new System.Drawing.Size(87, 47);
-            this.tbAttrGetCvt.TabIndex = 12;
-            // 
-            // btStrCvt
-            // 
-            this.btStrCvt.Location = new System.Drawing.Point(147, 118);
-            this.btStrCvt.Name = "btStrCvt";
-            this.btStrCvt.Size = new System.Drawing.Size(75, 23);
-            this.btStrCvt.TabIndex = 13;
-            this.btStrCvt.Text = "Convert";
-            this.btStrCvt.UseVisualStyleBackColor = true;
-            this.btStrCvt.Click += new System.EventHandler(this.btStrCvt_Click);
-            // 
-            // tabTonePlay
-            // 
-            this.tabTonePlay.Controls.Add(this.tbTonePlayStartHandle);
-            this.tabTonePlay.Controls.Add(this.tbTonePlayCfgHandle);
-            this.tabTonePlay.Controls.Add(this.btTonePlayStop);
-            this.tabTonePlay.Controls.Add(this.btTonePlayStart);
-            this.tabTonePlay.Controls.Add(this.btTonePlaySet);
-            this.tabTonePlay.Controls.Add(this.label16);
-            this.tabTonePlay.Controls.Add(this.tbTonePlayAmp);
-            this.tabTonePlay.Controls.Add(this.tbTonePlayFreq);
-            this.tabTonePlay.Controls.Add(this.label15);
-            this.tabTonePlay.Location = new System.Drawing.Point(4, 22);
-            this.tabTonePlay.Name = "tabTonePlay";
-            this.tabTonePlay.Padding = new System.Windows.Forms.Padding(3);
-            this.tabTonePlay.Size = new System.Drawing.Size(254, 432);
-            this.tabTonePlay.TabIndex = 2;
-            this.tabTonePlay.Text = "TonePlay";
-            this.tabTonePlay.UseVisualStyleBackColor = true;
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(20, 75);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(79, 13);
-            this.label15.TabIndex = 0;
-            this.label15.Text = "Frequency(Hz):";
-            // 
-            // tbTonePlayFreq
-            // 
-            this.tbTonePlayFreq.Location = new System.Drawing.Point(105, 72);
-            this.tbTonePlayFreq.Name = "tbTonePlayFreq";
-            this.tbTonePlayFreq.Size = new System.Drawing.Size(61, 20);
-            this.tbTonePlayFreq.TabIndex = 1;
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(24, 100);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(70, 13);
-            this.label16.TabIndex = 2;
-            this.label16.Text = "Amplitude(%):";
-            // 
-            // tbTonePlayAmp
-            // 
-            this.tbTonePlayAmp.Location = new System.Drawing.Point(105, 97);
-            this.tbTonePlayAmp.Name = "tbTonePlayAmp";
-            this.tbTonePlayAmp.Size = new System.Drawing.Size(61, 20);
-            this.tbTonePlayAmp.TabIndex = 1;
-            // 
-            // btTonePlaySet
-            // 
-            this.btTonePlaySet.Location = new System.Drawing.Point(50, 123);
-            this.btTonePlaySet.Name = "btTonePlaySet";
-            this.btTonePlaySet.Size = new System.Drawing.Size(61, 23);
-            this.btTonePlaySet.TabIndex = 3;
-            this.btTonePlaySet.Text = "Set";
-            this.btTonePlaySet.UseVisualStyleBackColor = true;
-            this.btTonePlaySet.Click += new System.EventHandler(this.btTonePlaySet_Click);
-            // 
-            // btTonePlayStart
-            // 
-            this.btTonePlayStart.Location = new System.Drawing.Point(50, 184);
-            this.btTonePlayStart.Name = "btTonePlayStart";
-            this.btTonePlayStart.Size = new System.Drawing.Size(61, 23);
-            this.btTonePlayStart.TabIndex = 3;
-            this.btTonePlayStart.Text = "Start";
-            this.btTonePlayStart.UseVisualStyleBackColor = true;
-            this.btTonePlayStart.Click += new System.EventHandler(this.btTonePlayStart_Click);
-            // 
-            // tbTonePlayCfgHandle
-            // 
-            this.tbTonePlayCfgHandle.Location = new System.Drawing.Point(117, 126);
-            this.tbTonePlayCfgHandle.Name = "tbTonePlayCfgHandle";
-            this.tbTonePlayCfgHandle.Size = new System.Drawing.Size(60, 20);
-            this.tbTonePlayCfgHandle.TabIndex = 4;
-            // 
-            // tbTonePlayStartHandle
-            // 
-            this.tbTonePlayStartHandle.Location = new System.Drawing.Point(117, 186);
-            this.tbTonePlayStartHandle.Name = "tbTonePlayStartHandle";
-            this.tbTonePlayStartHandle.Size = new System.Drawing.Size(60, 20);
-            this.tbTonePlayStartHandle.TabIndex = 4;
-            // 
-            // btTonePlayStop
-            // 
-            this.btTonePlayStop.Location = new System.Drawing.Point(50, 211);
-            this.btTonePlayStop.Name = "btTonePlayStop";
-            this.btTonePlayStop.Size = new System.Drawing.Size(61, 23);
-            this.btTonePlayStop.TabIndex = 3;
-            this.btTonePlayStop.Text = "Stop";
-            this.btTonePlayStop.UseVisualStyleBackColor = true;
-            this.btTonePlayStop.Click += new System.EventHandler(this.btTonePlayStop_Click);
+            this.srvTreeToolStripMenuItem.Name = "srvTreeToolStripMenuItem";
+            this.srvTreeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.srvTreeToolStripMenuItem.Text = "SrvTree";
+            this.srvTreeToolStripMenuItem.Click += new System.EventHandler(this.srvTreeToolStripMenuItem_Click);
             // 
             // frmMain
             // 
@@ -1419,6 +1429,8 @@
             this.groupBox4.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.tabTonePlay.ResumeLayout(false);
+            this.tabTonePlay.PerformLayout();
             this.toolStripContainer1.ContentPanel.ResumeLayout(false);
             this.toolStripContainer1.TopToolStripPanel.ResumeLayout(false);
             this.toolStripContainer1.TopToolStripPanel.PerformLayout();
@@ -1426,8 +1438,6 @@
             this.toolStripContainer1.PerformLayout();
             this.toolStripTop.ResumeLayout(false);
             this.toolStripTop.PerformLayout();
-            this.tabTonePlay.ResumeLayout(false);
-            this.tabTonePlay.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1553,6 +1563,7 @@
         private System.Windows.Forms.TextBox tbTonePlayStartHandle;
         private System.Windows.Forms.TextBox tbTonePlayCfgHandle;
         private System.Windows.Forms.Button btTonePlayStop;
+        private System.Windows.Forms.ToolStripMenuItem srvTreeToolStripMenuItem;
     }
 }
 

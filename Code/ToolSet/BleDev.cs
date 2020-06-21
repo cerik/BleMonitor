@@ -9,85 +9,89 @@ namespace ToolSet
     {
         public static readonly byte InvalidHandle = 0xFF;
 
-        private byte m_AttHandle = 0xFF;//Store handle id of attribute.
-        private string m_DescStr = string.Empty;//string, readable string to desctiption spescific attribute.
-        private string m_AttUUID = string.Empty;//max capacity = 16byte, store uuid of this charactristic.
-        private string m_SrvUUID = string.Empty;//max capacity = 16byte,uuid of parent service, it should primary service.
-
         public CAttribute()
         {
-            m_AttHandle = 0xFF;
+            AttHandle = 0xFF;
         }
 
-        public byte AttrHandle { get { return m_AttHandle; } set { m_AttHandle = value; } }
-        public string Description { get { return m_DescStr; } set { m_DescStr = value; } }
-        public string AttrUUID { get { return m_AttUUID; } set { m_AttUUID=value; } }
-        public string ServiceUUID { get { return m_SrvUUID; } set { m_SrvUUID = value; } }
+        public ushort AttHandle { get; set; }
+        public string AttName { get; set; }
+        public string AttUUID { get; set; }
+        public string SrvUUID { get; set; }
     }
 
     class CPrimService
     {
-        private string m_SrvDescription = string.Empty;
-        private string m_PrimUUID = string.Empty;
         private List<CAttribute> m_AttrList = new List<CAttribute>();
 
-        public string UUID { get { return m_PrimUUID; } set { m_PrimUUID=value; } }
-        public string Description { get { return m_SrvDescription; } set { m_SrvDescription = value; } }
+        public string UUID { get; set; }
+        public string Description { get; set; }
+        public ushort Start { get; set; }
+        public ushort End { get;  set; }
 
         public CPrimService()
         {
-            m_SrvDescription = string.Empty;
-            m_PrimUUID = string.Empty;
+            Description = string.Empty;
+            UUID = string.Empty;
         }
         public CPrimService(string uuid,string name)
         {
-            m_SrvDescription = name;
-            m_PrimUUID = uuid;
+            Description = name;
+            UUID = uuid;
         }
 
         public CPrimService(byte[] uuid, string name)
         {
             string uuidstr = DatConvert.ByteArrayToDecString(uuid);
-            m_SrvDescription = name;
-            m_PrimUUID = uuidstr;
+            Description = name;
+            UUID = uuidstr;
         }
 
         public void Reset()
         {
-            m_PrimUUID = string.Empty;
-            m_SrvDescription = string.Empty;
+            UUID = string.Empty;
+            Description = string.Empty;
             m_AttrList.Clear();
         }
-        public void AppendAttribute(CAttribute attrib)
+        public void AddAttribute(CAttribute attrib)
         {
             m_AttrList.Add(attrib);
         }
-        public void RemoveAttribute(byte[] uuid)
+        public void AddAttribute(string parentUUID, string attrUUID, string attrName, ushort attrHandle)
+        {
+            CAttribute mAttr = new CAttribute();
+            mAttr.AttUUID = attrUUID;
+            mAttr.SrvUUID = parentUUID;
+            mAttr.AttHandle = attrHandle;
+            mAttr.AttName = attrName;
+            AddAttribute(mAttr);
+        }
+        public void DelAttribute(byte[] uuid)
         {
             string uuidstr = DatConvert.HexArrayToString(uuid);
             foreach (CAttribute item in m_AttrList.ToArray())
             {
-                if (uuidstr == item.AttrUUID)
+                if (uuidstr == item.AttUUID)
                 {
                     m_AttrList.Remove(item);
                 }
             }
         }
-        public void RemoveAttribute(string uuid)
+        public void DelAttribute(string uuid)
         {
             foreach (CAttribute item in m_AttrList.ToArray())
             {
-                if (uuid == item.AttrUUID)
+                if (uuid == item.AttUUID)
                 {
                     m_AttrList.Remove(item);
                 }
             }
         }
-        public void RemoveAttribute(byte attHandle)
+        public void DelAttribute(byte attHandle)
         {
             foreach (CAttribute item in m_AttrList.ToArray())
             {
-                if (attHandle == item.AttrHandle)
+                if (attHandle == item.AttHandle)
                 {
                     m_AttrList.Remove(item);
                 }
@@ -99,7 +103,7 @@ namespace ToolSet
             string uuidstr = DatConvert.HexArrayToString(uuid);
             foreach (CAttribute item in m_AttrList.ToArray())
             {
-                if (uuidstr == item.AttrUUID)
+                if (uuidstr == item.AttUUID)
                 {
                     mAttribute = item;
                     break;
@@ -112,7 +116,7 @@ namespace ToolSet
             CAttribute mAttribute = null;
             foreach (CAttribute item in m_AttrList.ToArray())
             {
-                if (uuid == item.AttrUUID)
+                if (uuid == item.AttUUID)
                 {
                     mAttribute = item;
                     break;
@@ -125,7 +129,7 @@ namespace ToolSet
             CAttribute mAttribute = null;
             foreach (CAttribute item in m_AttrList.ToArray())
             {
-                if (attHandle == item.AttrHandle)
+                if (attHandle == item.AttHandle)
                 {
                     mAttribute = item;
                     break;
@@ -133,16 +137,16 @@ namespace ToolSet
             }
             return mAttribute;
         }
-        public byte GetAttributeHandle(byte[] uuid)
+        public ushort GetAttributeHandle(byte[] uuid)
         {
             CAttribute mAttribute= GetAttribute(uuid);
-            if (mAttribute != null) return mAttribute.AttrHandle;
+            if (mAttribute != null) return mAttribute.AttHandle;
             else return 0xFF;
         }
-        public byte GetAttributeHandle(string uuid)
+        public ushort GetAttributeHandle(string uuid)
         {
             CAttribute mAttribute = GetAttribute(uuid);
-            if (mAttribute != null) return mAttribute.AttrHandle;
+            if (mAttribute != null) return mAttribute.AttHandle;
             else return 0xFF;
         }
         public CAttribute GetAttritubeAt(int idx)
@@ -207,55 +211,73 @@ namespace ToolSet
         readonly byte[] m_VolumeKnobUUID = new byte[] { 0xf7, 0x35, 0xa0, 0x8e, 0xac, 0xea, 0xbb, 0xa6, 0xcb, 0x4e, 0x2a, 0x50, 0xBD, 0x9E, 0x74, 0x60 };
         #endregion
 
+        public const byte ACTTION_IDLE = 0;
+        public const byte ACTTION_SCAN_PRIMSRV = 1;
+        public const byte ACTTION_SCAN_PRIMSRV_DONE = 2;
+        public const byte ACTTION_SCAN_ATTRIB = 3;
+        public const byte ACTTION_SCAN_ATTRIB_DONE = 4;
+        public const byte ACTTION_WAIT_READ = 5;
+        public const byte ACTTION_WAIT_WRITE = 6;
+
         //
         //Member
         //
         //
         #region ClassMember
         List<CPrimService> m_PrimSrvList = new List<CPrimService>();
-        string m_MacADdr = string.Empty;
-        string m_DevName = string.Empty;
-        int m_RSSI;
-        byte m_AddrType;
-        byte m_ConnHandle;
         #endregion
 
         #region Interface
 
-        public int RSSI { get { return m_RSSI; } set { m_RSSI = value; } }
-        public byte AddrType { get { return m_AddrType; } set { m_AddrType = value; } }
-        public byte ConnHandle { get { return m_ConnHandle;  } set { m_ConnHandle = value; } }
-        public string MacAddr { get { return m_MacADdr; } set{ m_MacADdr = value; } }
-        public string Name { get { return m_DevName; } set { m_DevName = value; } }
+        public int CurrentSrvIndex { get; set; }
+
+        public byte State { get; set; }
+        public int RSSI { get; set; }
+        public byte AddrType { get; set; }
+        public byte ConnHandle { get; set; }
+        public string MacAddr { get; set; }
+        public string DevName { get; set; }
 
         public GhpBle()
         {
-            m_ConnHandle = CAttribute.InvalidHandle;
-            m_MacADdr = string.Empty;
-            m_DevName = string.Empty;
-            m_RSSI = 0;
-            m_AddrType = 0;
+            ConnHandle = CAttribute.InvalidHandle;
+            MacAddr = string.Empty;
+            DevName = string.Empty;
+            RSSI = 0;
+            AddrType = 0;
 
             m_PrimSrvList.Clear();
+            CurrentSrvIndex = 0;
         }
 
         public void Reset()
         {
-            m_ConnHandle = CAttribute.InvalidHandle;
-            m_MacADdr = string.Empty;
-            m_DevName = string.Empty;
-            m_RSSI = 0;
-            m_AddrType = 0;
+            ConnHandle = CAttribute.InvalidHandle;
+            MacAddr = string.Empty;
+            DevName = string.Empty;
+            RSSI = 0;
+            AddrType = 0;
 
             m_PrimSrvList.Clear();
+            CurrentSrvIndex = 0;
         }
 
-        public void PrimSrvAdd(string uuidstr)
+        public int GetPrimSrvIndex(string uuidstr)
+        {
+            return m_PrimSrvList.FindIndex(CPrimService=> CPrimService.UUID==uuidstr);
+        }
+        public void PrimSrvAdd(string uuidstr, ushort start, ushort end)
         {
             string name = ServiceNameByUUID(uuidstr);
             CPrimService mSrv = new CPrimService(uuidstr,name);
-            
+            mSrv.Start = start;
+            mSrv.End = end;
             m_PrimSrvList.Add(mSrv);
+        }
+        public void PrimSrvAdd(byte[] uuid,ushort start,ushort end)
+        {
+            string uuidstr = DatConvert.ByteArrayToHexString(uuid);
+            PrimSrvAdd(uuidstr,start,end);
         }
         public void PrimSrvDel(string uuidstr)
         {
@@ -267,6 +289,28 @@ namespace ToolSet
                     break;
                 }
             }
+        }
+        public CPrimService GetPrimSrv(string uuidstr)
+        {
+            CPrimService mSrv=null;
+            foreach (CPrimService item in m_PrimSrvList)
+            {
+                if (uuidstr == item.UUID)
+                {
+                    mSrv = item;
+                    break;
+                }
+            }
+            return mSrv;
+        }
+        public CPrimService GetPrimSrv(byte[] uuid)
+        {
+            string uuidstr = DatConvert.ByteArrayToHexString(uuid);
+            return GetPrimSrv(uuidstr);
+        }
+        public CPrimService GetPrimSrv(int index)
+        {
+            return m_PrimSrvList[index];
         }
 
         private bool IsByteArrayEqual(byte[] arry1, byte[] arry2)
