@@ -14,6 +14,7 @@ namespace ToolSet
             AttHandle = 0xFF;
         }
 
+        public ushort UserDescHandle { get; set; }
         public ushort AttHandle { get; set; }
         public string AttName { get; set; }
         public string AttUUID { get; set; }
@@ -22,20 +23,25 @@ namespace ToolSet
 
     class CPrimService
     {
-        private List<CAttribute> m_AttrList = new List<CAttribute>();
+        public List<CAttribute> AttrList = new List<CAttribute>();
 
         public string UUID { get; set; }
         public string Description { get; set; }
         public ushort Start { get; set; }
         public ushort End { get;  set; }
 
+        public bool AttScanDone { get; set; }
+
+
         public CPrimService()
         {
             Description = string.Empty;
             UUID = string.Empty;
+            AttScanDone = false;
         }
         public CPrimService(string uuid,string name)
         {
+            AttScanDone = false;
             Description = name;
             UUID = uuid;
         }
@@ -45,19 +51,21 @@ namespace ToolSet
             string uuidstr = DatConvert.ByteArrayToDecString(uuid);
             Description = name;
             UUID = uuidstr;
+            AttScanDone = false;
         }
 
         public void Reset()
         {
             UUID = string.Empty;
             Description = string.Empty;
-            m_AttrList.Clear();
+            AttrList.Clear();
+            AttScanDone = false;
         }
         public void AddAttribute(CAttribute attrib)
         {
-            m_AttrList.Add(attrib);
+            AttrList.Add(attrib);
         }
-        public void AddAttribute(string parentUUID, string attrUUID, string attrName, ushort attrHandle)
+        public CAttribute AddAttribute(string parentUUID, string attrUUID, string attrName, ushort attrHandle)
         {
             CAttribute mAttr = new CAttribute();
             mAttr.AttUUID = attrUUID;
@@ -65,35 +73,36 @@ namespace ToolSet
             mAttr.AttHandle = attrHandle;
             mAttr.AttName = attrName;
             AddAttribute(mAttr);
+            return mAttr;
         }
         public void DelAttribute(byte[] uuid)
         {
             string uuidstr = DatConvert.HexArrayToString(uuid);
-            foreach (CAttribute item in m_AttrList.ToArray())
+            foreach (CAttribute item in AttrList.ToArray())
             {
                 if (uuidstr == item.AttUUID)
                 {
-                    m_AttrList.Remove(item);
+                    AttrList.Remove(item);
                 }
             }
         }
         public void DelAttribute(string uuid)
         {
-            foreach (CAttribute item in m_AttrList.ToArray())
+            foreach (CAttribute item in AttrList.ToArray())
             {
                 if (uuid == item.AttUUID)
                 {
-                    m_AttrList.Remove(item);
+                    AttrList.Remove(item);
                 }
             }
         }
         public void DelAttribute(byte attHandle)
         {
-            foreach (CAttribute item in m_AttrList.ToArray())
+            foreach (CAttribute item in AttrList.ToArray())
             {
                 if (attHandle == item.AttHandle)
                 {
-                    m_AttrList.Remove(item);
+                    AttrList.Remove(item);
                 }
             }
         }
@@ -101,7 +110,7 @@ namespace ToolSet
         {
             CAttribute mAttribute = null;
             string uuidstr = DatConvert.HexArrayToString(uuid);
-            foreach (CAttribute item in m_AttrList.ToArray())
+            foreach (CAttribute item in AttrList.ToArray())
             {
                 if (uuidstr == item.AttUUID)
                 {
@@ -114,7 +123,7 @@ namespace ToolSet
         public CAttribute GetAttribute(string uuid)
         {
             CAttribute mAttribute = null;
-            foreach (CAttribute item in m_AttrList.ToArray())
+            foreach (CAttribute item in AttrList.ToArray())
             {
                 if (uuid == item.AttUUID)
                 {
@@ -127,7 +136,7 @@ namespace ToolSet
         public CAttribute GetAttribute(byte attHandle)
         {
             CAttribute mAttribute = null;
-            foreach (CAttribute item in m_AttrList.ToArray())
+            foreach (CAttribute item in AttrList.ToArray())
             {
                 if (attHandle == item.AttHandle)
                 {
@@ -151,13 +160,13 @@ namespace ToolSet
         }
         public CAttribute GetAttritubeAt(int idx)
         {
-            if (idx >= m_AttrList.Count) return null;
+            if (idx >= AttrList.Count) return null;
 
-            return m_AttrList[idx];
+            return AttrList[idx];
         }
         public int GetAttributeCount()
         {
-            return m_AttrList.Count;
+            return AttrList.Count;
         }
         public bool IsAttributeExists(string uuid)
         {
@@ -181,7 +190,7 @@ namespace ToolSet
         readonly byte[] m_DeclareSecondaryService = new byte[] { 0x01, 0x28 };
         readonly byte[] m_DeclareAttribute = new byte[] { 0x03, 0x28 };
 
-        readonly byte[] m_DescAttribute = new byte[] { 0x01, 0x29};
+        readonly byte[] m_DescAttribute = new byte[] { 0x01, 0x29 };
         readonly byte[] m_DescClientCfg = new byte[] { 0x02, 0x29 };
 
         readonly byte[] m_SrvGenericAccess = new byte[] { 0x00, 0x18 };
@@ -196,11 +205,11 @@ namespace ToolSet
         readonly byte[] m_CalibrationUUID = new byte[] { 0xf7, 0x35, 0xa0, 0x8e, 0xac, 0xea, 0xbb, 0xa6, 0xcb, 0x4e, 0x2a, 0x50, 0xC6, 0xE5, 0x74, 0x60 };
         readonly byte[] m_CurrentTimeUUID = new byte[] { 0xf7, 0x35, 0xa0, 0x8e, 0xac, 0xea, 0xbb, 0xa6, 0xcb, 0x4e, 0x2a, 0x50, 0xD5, 0x11, 0x74, 0x60 };
         readonly byte[] m_DBMeterUUID = new byte[] { 0xf7, 0x35, 0xa0, 0x8e, 0xac, 0xea, 0xbb, 0xa6, 0xcb, 0x4e, 0x2a, 0x50, 0x82, 0x6F, 0x74, 0x60 };
-        readonly byte[] m_DoseUUID = new byte[] { 0xf7, 0x35, 0xa0, 0x8e, 0xac, 0xea, 0xbb, 0xa6, 0xcb, 0x4e, 0x2a, 0x50, 0xC1,0xC8, 0x74, 0x60 };
+        readonly byte[] m_DoseUUID = new byte[] { 0xf7, 0x35, 0xa0, 0x8e, 0xac, 0xea, 0xbb, 0xa6, 0xcb, 0x4e, 0x2a, 0x50, 0xC1, 0xC8, 0x74, 0x60 };
         readonly byte[] m_FitTestUUID = new byte[] { 0xf7, 0x35, 0xa0, 0x8e, 0xac, 0xea, 0xbb, 0xa6, 0xcb, 0x4e, 0x2a, 0x50, 0xD6, 0xC8, 0x74, 0x60 };
         readonly byte[] m_GainSpkUUID = new byte[] { 0xf7, 0x35, 0xa0, 0x8e, 0xac, 0xea, 0xbb, 0xa6, 0xcb, 0x4e, 0x2a, 0x50, 0xcc, 0x43, 0x74, 0x60 };
         readonly byte[] m_HsConfigUUID = new byte[] { 0xf7, 0x35, 0xa0, 0x8e, 0xac, 0xea, 0xbb, 0xa6, 0xcb, 0x4e, 0x2a, 0x50, 0x2A, 0x48, 0x74, 0x60 };
-        readonly byte[] m_HearThroughUUID = new byte[] { 0xf7, 0x35, 0xa0, 0x8e, 0xac, 0xea, 0xbb, 0xa6, 0xcb, 0x4e, 0x2a, 0x50, 0x52, 0x02,  0x74, 0x60 };
+        readonly byte[] m_HearThroughUUID = new byte[] { 0xf7, 0x35, 0xa0, 0x8e, 0xac, 0xea, 0xbb, 0xa6, 0xcb, 0x4e, 0x2a, 0x50, 0x52, 0x02, 0x74, 0x60 };
 
         readonly byte[] m_McuTemperatureUUID = new byte[] { 0xf7, 0x35, 0xa0, 0x8e, 0xac, 0xea, 0xbb, 0xa6, 0xcb, 0x4e, 0x2a, 0x50, 0xBC, 0x04, 0x74, 0x60 };
         readonly byte[] m_SpkBalanceUUID = new byte[] { 0xf7, 0x35, 0xa0, 0x8e, 0xac, 0xea, 0xbb, 0xa6, 0xcb, 0x4e, 0x2a, 0x50, 0x15, 0x5F, 0x74, 0x60 };
@@ -224,12 +233,14 @@ namespace ToolSet
         //
         //
         #region ClassMember
-        List<CPrimService> m_PrimSrvList = new List<CPrimService>();
+        public List<CPrimService> m_PrimSrvList = new List<CPrimService>();
+
         #endregion
 
         #region Interface
-
-        public int CurrentSrvIndex { get; set; }
+        public CPrimService CurrentPrimSrv { get; set;}
+        public byte[] AttReadValue { get; set; }
+        public bool AttReadDone { get; set; }
 
         public byte State { get; set; }
         public int RSSI { get; set; }
@@ -237,7 +248,7 @@ namespace ToolSet
         public byte ConnHandle { get; set; }
         public string MacAddr { get; set; }
         public string DevName { get; set; }
-
+        public bool Busy { get; set; }
         public GhpBle()
         {
             ConnHandle = CAttribute.InvalidHandle;
@@ -247,7 +258,10 @@ namespace ToolSet
             AddrType = 0;
 
             m_PrimSrvList.Clear();
-            CurrentSrvIndex = 0;
+            CurrentPrimSrv = null;
+            AttReadValue = null;
+            Busy = false;
+            AttReadDone = false;
         }
 
         public void Reset()
@@ -259,7 +273,10 @@ namespace ToolSet
             AddrType = 0;
 
             m_PrimSrvList.Clear();
-            CurrentSrvIndex = 0;
+            CurrentPrimSrv = null;
+            AttReadValue = null;
+            Busy = false;
+            AttReadDone = false;
         }
 
         public int GetPrimSrvIndex(string uuidstr)

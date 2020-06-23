@@ -37,10 +37,12 @@
             this.tslbRxMsg = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsProBarScan = new System.Windows.Forms.ToolStripProgressBar();
             this.tsLabelScan = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsProcessBar = new System.Windows.Forms.ToolStripProgressBar();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.m_File = new System.Windows.Forms.ToolStripMenuItem();
             this.m_Edit = new System.Windows.Forms.ToolStripMenuItem();
             this.m_Tool = new System.Windows.Forms.ToolStripMenuItem();
+            this.srvTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabMain = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.splitTab1_Main = new System.Windows.Forms.SplitContainer();
@@ -55,19 +57,8 @@
             this.btDisconnect = new System.Windows.Forms.Button();
             this.btConnect = new System.Windows.Forms.Button();
             this.btScanStart = new System.Windows.Forms.Button();
-            this.splitTab1_Sub = new System.Windows.Forms.SplitContainer();
-            this.listPrimSrv = new System.Windows.Forms.ListView();
-            this.psrvName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.psrvStart = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.psrvEnd = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.psrvUUID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.splitTab1_Attr = new System.Windows.Forms.SplitContainer();
-            this.listAttribute = new System.Windows.Forms.ListView();
-            this.attrDesc = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ConnHandle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.attrHandle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.attrUUID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.attrUserDescHandle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.tvSrvTree = new System.Windows.Forms.TreeView();
             this.tabCharacter = new System.Windows.Forms.TabControl();
             this.tabPgRW = new System.Windows.Forms.TabPage();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -148,7 +139,6 @@
             this.toolBtDevPanel = new System.Windows.Forms.ToolStripButton();
             this.toolBtPrimSrvPanel = new System.Windows.Forms.ToolStripButton();
             this.timPeridic = new System.Windows.Forms.Timer(this.components);
-            this.srvTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tabMain.SuspendLayout();
@@ -162,10 +152,6 @@
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitTab1_Sub)).BeginInit();
-            this.splitTab1_Sub.Panel1.SuspendLayout();
-            this.splitTab1_Sub.Panel2.SuspendLayout();
-            this.splitTab1_Sub.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitTab1_Attr)).BeginInit();
             this.splitTab1_Attr.Panel1.SuspendLayout();
             this.splitTab1_Attr.Panel2.SuspendLayout();
@@ -194,11 +180,12 @@
             this.toolStripStatusLabel1,
             this.tslbRxMsg,
             this.tsProBarScan,
-            this.tsLabelScan});
+            this.tsLabelScan,
+            this.tsProcessBar});
             this.statusStrip1.Location = new System.Drawing.Point(0, 541);
             this.statusStrip1.Margin = new System.Windows.Forms.Padding(10);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(828, 25);
+            this.statusStrip1.Size = new System.Drawing.Size(908, 25);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -253,6 +240,11 @@
             this.tsLabelScan.Size = new System.Drawing.Size(69, 20);
             this.tsLabelScan.Text = "tsLabelScan";
             // 
+            // tsProcessBar
+            // 
+            this.tsProcessBar.Name = "tsProcessBar";
+            this.tsProcessBar.Size = new System.Drawing.Size(100, 19);
+            // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -261,7 +253,7 @@
             this.m_Tool});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(828, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(908, 24);
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -285,6 +277,13 @@
             this.m_Tool.Size = new System.Drawing.Size(42, 20);
             this.m_Tool.Text = "&Tool";
             // 
+            // srvTreeToolStripMenuItem
+            // 
+            this.srvTreeToolStripMenuItem.Name = "srvTreeToolStripMenuItem";
+            this.srvTreeToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.srvTreeToolStripMenuItem.Text = "SrvTree";
+            this.srvTreeToolStripMenuItem.Click += new System.EventHandler(this.srvTreeToolStripMenuItem_Click);
+            // 
             // tabMain
             // 
             this.tabMain.Controls.Add(this.tabPage1);
@@ -293,7 +292,7 @@
             this.tabMain.Location = new System.Drawing.Point(0, 0);
             this.tabMain.Name = "tabMain";
             this.tabMain.SelectedIndex = 0;
-            this.tabMain.Size = new System.Drawing.Size(828, 492);
+            this.tabMain.Size = new System.Drawing.Size(908, 492);
             this.tabMain.TabIndex = 0;
             // 
             // tabPage1
@@ -303,7 +302,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(820, 466);
+            this.tabPage1.Size = new System.Drawing.Size(900, 466);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             // 
@@ -320,9 +319,9 @@
             // 
             // splitTab1_Main.Panel2
             // 
-            this.splitTab1_Main.Panel2.Controls.Add(this.splitTab1_Sub);
-            this.splitTab1_Main.Size = new System.Drawing.Size(814, 460);
-            this.splitTab1_Main.SplitterDistance = 220;
+            this.splitTab1_Main.Panel2.Controls.Add(this.splitTab1_Attr);
+            this.splitTab1_Main.Size = new System.Drawing.Size(894, 460);
+            this.splitTab1_Main.SplitterDistance = 241;
             this.splitTab1_Main.TabIndex = 1;
             // 
             // splitContainer1
@@ -340,8 +339,8 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.txtLog);
             this.splitContainer1.Panel2.Controls.Add(this.panel1);
-            this.splitContainer1.Size = new System.Drawing.Size(218, 458);
-            this.splitContainer1.SplitterDistance = 229;
+            this.splitContainer1.Size = new System.Drawing.Size(239, 458);
+            this.splitContainer1.SplitterDistance = 324;
             this.splitContainer1.TabIndex = 5;
             // 
             // listScanDev
@@ -360,7 +359,7 @@
             this.listScanDev.MultiSelect = false;
             this.listScanDev.Name = "listScanDev";
             this.listScanDev.ShowGroups = false;
-            this.listScanDev.Size = new System.Drawing.Size(218, 229);
+            this.listScanDev.Size = new System.Drawing.Size(239, 324);
             this.listScanDev.TabIndex = 3;
             this.listScanDev.UseCompatibleStateImageBehavior = false;
             this.listScanDev.View = System.Windows.Forms.View.Details;
@@ -393,7 +392,7 @@
             this.txtLog.Name = "txtLog";
             this.txtLog.ReadOnly = true;
             this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtLog.Size = new System.Drawing.Size(218, 202);
+            this.txtLog.Size = new System.Drawing.Size(239, 107);
             this.txtLog.TabIndex = 0;
             // 
             // panel1
@@ -406,7 +405,7 @@
             this.panel1.Margin = new System.Windows.Forms.Padding(10, 0, 0, 0);
             this.panel1.MaximumSize = new System.Drawing.Size(0, 23);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(218, 23);
+            this.panel1.Size = new System.Drawing.Size(239, 23);
             this.panel1.TabIndex = 4;
             // 
             // btDisconnect
@@ -449,62 +448,6 @@
             this.btScanStart.UseVisualStyleBackColor = true;
             this.btScanStart.Click += new System.EventHandler(this.btScanStart_Click);
             // 
-            // splitTab1_Sub
-            // 
-            this.splitTab1_Sub.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.splitTab1_Sub.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitTab1_Sub.Location = new System.Drawing.Point(0, 0);
-            this.splitTab1_Sub.Name = "splitTab1_Sub";
-            // 
-            // splitTab1_Sub.Panel1
-            // 
-            this.splitTab1_Sub.Panel1.Controls.Add(this.listPrimSrv);
-            // 
-            // splitTab1_Sub.Panel2
-            // 
-            this.splitTab1_Sub.Panel2.Controls.Add(this.splitTab1_Attr);
-            this.splitTab1_Sub.Size = new System.Drawing.Size(590, 460);
-            this.splitTab1_Sub.SplitterDistance = 172;
-            this.splitTab1_Sub.TabIndex = 5;
-            // 
-            // listPrimSrv
-            // 
-            this.listPrimSrv.AllowColumnReorder = true;
-            this.listPrimSrv.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.psrvName,
-            this.psrvStart,
-            this.psrvEnd,
-            this.psrvUUID});
-            this.listPrimSrv.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listPrimSrv.FullRowSelect = true;
-            this.listPrimSrv.GridLines = true;
-            this.listPrimSrv.HideSelection = false;
-            this.listPrimSrv.Location = new System.Drawing.Point(0, 0);
-            this.listPrimSrv.MultiSelect = false;
-            this.listPrimSrv.Name = "listPrimSrv";
-            this.listPrimSrv.ShowGroups = false;
-            this.listPrimSrv.Size = new System.Drawing.Size(170, 458);
-            this.listPrimSrv.TabIndex = 0;
-            this.listPrimSrv.UseCompatibleStateImageBehavior = false;
-            this.listPrimSrv.View = System.Windows.Forms.View.Details;
-            this.listPrimSrv.DoubleClick += new System.EventHandler(this.listPrimSrv_DoubleClick);
-            // 
-            // psrvName
-            // 
-            this.psrvName.Text = "Name";
-            // 
-            // psrvStart
-            // 
-            this.psrvStart.Text = "Start";
-            // 
-            // psrvEnd
-            // 
-            this.psrvEnd.Text = "End";
-            // 
-            // psrvUUID
-            // 
-            this.psrvUUID.Text = "UUID";
-            // 
             // splitTab1_Attr
             // 
             this.splitTab1_Attr.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -513,57 +456,23 @@
             // 
             // splitTab1_Attr.Panel1
             // 
-            this.splitTab1_Attr.Panel1.Controls.Add(this.listAttribute);
+            this.splitTab1_Attr.Panel1.Controls.Add(this.tvSrvTree);
             // 
             // splitTab1_Attr.Panel2
             // 
             this.splitTab1_Attr.Panel2.Controls.Add(this.tabCharacter);
-            this.splitTab1_Attr.Size = new System.Drawing.Size(412, 458);
-            this.splitTab1_Attr.SplitterDistance = 146;
+            this.splitTab1_Attr.Size = new System.Drawing.Size(647, 458);
+            this.splitTab1_Attr.SplitterDistance = 363;
             this.splitTab1_Attr.TabIndex = 2;
             // 
-            // listAttribute
+            // tvSrvTree
             // 
-            this.listAttribute.AutoArrange = false;
-            this.listAttribute.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.attrDesc,
-            this.ConnHandle,
-            this.attrHandle,
-            this.attrUUID,
-            this.attrUserDescHandle});
-            this.listAttribute.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listAttribute.FullRowSelect = true;
-            this.listAttribute.GridLines = true;
-            this.listAttribute.HideSelection = false;
-            this.listAttribute.Location = new System.Drawing.Point(0, 0);
-            this.listAttribute.MultiSelect = false;
-            this.listAttribute.Name = "listAttribute";
-            this.listAttribute.ShowGroups = false;
-            this.listAttribute.Size = new System.Drawing.Size(146, 458);
-            this.listAttribute.TabIndex = 1;
-            this.listAttribute.UseCompatibleStateImageBehavior = false;
-            this.listAttribute.View = System.Windows.Forms.View.Details;
-            this.listAttribute.SelectedIndexChanged += new System.EventHandler(this.listAttribute_SelectedIndexChanged);
-            // 
-            // attrDesc
-            // 
-            this.attrDesc.Text = "UserDesc";
-            // 
-            // ConnHandle
-            // 
-            this.ConnHandle.Text = "ConnHandle";
-            // 
-            // attrHandle
-            // 
-            this.attrHandle.Text = "AttrHandle";
-            // 
-            // attrUUID
-            // 
-            this.attrUUID.Text = "UUID";
-            // 
-            // attrUserDescHandle
-            // 
-            this.attrUserDescHandle.Text = "DescHandle";
+            this.tvSrvTree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tvSrvTree.Location = new System.Drawing.Point(0, 0);
+            this.tvSrvTree.Name = "tvSrvTree";
+            this.tvSrvTree.Size = new System.Drawing.Size(363, 458);
+            this.tvSrvTree.TabIndex = 0;
+            this.tvSrvTree.Click += new System.EventHandler(this.tvSrvTree_Click);
             // 
             // tabCharacter
             // 
@@ -574,7 +483,7 @@
             this.tabCharacter.Location = new System.Drawing.Point(0, 0);
             this.tabCharacter.Name = "tabCharacter";
             this.tabCharacter.SelectedIndex = 0;
-            this.tabCharacter.Size = new System.Drawing.Size(262, 458);
+            this.tabCharacter.Size = new System.Drawing.Size(280, 458);
             this.tabCharacter.TabIndex = 0;
             // 
             // tabPgRW
@@ -588,7 +497,7 @@
             this.tabPgRW.Location = new System.Drawing.Point(4, 22);
             this.tabPgRW.Name = "tabPgRW";
             this.tabPgRW.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPgRW.Size = new System.Drawing.Size(254, 432);
+            this.tabPgRW.Size = new System.Drawing.Size(272, 432);
             this.tabPgRW.TabIndex = 0;
             this.tabPgRW.Text = "Read&Write";
             this.tabPgRW.UseVisualStyleBackColor = true;
@@ -842,7 +751,7 @@
             this.tabPgCalib.Location = new System.Drawing.Point(4, 22);
             this.tabPgCalib.Name = "tabPgCalib";
             this.tabPgCalib.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPgCalib.Size = new System.Drawing.Size(254, 430);
+            this.tabPgCalib.Size = new System.Drawing.Size(272, 430);
             this.tabPgCalib.TabIndex = 1;
             this.tabPgCalib.Text = "MicCalibration";
             this.tabPgCalib.UseVisualStyleBackColor = true;
@@ -1154,7 +1063,7 @@
             this.tabTonePlay.Location = new System.Drawing.Point(4, 22);
             this.tabTonePlay.Name = "tabTonePlay";
             this.tabTonePlay.Padding = new System.Windows.Forms.Padding(3);
-            this.tabTonePlay.Size = new System.Drawing.Size(254, 432);
+            this.tabTonePlay.Size = new System.Drawing.Size(272, 430);
             this.tabTonePlay.TabIndex = 2;
             this.tabTonePlay.Text = "TonePlay";
             this.tabTonePlay.UseVisualStyleBackColor = true;
@@ -1240,7 +1149,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(820, 464);
+            this.tabPage2.Size = new System.Drawing.Size(900, 464);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -1252,11 +1161,11 @@
             // toolStripContainer1.ContentPanel
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this.tabMain);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(828, 492);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(908, 492);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 24);
             this.toolStripContainer1.Name = "toolStripContainer1";
-            this.toolStripContainer1.Size = new System.Drawing.Size(828, 517);
+            this.toolStripContainer1.Size = new System.Drawing.Size(908, 517);
             this.toolStripContainer1.TabIndex = 5;
             this.toolStripContainer1.Text = "toolStripContainer1";
             // 
@@ -1279,7 +1188,7 @@
             this.toolBtPrimSrvPanel});
             this.toolStripTop.Location = new System.Drawing.Point(0, 0);
             this.toolStripTop.Name = "toolStripTop";
-            this.toolStripTop.Size = new System.Drawing.Size(828, 25);
+            this.toolStripTop.Size = new System.Drawing.Size(908, 25);
             this.toolStripTop.Stretch = true;
             this.toolStripTop.TabIndex = 5;
             this.toolStripTop.Text = "toolStrip1";
@@ -1371,18 +1280,11 @@
             // 
             this.timPeridic.Tick += new System.EventHandler(this.timPeridic_Tick);
             // 
-            // srvTreeToolStripMenuItem
-            // 
-            this.srvTreeToolStripMenuItem.Name = "srvTreeToolStripMenuItem";
-            this.srvTreeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.srvTreeToolStripMenuItem.Text = "SrvTree";
-            this.srvTreeToolStripMenuItem.Click += new System.EventHandler(this.srvTreeToolStripMenuItem_Click);
-            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(828, 566);
+            this.ClientSize = new System.Drawing.Size(908, 566);
             this.Controls.Add(this.toolStripContainer1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
@@ -1407,10 +1309,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
-            this.splitTab1_Sub.Panel1.ResumeLayout(false);
-            this.splitTab1_Sub.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitTab1_Sub)).EndInit();
-            this.splitTab1_Sub.ResumeLayout(false);
             this.splitTab1_Attr.Panel1.ResumeLayout(false);
             this.splitTab1_Attr.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitTab1_Attr)).EndInit();
@@ -1462,7 +1360,6 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button btConnect;
         private System.Windows.Forms.Button btDisconnect;
-        private System.Windows.Forms.SplitContainer splitTab1_Sub;
         private System.IO.Ports.SerialPort comDev;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.ToolStripContainer toolStripContainer1;
@@ -1474,14 +1371,6 @@
         public System.Windows.Forms.ToolStripComboBox toolCmbPort;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.SplitContainer splitTab1_Main;
-        private System.Windows.Forms.ListView listPrimSrv;
-        private System.Windows.Forms.ColumnHeader psrvName;
-        private System.Windows.Forms.ColumnHeader psrvUUID;
-        private System.Windows.Forms.ColumnHeader psrvStart;
-        private System.Windows.Forms.ColumnHeader psrvEnd;
-        private System.Windows.Forms.ColumnHeader attrHandle;
-        private System.Windows.Forms.ColumnHeader attrUUID;
-        private System.Windows.Forms.ColumnHeader ConnHandle;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton toolBtDevPanel;
         private System.Windows.Forms.ToolStripButton toolBtPrimSrvPanel;
@@ -1503,9 +1392,6 @@
         private System.Windows.Forms.TextBox tbAttrID;
         private System.Windows.Forms.TextBox tbConnID;
         private System.Windows.Forms.ColumnHeader cAddrType;
-        private System.Windows.Forms.ColumnHeader attrDesc;
-        private System.Windows.Forms.ColumnHeader attrUserDescHandle;
-        private System.Windows.Forms.ListView listAttribute;
         private System.Windows.Forms.CheckBox cbCalibMicOR;
         private System.Windows.Forms.CheckBox cbCalibMicOL;
         private System.Windows.Forms.CheckBox cbCalibMicIR;
@@ -1564,6 +1450,8 @@
         private System.Windows.Forms.TextBox tbTonePlayCfgHandle;
         private System.Windows.Forms.Button btTonePlayStop;
         private System.Windows.Forms.ToolStripMenuItem srvTreeToolStripMenuItem;
+        private System.Windows.Forms.TreeView tvSrvTree;
+        private System.Windows.Forms.ToolStripProgressBar tsProcessBar;
     }
 }
 
