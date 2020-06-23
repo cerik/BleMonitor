@@ -18,17 +18,21 @@ namespace ToolSet
     {
         public readonly string[] AttrType = { "Read", "Notify", "Indicate", "ReadByType", "ReadBlob", "IndicateRspReq" };
 
-        public Dictionary<string, string> portDict = new Dictionary<string, string>();
-
         /* ================================================================ */
         /*                BEGIN MAIN EVENT-DRIVEN APP LOGIC                 */
         /* ================================================================ */
+        private Dictionary<string, string> portDict = new Dictionary<string, string>();
         private Thread m_ScanThread = null;
-        private GhpBle c_BleDev = new GhpBle();
-        private Bluegiga.BGLib bglib = new Bluegiga.BGLib();
-        private List<Attribute> m_AttrList = new List<Attribute>();
 
+        public Bluegiga.BGLib bglib = new Bluegiga.BGLib();
+        public GhpBle c_BleDev = new GhpBle();
+        
 
+        #region
+        private frmSrvCalib m_FrmSrvCalib = new frmSrvCalib();
+        #endregion
+
+        #region BleEventCallback
         public void EventProcedureCompleted(object sender, Bluegiga.BLE.Events.ATTClient.ProcedureCompletedEventArgs e)
         {
             c_BleDev.Busy = false;
@@ -161,7 +165,8 @@ namespace ToolSet
                 // DEBUG: display bytes written
                 ThreadSafeDelegate(delegate
                 {
-                    txtLog.AppendText(String.Format("Connected to {0}", DatConvert.ByteArrayToHexString(e.address)) + Environment.NewLine);
+                    splitTab1_Main.Panel1Collapsed = true;
+                    splitTab1_Main.Panel2Collapsed = false;
                     btConnect.Image = Properties.Resources.BMP_GREEN;
                     stsLb_ConnSts.Image = Properties.Resources.BMP_GREEN;
                 });
@@ -239,14 +244,11 @@ namespace ToolSet
             {
                 c_BleDev.AttReadDone = true;
                 c_BleDev.AttReadValue = e.value;
-                
-                ThreadSafeDelegate(delegate
-                {
-                    tbAttrGet.Text = DatConvert.ByteArrayToHexString(e.value);
-                    btStrCvt_Click(sender, e);
-                });
+                c_BleDev.AttReadType = e.type;
             }
         }
+
+        #endregion
 
         //Attribute read response event
         ////response data:
@@ -268,21 +270,6 @@ namespace ToolSet
             else
                 method.Invoke();
         }
-        private string GetAttrBoxID(int row)
-        {
-            //if (listAttribute.InvokeRequired)
-            {
-                string str = string.Empty;
-                //this.listAttribute.Invoke(new MethodInvoker(delegate { str = listAttribute.Items[row].SubItems[2].Text; }));
-                //return str;
-            }
-            return null;
-        }
-        private void SetAttrUserDesc(int rowIdx,string str)
-        {
-            //listAttribute.Invoke(new Action<String>(p => { listAttribute.Items[rowIdx].SubItems[0].Text = str; }), listAttribute.Items[rowIdx].SubItems[0].Text);
-        }
-
         private void ScanThread()
         {
             while (true)
@@ -299,41 +286,25 @@ namespace ToolSet
                         bglib.SendCommand(comDev, cmd);
                         while (c_BleDev.Busy)
                         {
-                            ThreadSafeDelegate(delegate
-                            {
-                                tsProcessBar.Value = (tsProcessBar.Value + 10) % 100;
-                            });
-                            Thread.Sleep(5);
                         }
-                        ThreadSafeDelegate(delegate
-                        {
-                            tsProcessBar.Value = 100;
-                        });
-                        c_BleDev.State = GhpBle.ACTTION_SCAN_ATTRIB;
+                        c_BleDev.State = GhpBle.ACTTION_SCAN_PRIMSRV_DONE;
                     }
                     break;
                 case GhpBle.ACTTION_SCAN_PRIMSRV_DONE:
+                    break;
                 case GhpBle.ACTTION_SCAN_ATTRIB:
-                    foreach (CPrimService srv in c_BleDev.m_PrimSrvList)
+                    if(c_BleDev.CurrentPrimSrv != null)
                     {
-                        if(srv.AttScanDone == false)
+                        if(c_BleDev.CurrentPrimSrv.AttScanDone == false)
                         {
-                            c_BleDev.CurrentPrimSrv = srv;
-
-
                             //
                             //scan all attribute first.
                             //
                             c_BleDev.Busy = true;
-                            Byte[] cmd = bglib.BLECommandATTClientFindInformation(c_BleDev.ConnHandle, srv.Start, srv.End);
+                            Byte[] cmd = bglib.BLECommandATTClientFindInformation(c_BleDev.ConnHandle, c_BleDev.CurrentPrimSrv.Start, c_BleDev.CurrentPrimSrv.End);
                             bglib.SendCommand(comDev, cmd);
                             while (c_BleDev.Busy)
                             {
-                                ThreadSafeDelegate(delegate
-                                {
-                                    tsProcessBar.Value = (tsProcessBar.Value + 10) % 100;
-                                });
-                                Thread.Sleep(5);
                             }
 
                             //
@@ -347,32 +318,26 @@ namespace ToolSet
                                 bglib.SendCommand(comDev, cmd);
                                 while (c_BleDev.Busy && c_BleDev.AttReadDone==false)
                                 {
-                                    ThreadSafeDelegate(delegate
-                                    {
-                                        tsProcessBar.Value = (tsProcessBar.Value + 10) % 100;
-                                    });
-                                    Thread.Sleep(5);
                                 }
                                 if (c_BleDev.AttReadDone == true)
                                 {
                                     attr.AttName = Encoding.UTF8.GetString(c_BleDev.AttReadValue);
                                 }
                             }
-                            srv.AttScanDone = true;
+                            c_BleDev.CurrentPrimSrv.AttScanDone = true;
                         }
                     }
-                    ThreadSafeDelegate(delegate
-                    {
-                        tsProcessBar.Value = 100;
-                    });
                     c_BleDev.State = GhpBle.ACTTION_SCAN_ATTRIB_DONE;
                     break;
                 case GhpBle.ACTTION_SCAN_ATTRIB_DONE:
-                    //c_BleDev.State = GhpBle.ACTTION_IDLE;
                     break;
-                case GhpBle.ACTTION_WAIT_READ:
+                case GhpBle.ACTTION_ATTR_READ:
+                    while (c_BleDev.Busy == false && c_BleDev.AttReadDone == false) ;
+                    c_BleDev.State = GhpBle.ACTIONN_ATTR_READ_DONE;
                     break;
-                case GhpBle.ACTTION_WAIT_WRITE:
+                case GhpBle.ACTIONN_ATTR_READ_DONE:
+                    break;
+                case GhpBle.ACTTION_ATTR_WRITE:
                     break;
                 default:
                     break;
@@ -380,6 +345,49 @@ namespace ToolSet
             }
         }
 
+        public void BleDoReadAction()
+        {
+            c_BleDev.Busy = true;
+            c_BleDev.AttReadDone = false;
+        }
+        public bool BleIsReadDone()
+        {
+            if (c_BleDev.Busy = false || c_BleDev.AttReadDone == true) return true;
+            else return false;
+        }
+        public void BleStateClear()
+        {
+            c_BleDev.State = GhpBle.ACTTION_IDLE;
+        }
+
+
+        private void SetEnableByComSts(bool enable)
+        {
+            if (enable)
+            {
+                btScanStart.Enabled = true;
+                btConnect.Enabled = true;
+                btDisconnect.Enabled = true;
+
+                toolCmbPort.Enabled = false;
+                toolCmbBaudrate.Enabled = false;
+            }
+            else
+            {
+                btScanStart.Enabled = false;
+                btConnect.Enabled = false;
+                btDisconnect.Enabled = false;
+
+                toolCmbPort.Enabled = true;
+                toolCmbBaudrate.Enabled = false;
+            }
+        }
+
+
+        public void SendBleCmd(byte[] dat)
+        {
+            bglib.SendCommand(comDev, dat);
+        }
         public frmMain()
         {
             InitializeComponent();
@@ -488,6 +496,7 @@ namespace ToolSet
             //This means the event is only produced at the GATT server if the indication is acknowledged by the GATT client(the removte device).
 
             splitTab1_Main.Panel2Collapsed = true;
+            splitTab1_Main.Panel1Collapsed = false;
 
             SetEnableByComSts(false);
 
@@ -500,6 +509,10 @@ namespace ToolSet
             cmbGetType.SelectedIndex = 0;
             cmbSetFormat.SelectedIndex = 0;
             cmbSetType.SelectedIndex = 0;
+
+            m_FrmSrvCalib.TopLevel = false;
+            pgCalib.Controls.Add(m_FrmSrvCalib);
+            m_FrmSrvCalib.Show();
         }
 
         private void toolCmbPort_DropDown(object sender, EventArgs e)
@@ -574,6 +587,41 @@ namespace ToolSet
             SetEnableByComSts(comDev.IsOpen);
         }
 
+        private void tbtDirectLeft_Click(object sender, EventArgs e)
+        {
+            byte tag = byte.Parse(tbtDirectLeft.Tag.ToString());
+            tbtDirectRight.Tag = 0;
+            if (tag == 0)
+            {
+                splitTab1_Main.Panel1Collapsed = false;
+                tag = 1;
+            }
+            else if (tag == 1)
+            {
+                tag = 0;
+                splitTab1_Main.Panel2Collapsed = true;
+            }
+            tbtDirectLeft.Tag = tag;
+        }
+
+        private void tbtDirectRight_Click(object sender, EventArgs e)
+        {
+            byte tag = byte.Parse(tbtDirectRight.Tag.ToString());
+            tbtDirectLeft.Tag = 0;
+
+            if (tag == 0)
+            {
+                splitTab1_Main.Panel2Collapsed = false;
+                tag = 1;
+            }
+            else if (tag == 1)
+            {
+                tag = 0;
+                splitTab1_Main.Panel1Collapsed = true;
+            }
+            tbtDirectRight.Tag = tag;
+        }
+
         /// <summary>
         /// 一旦ComDevice.DataReceived事件发生，就将从串口接收到的数据显示到接收端对话框
         /// </summary>
@@ -586,7 +634,6 @@ namespace ToolSet
 
             //从串口读取数据
             comDev.Read(ReDatas, 0, ReDatas.Length);
-            AddData(ReDatas);
 
             // DEBUG: display bytes read
             // parse all bytes read through BGLib parser
@@ -597,45 +644,6 @@ namespace ToolSet
             //实现数据的解码与显示
         }
 
-        public void AddData(byte[] data)
-        {
-            int hex;
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < data.Length; i++)
-            {
-                hex = data[i];
-                sb.AppendFormat("{0}", Char.ConvertFromUtf32(data[i]));
-            }
-        }
-
-        /// <summary>
-        /// 此函数将编码后的消息传递给串口
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public bool SendData(byte[] data)
-        {
-            if (comDev.IsOpen)
-            {
-                try
-                {
-                    //将消息传递给串口
-                    comDev.Write(data, 0, data.Length);
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "发送失败", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            else
-            {
-                MessageBox.Show("串口未开启", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            return false;
-        }
-
-        
         private void btScanStart_Click(object sender, EventArgs e)
         {
             if (comDev.IsOpen == true)
@@ -672,43 +680,84 @@ namespace ToolSet
             stsLb_ConnSts.Image = Properties.Resources.BMP_GRAY;
             bglib.SendCommand(comDev, bglib.BLECommandConnectionDisconnect(c_BleDev.ConnHandle));
         }
-
-        private void listPrimSrv_DoubleClick(object sender, EventArgs e)
-        {
-            if (comDev.IsOpen == false)
-            {
-                MessageBox.Show("请先打开串口", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-#if false
-            if (listPrimSrv.SelectedIndices != null && listPrimSrv.SelectedItems.Count > 0)
-            {
-                CPrimService mSrv;
-                splitTab1_Sub.Panel2Collapsed = false;
-
-                listAttribute.Items.Clear();
-                mSrv = c_BleDev.GetPrimSrv(listPrimSrv.SelectedItems[0].SubItems[3].Text);
-                c_BleDev.CurrentSrvIndex = c_BleDev.GetPrimSrvIndex(listPrimSrv.SelectedItems[0].SubItems[3].Text);
-                if (true)//uuid[0] == 0x0F && uuid[1] == 0x18)
-                {
-                    tabPgRW.Show();
-                }
-                else
-                {
-                    tabPgRW.Hide();
-                }
-
-                m_ProcCompleted = false;
-                Byte[] cmd = bglib.BLECommandATTClientFindInformation(c_BleDev.ConnHandle, mSrv.Start, mSrv.End);
-                bglib.SendCommand(comDev, cmd);
-                m_CheckUserDesc = true;
-            }
-#endif
-        }
+        
         private void btConnect_Click(object sender, EventArgs e)
         {
             listScanDev_DoubleClick(sender, e);
         }
+
+        //
+        //Auto adjust the cloumn width both for contents and header.
+        //
+        private void AutoResizeColumnWidth(ListView lv)
+        {
+            for (int i = 0; i < lv.Columns.Count; i++)
+            {
+                lv.Columns[i].Width = -1;
+                lv.Columns[i].Width = -2;
+            }
+        }
+
+        private void timPeridic_Tick(object sender, EventArgs e)
+        {
+            if (bglib.IsBusy()) tsLabelScan.Text = "Busy";
+            else tsLabelScan.Text = "Ready";
+
+            switch (c_BleDev.State)
+            {
+            case GhpBle.ACTTION_IDLE:
+                tsProcessBar.Value = 0;
+                break;
+            case GhpBle.ACTTION_SCAN_PRIMSRV:
+                tsProcessBar.Value = (tsProcessBar.Value + 20) % 120;
+                break;
+            case GhpBle.ACTTION_SCAN_PRIMSRV_DONE://服务项扫描完毕,添加到树表中;
+                { 
+                    tsProcessBar.Value = 100;
+                    tvSrvTree.Nodes.Clear();
+                    foreach (CPrimService srv in c_BleDev.m_PrimSrvList)
+                    {
+                        TreeNode srvNode = new TreeNode();
+                        srvNode.Text = srv.Description + "__" + srv.UUID;
+                        srvNode.Tag = srv.UUID;
+                        srvNode.ToolTipText = srv.Description;
+                        tvSrvTree.Nodes.Add(srvNode);
+                    }
+                    c_BleDev.State = GhpBle.ACTTION_IDLE;
+                }
+                break;
+            case GhpBle.ACTTION_SCAN_ATTRIB:
+                tsProcessBar.Value = (tsProcessBar.Value + 20) % 120;
+                break;
+            case GhpBle.ACTTION_SCAN_ATTRIB_DONE://添加属性列表
+                { 
+                    tsProcessBar.Value = 100;
+                    if (tvSrvTree.SelectedNode != null && tvSrvTree.SelectedNode.Level == 0)
+                    {
+                        if (tvSrvTree.SelectedNode.Nodes.Count == 0)
+                        {
+                            foreach (CAttribute attr in c_BleDev.CurrentPrimSrv.AttrList)
+                            {
+                                TreeNode attNode = new TreeNode();
+                                attNode.Text = attr.AttName + "_" + attr.AttUUID;
+                                attNode.Tag = attr.AttUUID;
+                                attNode.ToolTipText = attr.AttHandle.ToString();
+                                tvSrvTree.SelectedNode.Nodes.Add(attNode);
+                            }
+                        }
+                    }
+                    c_BleDev.State = GhpBle.ACTTION_IDLE;
+                }
+                break;
+            }
+        }
+
+        private void srvTreeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmSrvDose frm = new frmSrvDose();
+            frm.Show();
+        }
+
         private void listScanDev_DoubleClick(object sender, EventArgs e)
         {
             if (comDev.IsOpen == false)
@@ -732,92 +781,31 @@ namespace ToolSet
                 tvSrvTree.Nodes.Clear();
             }
         }
-
-        private void listAttribute_SelectedIndexChanged(object sender, EventArgs e)
+        private void tvSrvTree_DoubleClick(object sender, EventArgs e)
         {
-            //if (listAttribute.SelectedIndices != null && listAttribute.SelectedIndices.Count > 0)
+            if (tvSrvTree.SelectedNode == null)
             {
-                //gChrHandle = ushort.Parse(listAttribute.SelectedItems[0].SubItems[2].Text);
-                //tbAttrID.Text = gChrHandle.ToString("D");
-                tbConnID.Text = c_BleDev.ConnHandle.ToString("D");
+                return;
             }
-        }
-        private void toolBtDevPanel_Click(object sender, EventArgs e)
-        {
-            splitTab1_Main.Panel1Collapsed = false;
-            splitTab1_Main.Panel2Collapsed = true;
-        }
-
-        private void toolBtPrimSrvPanel_Click(object sender, EventArgs e)
-        {
-            splitTab1_Main.Panel1Collapsed = true;
-            splitTab1_Main.Panel2Collapsed = false;
-        }
-        
-        //
-        //Auto adjust the cloumn width both for contents and header.
-        //
-        private void AutoResizeColumnWidth(ListView lv)
-        {
-            for (int i = 0; i < lv.Columns.Count; i++)
+            if (tvSrvTree.SelectedNode.Level != 0)
             {
-                lv.Columns[i].Width = -1;
-                lv.Columns[i].Width = -2;
+                return;
             }
-        }
-
-        private void frmMain_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            if (comDev.IsOpen)
+            if (tvSrvTree.SelectedNode.Nodes.Count > 0)
             {
-                //btScanStart_Click(sender, e);
+                return;
             }
-        }
-
-        private void SetEnableByComSts(bool enable)
-        {
-            if (enable)
+            foreach (CPrimService srv in c_BleDev.m_PrimSrvList)
             {
-                btScanStart.Enabled = true;
-                btConnect.Enabled = true;
-                btDisconnect.Enabled = true;
-
-                toolCmbPort.Enabled = false;
-                toolCmbBaudrate.Enabled = false;
-            }
-            else
-            {
-                btScanStart.Enabled = false;
-                btConnect.Enabled = false;
-                btDisconnect.Enabled = false;
-
-                toolCmbPort.Enabled = true;
-                toolCmbBaudrate.Enabled = false;
-            }
-        }
-
-        private void timPeridic_Tick(object sender, EventArgs e)
-        {
-            if (bglib.IsBusy()) tsLabelScan.Text = "Busy";
-            else tsLabelScan.Text = "Ready";
-
-            if (c_BleDev.State == GhpBle.ACTTION_SCAN_ATTRIB_DONE)
-            {
-                tvSrvTree.Nodes.Clear();
-                foreach (CPrimService srv in c_BleDev.m_PrimSrvList)
+                if (srv.UUID == tvSrvTree.SelectedNode.Tag.ToString())
                 {
-                    TreeNode mSrvNode=tvSrvTree.Nodes.Add(srv.Description+"__"+srv.UUID);
-                    foreach (CAttribute attr in srv.AttrList)
-                    {
-                        TreeNode attNode = new TreeNode();
-                        attNode.Text = attr.AttName + "_" + attr.AttUUID;
-                        attNode.Tag = attr.AttUUID;
-                        attNode.ToolTipText = attr.AttHandle.ToString();
-                        
-                        mSrvNode.Nodes.Add(attNode);
-                    }
+                    c_BleDev.CurrentPrimSrv = srv;
+                    break;
                 }
-                c_BleDev.State = GhpBle.ACTTION_IDLE;
+            }
+            if (c_BleDev.CurrentPrimSrv != null)
+            {
+                c_BleDev.State = GhpBle.ACTTION_SCAN_ATTRIB;
             }
         }
 
@@ -826,7 +814,7 @@ namespace ToolSet
             byte mConnectID = byte.Parse(tbConnID.Text);
             byte mAttrID = byte.Parse(tbAttrID.Text);
             Byte[] cmd = bglib.BLECommandATTClientReadByHandle(mConnectID, mAttrID);
-            bglib.SendCommand(comDev,cmd);
+            bglib.SendCommand(comDev, cmd);
         }
         private void btAttrWrite_Click(object sender, EventArgs e)
         {
@@ -862,7 +850,7 @@ namespace ToolSet
                     }
                     break;
                 case 3://U16
-                    { 
+                    {
                         UInt16 val = UInt16.Parse(tbAttrSet.Text);
                         byte[] b = BitConverter.GetBytes(val);
                         byteList.AddRange(b);
@@ -903,30 +891,17 @@ namespace ToolSet
             Byte[] cmd = bglib.BLECommandATTClientAttributeWrite(mConnectID, mAttrID, byteList.ToArray());
             bglib.SendCommand(comDev, cmd);
         }
-        private void btCalibMicSet_Click(object sender, EventArgs e)
-        {
-            UInt16 micMask = 0;
-            UInt16 maskID;
-            if (cbCalibMicIL.Checked) micMask |= 0x01;
-            if (cbCalibMicIR.Checked) micMask |= 0x02;
-            if (cbCalibMicOL.Checked) micMask |= 0x04;
-            if (cbCalibMicOR.Checked) micMask |= 0x08;
-            maskID = UInt16.Parse(tbMicMaskAttrID.Text);
-            byte[] data = new byte[2] { (byte)micMask,(byte)(micMask >> 8)};
-            Byte[] cmd = bglib.BLECommandATTClientAttributeWrite(c_BleDev.ConnHandle, maskID, data);
-            bglib.SendCommand(comDev, cmd);
-        }
 
         private void btStrCvt_Click(object sender, EventArgs e)
         {
             byte[] hexDat = DatConvert.strToHexByte(tbAttrGet.Text);
-            switch (cmbGetType.SelectedIndex )
+            switch (cmbGetType.SelectedIndex)
             {
             case 0://Hex
                 tbAttrGetCvt.Text = DatConvert.ByteArrayToHexString(hexDat);
                 break;
             case 1://Number
-                { 
+                {
                     if (cmbGetEndian.SelectedIndex == 1)
                     {
                         Array.Reverse(hexDat);
@@ -995,33 +970,6 @@ namespace ToolSet
             byte[] val = new byte[] { 0 };
             Byte[] cmd = bglib.BLECommandATTClientAttributeWrite(c_BleDev.ConnHandle, mAttrID, val);
             bglib.SendCommand(comDev, cmd);
-        }
-
-        private void srvTreeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            frmService frm = new frmService();
-            frm.Show();
-        }
-
-        private void tvSrvTree_Click(object sender, EventArgs e)
-        {
-            if (tvSrvTree.SelectedNode == null)
-            {
-                return;
-            }
-            if (tvSrvTree.SelectedNode.Level != 0)
-            {
-                return;
-            }
-            foreach (CPrimService srv in c_BleDev.m_PrimSrvList)
-            {
-                if (srv.UUID == tvSrvTree.SelectedNode.Tag.ToString())
-                {
-
-                }
-            }
-            
-            //tvSrvTree.SelectedNode.Nodes.Add(tbNodeName.Text.Trim());
         }
     }
 }

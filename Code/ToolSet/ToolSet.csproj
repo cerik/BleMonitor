@@ -63,11 +63,17 @@
     <Compile Include="frmMain.designer.cs">
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmService.cs">
+    <Compile Include="frmSrvCalib.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmService.Designer.cs">
-      <DependentUpon>frmService.cs</DependentUpon>
+    <Compile Include="frmSrvCalib.Designer.cs">
+      <DependentUpon>frmSrvCalib.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmSrvDose.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmSrvDose.Designer.cs">
+      <DependentUpon>frmSrvDose.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -75,8 +81,11 @@
       <SubType>Designer</SubType>
       <DependentUpon>frmMain.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmService.resx">
-      <DependentUpon>frmService.cs</DependentUpon>
+    <EmbeddedResource Include="frmSrvCalib.resx">
+      <DependentUpon>frmSrvCalib.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmSrvDose.resx">
+      <DependentUpon>frmSrvDose.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
