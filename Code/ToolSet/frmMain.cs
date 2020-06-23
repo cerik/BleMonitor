@@ -30,6 +30,9 @@ namespace ToolSet
 
         #region
         private frmSrvCalib m_FrmSrvCalib = new frmSrvCalib();
+        private frmSrvTonePlay mFrmSrvTonePly = new frmSrvTonePlay();
+        private frmSrvDose mFrmSrvDose = new frmSrvDose();
+        private frmSrvFittest mFrmSrvFittest = new frmSrvFittest();
         #endregion
 
         #region BleEventCallback
@@ -510,9 +513,24 @@ namespace ToolSet
             cmbSetFormat.SelectedIndex = 0;
             cmbSetType.SelectedIndex = 0;
 
+            //
+            //add each controm form into tag page;
+            //
             m_FrmSrvCalib.TopLevel = false;
             pgCalib.Controls.Add(m_FrmSrvCalib);
             m_FrmSrvCalib.Show();
+
+            mFrmSrvTonePly.TopLevel = false;
+            pgTonePlay.Controls.Add(mFrmSrvTonePly);
+            mFrmSrvTonePly.Show();
+
+            mFrmSrvDose.TopLevel = false;
+            pgDose.Controls.Add(mFrmSrvDose); 
+            mFrmSrvDose.Show();
+
+            mFrmSrvFittest.TopLevel = false;
+            pgFittest.Controls.Add(mFrmSrvFittest);
+            mFrmSrvFittest.Show();
         }
 
         private void toolCmbPort_DropDown(object sender, EventArgs e)
@@ -718,9 +736,10 @@ namespace ToolSet
                     foreach (CPrimService srv in c_BleDev.m_PrimSrvList)
                     {
                         TreeNode srvNode = new TreeNode();
-                        srvNode.Text = srv.Description + "__" + srv.UUID;
+                        if (srv.Description == null) srvNode.Text = srv.UUID;
+                        else srvNode.Text = srv.Description;
                         srvNode.Tag = srv.UUID;
-                        srvNode.ToolTipText = srv.Description;
+                        srvNode.ToolTipText = "UUID= "+srv.UUID;
                         tvSrvTree.Nodes.Add(srvNode);
                     }
                     c_BleDev.State = GhpBle.ACTTION_IDLE;
@@ -739,9 +758,10 @@ namespace ToolSet
                             foreach (CAttribute attr in c_BleDev.CurrentPrimSrv.AttrList)
                             {
                                 TreeNode attNode = new TreeNode();
-                                attNode.Text = attr.AttName + "_" + attr.AttUUID;
+                                if (attr.AttName == null) attNode.Text = attr.AttUUID;
+                                else attNode.Text = attr.AttName;
                                 attNode.Tag = attr.AttUUID;
-                                attNode.ToolTipText = attr.AttHandle.ToString();
+                                attNode.ToolTipText = "UUID= " + attr.AttUUID;
                                 tvSrvTree.SelectedNode.Nodes.Add(attNode);
                             }
                         }
@@ -754,7 +774,7 @@ namespace ToolSet
 
         private void srvTreeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            frmSrvDose frm = new frmSrvDose();
+            frmSrvTonePlay frm = new frmSrvTonePlay();
             frm.Show();
         }
 
@@ -811,21 +831,54 @@ namespace ToolSet
 
         private void btAttrRead_Click(object sender, EventArgs e)
         {
-            byte mConnectID = byte.Parse(tbConnID.Text);
-            byte mAttrID = byte.Parse(tbAttrID.Text);
-            Byte[] cmd = bglib.BLECommandATTClientReadByHandle(mConnectID, mAttrID);
-            bglib.SendCommand(comDev, cmd);
-        }
-        private void btAttrWrite_Click(object sender, EventArgs e)
-        {
-            byte mConnectID = byte.Parse(tbConnID.Text);
-            byte mAttrID = byte.Parse(tbAttrID.Text);
+            DateTime tStart = DateTime.Now;
+            TimeSpan ts = DateTime.Now.Subtract(tStart);
 
             if (comDev.IsOpen == false)
             {
                 MessageBox.Show("请先打开串口", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
+            if (c_BleDev.ConnHandle == CAttribute.InvalidHandle) return;
+            if (tvSrvTree.SelectedNode.Level != 1) return;
+
+            string uuidstr = (string)tvSrvTree.SelectedNode.Tag;
+            ushort attrID=c_BleDev.AttrHandleByUUID(uuidstr);
+            if (attrID == CAttribute.InvalidHandle) return;
+  
+            Byte[] cmd = bglib.BLECommandATTClientReadByHandle(c_BleDev.ConnHandle, attrID);
+            BleDoReadAction();
+            SendBleCmd(cmd);
+            while (BleIsReadDone() == false)
+            {
+                Application.DoEvents();
+                ts = DateTime.Now.Subtract(tStart);
+                if (ts.Seconds > 1) break;
+            }
+
+            if(ts.Seconds<=1)
+            { 
+                tbAttrGet.Text = DatConvert.ByteArrayToHexString(c_BleDev.AttReadValue);
+                btStrCvt_Click(sender, e);
+            }
+        }
+        private void btAttrWrite_Click(object sender, EventArgs e)
+        {
+            if (comDev.IsOpen == false)
+            {
+                MessageBox.Show("请先打开串口", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (c_BleDev.ConnHandle == CAttribute.InvalidHandle) return;
+            if (tvSrvTree.SelectedNode.Level != 1) return;
+
+            string uuidstr = (string)tvSrvTree.SelectedNode.Tag;
+            ushort attrID = c_BleDev.AttrHandleByUUID(uuidstr);
+            if (attrID == CAttribute.InvalidHandle) return;
+
+            
             List<byte> byteList = new List<byte>();
             switch (cmbSetType.SelectedIndex)
             {
@@ -888,7 +941,7 @@ namespace ToolSet
                 }
                 break;
             }
-            Byte[] cmd = bglib.BLECommandATTClientAttributeWrite(mConnectID, mAttrID, byteList.ToArray());
+            Byte[] cmd = bglib.BLECommandATTClientAttributeWrite(c_BleDev.ConnHandle, attrID, byteList.ToArray());
             bglib.SendCommand(comDev, cmd);
         }
 
@@ -937,39 +990,6 @@ namespace ToolSet
                 tbAttrGetCvt.Text = DatConvert.HexArrayToString(hexDat);
                 break;
             }
-        }
-
-        private void btTonePlaySet_Click(object sender, EventArgs e)
-        {
-            byte mAttrID = byte.Parse(tbTonePlayCfgHandle.Text);
-
-            byte[] cfg = new byte[3];
-            cfg[0] = byte.Parse(tbTonePlayAmp.Text);
-
-            UInt16 val = UInt16.Parse(tbTonePlayFreq.Text);
-            cfg[1] = (byte)(val);
-            cfg[2] = (byte)(val >> 8);
-
-            Byte[] cmd = bglib.BLECommandATTClientAttributeWrite(c_BleDev.ConnHandle, mAttrID, cfg);
-            bglib.SendCommand(comDev, cmd);
-        }
-
-        private void btTonePlayStart_Click(object sender, EventArgs e)
-        {
-            byte mAttrID = byte.Parse(tbTonePlayStartHandle.Text);
-
-            byte[] val = new byte[] { 1 };
-            Byte[] cmd = bglib.BLECommandATTClientAttributeWrite(c_BleDev.ConnHandle, mAttrID, val);
-            bglib.SendCommand(comDev, cmd);
-        }
-
-        private void btTonePlayStop_Click(object sender, EventArgs e)
-        {
-            byte mAttrID = byte.Parse(tbTonePlayStartHandle.Text);
-
-            byte[] val = new byte[] { 0 };
-            Byte[] cmd = bglib.BLECommandATTClientAttributeWrite(c_BleDev.ConnHandle, mAttrID, val);
-            bglib.SendCommand(comDev, cmd);
         }
     }
 }

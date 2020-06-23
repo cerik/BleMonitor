@@ -31,7 +31,6 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.stsLb_ConnSts = new System.Windows.Forms.ToolStripStatusLabel();
             this.stsLb_ConnMac = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tslbRxMsg = new System.Windows.Forms.ToolStripStatusLabel();
@@ -54,8 +53,6 @@
             this.cAddrType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.panel1 = new System.Windows.Forms.Panel();
             this.btDisconnect = new System.Windows.Forms.Button();
-            this.btConnect = new System.Windows.Forms.Button();
-            this.btScanStart = new System.Windows.Forms.Button();
             this.splitTab1_Attr = new System.Windows.Forms.SplitContainer();
             this.tvSrvTree = new System.Windows.Forms.TreeView();
             this.tabAttr = new System.Windows.Forms.TabControl();
@@ -78,21 +75,8 @@
             this.cmbGetEndian = new System.Windows.Forms.ComboBox();
             this.tbAttrGet = new System.Windows.Forms.TextBox();
             this.btAttrGet = new System.Windows.Forms.Button();
-            this.tbAttrID = new System.Windows.Forms.TextBox();
-            this.tbConnID = new System.Windows.Forms.TextBox();
-            this.lbAttrHandle = new System.Windows.Forms.Label();
-            this.lbConnHandle = new System.Windows.Forms.Label();
             this.pgCalib = new System.Windows.Forms.TabPage();
             this.pgTonePlay = new System.Windows.Forms.TabPage();
-            this.tbTonePlayStartHandle = new System.Windows.Forms.TextBox();
-            this.tbTonePlayCfgHandle = new System.Windows.Forms.TextBox();
-            this.btTonePlayStop = new System.Windows.Forms.Button();
-            this.btTonePlayStart = new System.Windows.Forms.Button();
-            this.btTonePlaySet = new System.Windows.Forms.Button();
-            this.label16 = new System.Windows.Forms.Label();
-            this.tbTonePlayAmp = new System.Windows.Forms.TextBox();
-            this.tbTonePlayFreq = new System.Windows.Forms.TextBox();
-            this.label15 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.comDev = new System.IO.Ports.SerialPort(this.components);
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
@@ -101,12 +85,17 @@
             this.toolCmbPort = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
             this.toolCmbBaudrate = new System.Windows.Forms.ToolStripComboBox();
-            this.toolBtOpenCom = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.timPeridic = new System.Windows.Forms.Timer(this.components);
+            this.pgDose = new System.Windows.Forms.TabPage();
+            this.pgFittest = new System.Windows.Forms.TabPage();
+            this.btConnect = new System.Windows.Forms.Button();
+            this.btScanStart = new System.Windows.Forms.Button();
+            this.toolBtOpenCom = new System.Windows.Forms.ToolStripButton();
             this.tbtDirectLeft = new System.Windows.Forms.ToolStripButton();
             this.tbtDirectRight = new System.Windows.Forms.ToolStripButton();
-            this.timPeridic = new System.Windows.Forms.Timer(this.components);
+            this.stsLb_ConnSts = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tabMain.SuspendLayout();
@@ -128,7 +117,6 @@
             this.pgRW.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            this.pgTonePlay.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
@@ -152,18 +140,6 @@
             this.statusStrip1.Size = new System.Drawing.Size(908, 25);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
-            // 
-            // stsLb_ConnSts
-            // 
-            this.stsLb_ConnSts.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Top) 
-            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) 
-            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
-            this.stsLb_ConnSts.Image = global::ToolSet.Properties.Resources.BMP_GRAY;
-            this.stsLb_ConnSts.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.stsLb_ConnSts.Name = "stsLb_ConnSts";
-            this.stsLb_ConnSts.Size = new System.Drawing.Size(72, 20);
-            this.stsLb_ConnSts.Text = "Connect";
-            this.stsLb_ConnSts.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // stsLb_ConnMac
             // 
@@ -207,7 +183,7 @@
             // tsProcessBar
             // 
             this.tsProcessBar.Name = "tsProcessBar";
-            this.tsProcessBar.Size = new System.Drawing.Size(100, 19);
+            this.tsProcessBar.Size = new System.Drawing.Size(50, 19);
             // 
             // menuStrip1
             // 
@@ -358,7 +334,7 @@
             this.panel1.Margin = new System.Windows.Forms.Padding(10, 0, 0, 0);
             this.panel1.MaximumSize = new System.Drawing.Size(0, 23);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(239, 23);
+            this.panel1.Size = new System.Drawing.Size(0, 23);
             this.panel1.TabIndex = 4;
             // 
             // btDisconnect
@@ -371,35 +347,6 @@
             this.btDisconnect.Text = "Disconnect";
             this.btDisconnect.UseVisualStyleBackColor = true;
             this.btDisconnect.Click += new System.EventHandler(this.btDisconnect_Click);
-            // 
-            // btConnect
-            // 
-            this.btConnect.Image = global::ToolSet.Properties.Resources.BMP_GRAY;
-            this.btConnect.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btConnect.Location = new System.Drawing.Point(91, 0);
-            this.btConnect.Margin = new System.Windows.Forms.Padding(0);
-            this.btConnect.Name = "btConnect";
-            this.btConnect.Size = new System.Drawing.Size(68, 23);
-            this.btConnect.TabIndex = 3;
-            this.btConnect.Text = "Connect";
-            this.btConnect.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btConnect.UseVisualStyleBackColor = true;
-            this.btConnect.Click += new System.EventHandler(this.btConnect_Click);
-            // 
-            // btScanStart
-            // 
-            this.btScanStart.Dock = System.Windows.Forms.DockStyle.Left;
-            this.btScanStart.Image = global::ToolSet.Properties.Resources.BMP_GRAY;
-            this.btScanStart.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btScanStart.Location = new System.Drawing.Point(0, 0);
-            this.btScanStart.Margin = new System.Windows.Forms.Padding(0);
-            this.btScanStart.Name = "btScanStart";
-            this.btScanStart.Size = new System.Drawing.Size(75, 23);
-            this.btScanStart.TabIndex = 1;
-            this.btScanStart.Text = "StartScan";
-            this.btScanStart.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btScanStart.UseVisualStyleBackColor = true;
-            this.btScanStart.Click += new System.EventHandler(this.btScanStart_Click);
             // 
             // splitTab1_Attr
             // 
@@ -433,6 +380,8 @@
             this.tabAttr.Controls.Add(this.pgRW);
             this.tabAttr.Controls.Add(this.pgCalib);
             this.tabAttr.Controls.Add(this.pgTonePlay);
+            this.tabAttr.Controls.Add(this.pgDose);
+            this.tabAttr.Controls.Add(this.pgFittest);
             this.tabAttr.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabAttr.Location = new System.Drawing.Point(0, 0);
             this.tabAttr.Name = "tabAttr";
@@ -444,10 +393,6 @@
             // 
             this.pgRW.Controls.Add(this.groupBox3);
             this.pgRW.Controls.Add(this.groupBox2);
-            this.pgRW.Controls.Add(this.tbAttrID);
-            this.pgRW.Controls.Add(this.tbConnID);
-            this.pgRW.Controls.Add(this.lbAttrHandle);
-            this.pgRW.Controls.Add(this.lbConnHandle);
             this.pgRW.Location = new System.Drawing.Point(4, 22);
             this.pgRW.Name = "pgRW";
             this.pgRW.Padding = new System.Windows.Forms.Padding(3);
@@ -464,9 +409,9 @@
             this.groupBox3.Controls.Add(this.cmbSetFormat);
             this.groupBox3.Controls.Add(this.btAttrSet);
             this.groupBox3.Controls.Add(this.tbAttrSet);
-            this.groupBox3.Location = new System.Drawing.Point(8, 201);
+            this.groupBox3.Location = new System.Drawing.Point(8, 178);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(240, 198);
+            this.groupBox3.Size = new System.Drawing.Size(240, 129);
             this.groupBox3.TabIndex = 18;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Write";
@@ -549,7 +494,7 @@
             this.groupBox2.Controls.Add(this.cmbGetEndian);
             this.groupBox2.Controls.Add(this.tbAttrGet);
             this.groupBox2.Controls.Add(this.btAttrGet);
-            this.groupBox2.Location = new System.Drawing.Point(8, 39);
+            this.groupBox2.Location = new System.Drawing.Point(8, 6);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(240, 156);
             this.groupBox2.TabIndex = 17;
@@ -663,40 +608,6 @@
             this.btAttrGet.UseVisualStyleBackColor = true;
             this.btAttrGet.Click += new System.EventHandler(this.btAttrRead_Click);
             // 
-            // tbAttrID
-            // 
-            this.tbAttrID.Location = new System.Drawing.Point(197, 12);
-            this.tbAttrID.Name = "tbAttrID";
-            this.tbAttrID.Size = new System.Drawing.Size(47, 20);
-            this.tbAttrID.TabIndex = 7;
-            this.tbAttrID.Text = "0";
-            // 
-            // tbConnID
-            // 
-            this.tbConnID.Location = new System.Drawing.Point(74, 13);
-            this.tbConnID.Name = "tbConnID";
-            this.tbConnID.Size = new System.Drawing.Size(46, 20);
-            this.tbConnID.TabIndex = 7;
-            this.tbConnID.Text = "0";
-            // 
-            // lbAttrHandle
-            // 
-            this.lbAttrHandle.AutoSize = true;
-            this.lbAttrHandle.Location = new System.Drawing.Point(135, 16);
-            this.lbAttrHandle.Name = "lbAttrHandle";
-            this.lbAttrHandle.Size = new System.Drawing.Size(60, 13);
-            this.lbAttrHandle.TabIndex = 5;
-            this.lbAttrHandle.Text = "AttributeID:";
-            // 
-            // lbConnHandle
-            // 
-            this.lbConnHandle.AutoSize = true;
-            this.lbConnHandle.Location = new System.Drawing.Point(9, 17);
-            this.lbConnHandle.Name = "lbConnHandle";
-            this.lbConnHandle.Size = new System.Drawing.Size(61, 13);
-            this.lbConnHandle.TabIndex = 4;
-            this.lbConnHandle.Text = "ConnectID:";
-            // 
             // pgCalib
             // 
             this.pgCalib.Location = new System.Drawing.Point(4, 22);
@@ -709,105 +620,20 @@
             // 
             // pgTonePlay
             // 
-            this.pgTonePlay.Controls.Add(this.tbTonePlayStartHandle);
-            this.pgTonePlay.Controls.Add(this.tbTonePlayCfgHandle);
-            this.pgTonePlay.Controls.Add(this.btTonePlayStop);
-            this.pgTonePlay.Controls.Add(this.btTonePlayStart);
-            this.pgTonePlay.Controls.Add(this.btTonePlaySet);
-            this.pgTonePlay.Controls.Add(this.label16);
-            this.pgTonePlay.Controls.Add(this.tbTonePlayAmp);
-            this.pgTonePlay.Controls.Add(this.tbTonePlayFreq);
-            this.pgTonePlay.Controls.Add(this.label15);
             this.pgTonePlay.Location = new System.Drawing.Point(4, 22);
             this.pgTonePlay.Name = "pgTonePlay";
             this.pgTonePlay.Padding = new System.Windows.Forms.Padding(3);
-            this.pgTonePlay.Size = new System.Drawing.Size(403, 430);
+            this.pgTonePlay.Size = new System.Drawing.Size(403, 432);
             this.pgTonePlay.TabIndex = 2;
             this.pgTonePlay.Text = "TonePlay";
             this.pgTonePlay.UseVisualStyleBackColor = true;
-            // 
-            // tbTonePlayStartHandle
-            // 
-            this.tbTonePlayStartHandle.Location = new System.Drawing.Point(103, 98);
-            this.tbTonePlayStartHandle.Name = "tbTonePlayStartHandle";
-            this.tbTonePlayStartHandle.Size = new System.Drawing.Size(60, 20);
-            this.tbTonePlayStartHandle.TabIndex = 4;
-            // 
-            // tbTonePlayCfgHandle
-            // 
-            this.tbTonePlayCfgHandle.Location = new System.Drawing.Point(103, 54);
-            this.tbTonePlayCfgHandle.Name = "tbTonePlayCfgHandle";
-            this.tbTonePlayCfgHandle.Size = new System.Drawing.Size(60, 20);
-            this.tbTonePlayCfgHandle.TabIndex = 4;
-            // 
-            // btTonePlayStop
-            // 
-            this.btTonePlayStop.Location = new System.Drawing.Point(36, 123);
-            this.btTonePlayStop.Name = "btTonePlayStop";
-            this.btTonePlayStop.Size = new System.Drawing.Size(61, 23);
-            this.btTonePlayStop.TabIndex = 3;
-            this.btTonePlayStop.Text = "Stop";
-            this.btTonePlayStop.UseVisualStyleBackColor = true;
-            this.btTonePlayStop.Click += new System.EventHandler(this.btTonePlayStop_Click);
-            // 
-            // btTonePlayStart
-            // 
-            this.btTonePlayStart.Location = new System.Drawing.Point(36, 96);
-            this.btTonePlayStart.Name = "btTonePlayStart";
-            this.btTonePlayStart.Size = new System.Drawing.Size(61, 23);
-            this.btTonePlayStart.TabIndex = 3;
-            this.btTonePlayStart.Text = "Start";
-            this.btTonePlayStart.UseVisualStyleBackColor = true;
-            this.btTonePlayStart.Click += new System.EventHandler(this.btTonePlayStart_Click);
-            // 
-            // btTonePlaySet
-            // 
-            this.btTonePlaySet.Location = new System.Drawing.Point(36, 51);
-            this.btTonePlaySet.Name = "btTonePlaySet";
-            this.btTonePlaySet.Size = new System.Drawing.Size(61, 23);
-            this.btTonePlaySet.TabIndex = 3;
-            this.btTonePlaySet.Text = "Set";
-            this.btTonePlaySet.UseVisualStyleBackColor = true;
-            this.btTonePlaySet.Click += new System.EventHandler(this.btTonePlaySet_Click);
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(10, 28);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(70, 13);
-            this.label16.TabIndex = 2;
-            this.label16.Text = "Amplitude(%):";
-            // 
-            // tbTonePlayAmp
-            // 
-            this.tbTonePlayAmp.Location = new System.Drawing.Point(91, 25);
-            this.tbTonePlayAmp.Name = "tbTonePlayAmp";
-            this.tbTonePlayAmp.Size = new System.Drawing.Size(61, 20);
-            this.tbTonePlayAmp.TabIndex = 1;
-            // 
-            // tbTonePlayFreq
-            // 
-            this.tbTonePlayFreq.Location = new System.Drawing.Point(91, 0);
-            this.tbTonePlayFreq.Name = "tbTonePlayFreq";
-            this.tbTonePlayFreq.Size = new System.Drawing.Size(61, 20);
-            this.tbTonePlayFreq.TabIndex = 1;
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(6, 3);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(79, 13);
-            this.label15.TabIndex = 0;
-            this.label15.Text = "Frequency(Hz):";
             // 
             // tabPage2
             // 
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(900, 464);
+            this.tabPage2.Size = new System.Drawing.Size(900, 466);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -892,16 +718,6 @@
             this.toolCmbBaudrate.Size = new System.Drawing.Size(75, 25);
             this.toolCmbBaudrate.ToolTipText = "Baundrate";
             // 
-            // toolBtOpenCom
-            // 
-            this.toolBtOpenCom.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.toolBtOpenCom.Image = global::ToolSet.Properties.Resources.BMP_GRAY;
-            this.toolBtOpenCom.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolBtOpenCom.Name = "toolBtOpenCom";
-            this.toolBtOpenCom.Size = new System.Drawing.Size(56, 22);
-            this.toolBtOpenCom.Text = "Open";
-            this.toolBtOpenCom.Click += new System.EventHandler(this.toolBtOpenCom_Click);
-            // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
@@ -911,6 +727,69 @@
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            // 
+            // timPeridic
+            // 
+            this.timPeridic.Tick += new System.EventHandler(this.timPeridic_Tick);
+            // 
+            // pgDose
+            // 
+            this.pgDose.Location = new System.Drawing.Point(4, 22);
+            this.pgDose.Name = "pgDose";
+            this.pgDose.Padding = new System.Windows.Forms.Padding(3);
+            this.pgDose.Size = new System.Drawing.Size(403, 432);
+            this.pgDose.TabIndex = 3;
+            this.pgDose.Text = "DOSE";
+            this.pgDose.UseVisualStyleBackColor = true;
+            // 
+            // pgFittest
+            // 
+            this.pgFittest.Location = new System.Drawing.Point(4, 22);
+            this.pgFittest.Name = "pgFittest";
+            this.pgFittest.Padding = new System.Windows.Forms.Padding(3);
+            this.pgFittest.Size = new System.Drawing.Size(403, 432);
+            this.pgFittest.TabIndex = 4;
+            this.pgFittest.Text = "FIT Test";
+            this.pgFittest.UseVisualStyleBackColor = true;
+            // 
+            // btConnect
+            // 
+            this.btConnect.Image = global::ToolSet.Properties.Resources.BMP_GRAY;
+            this.btConnect.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btConnect.Location = new System.Drawing.Point(91, 0);
+            this.btConnect.Margin = new System.Windows.Forms.Padding(0);
+            this.btConnect.Name = "btConnect";
+            this.btConnect.Size = new System.Drawing.Size(68, 23);
+            this.btConnect.TabIndex = 3;
+            this.btConnect.Text = "Connect";
+            this.btConnect.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btConnect.UseVisualStyleBackColor = true;
+            this.btConnect.Click += new System.EventHandler(this.btConnect_Click);
+            // 
+            // btScanStart
+            // 
+            this.btScanStart.Dock = System.Windows.Forms.DockStyle.Left;
+            this.btScanStart.Image = global::ToolSet.Properties.Resources.BMP_GRAY;
+            this.btScanStart.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btScanStart.Location = new System.Drawing.Point(0, 0);
+            this.btScanStart.Margin = new System.Windows.Forms.Padding(0);
+            this.btScanStart.Name = "btScanStart";
+            this.btScanStart.Size = new System.Drawing.Size(75, 23);
+            this.btScanStart.TabIndex = 1;
+            this.btScanStart.Text = "StartScan";
+            this.btScanStart.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btScanStart.UseVisualStyleBackColor = true;
+            this.btScanStart.Click += new System.EventHandler(this.btScanStart_Click);
+            // 
+            // toolBtOpenCom
+            // 
+            this.toolBtOpenCom.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.toolBtOpenCom.Image = global::ToolSet.Properties.Resources.BMP_GRAY;
+            this.toolBtOpenCom.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolBtOpenCom.Name = "toolBtOpenCom";
+            this.toolBtOpenCom.Size = new System.Drawing.Size(56, 22);
+            this.toolBtOpenCom.Text = "Open";
+            this.toolBtOpenCom.Click += new System.EventHandler(this.toolBtOpenCom_Click);
             // 
             // tbtDirectLeft
             // 
@@ -936,9 +815,17 @@
             this.tbtDirectRight.Text = "->";
             this.tbtDirectRight.Click += new System.EventHandler(this.tbtDirectRight_Click);
             // 
-            // timPeridic
+            // stsLb_ConnSts
             // 
-            this.timPeridic.Tick += new System.EventHandler(this.timPeridic_Tick);
+            this.stsLb_ConnSts.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Top) 
+            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) 
+            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
+            this.stsLb_ConnSts.Image = global::ToolSet.Properties.Resources.BMP_GRAY;
+            this.stsLb_ConnSts.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.stsLb_ConnSts.Name = "stsLb_ConnSts";
+            this.stsLb_ConnSts.Size = new System.Drawing.Size(72, 20);
+            this.stsLb_ConnSts.Text = "Connect";
+            this.stsLb_ConnSts.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // frmMain
             // 
@@ -973,13 +860,10 @@
             this.splitTab1_Attr.ResumeLayout(false);
             this.tabAttr.ResumeLayout(false);
             this.pgRW.ResumeLayout(false);
-            this.pgRW.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.pgTonePlay.ResumeLayout(false);
-            this.pgTonePlay.PerformLayout();
             this.toolStripContainer1.ContentPanel.ResumeLayout(false);
             this.toolStripContainer1.TopToolStripPanel.ResumeLayout(false);
             this.toolStripContainer1.TopToolStripPanel.PerformLayout();
@@ -1035,16 +919,9 @@
         private System.Windows.Forms.ToolStripProgressBar tsProBarScan;
         private System.Windows.Forms.ToolStripStatusLabel tsLabelScan;
         private System.Windows.Forms.Timer timPeridic;
-        private System.Windows.Forms.Label lbAttrHandle;
-        private System.Windows.Forms.Label lbConnHandle;
         private System.Windows.Forms.Button btAttrGet;
         private System.Windows.Forms.TextBox tbAttrGet;
-        private System.Windows.Forms.TextBox tbAttrID;
-        private System.Windows.Forms.TextBox tbConnID;
         private System.Windows.Forms.ColumnHeader cAddrType;
-        private System.Windows.Forms.Button btAttrSet;
-        private System.Windows.Forms.TextBox tbAttrSet;
-        private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
@@ -1052,25 +929,21 @@
         private System.Windows.Forms.ComboBox cmbGetEndian;
         private System.Windows.Forms.ComboBox cmbGetType;
         private System.Windows.Forms.ComboBox cmbGetFormat;
+        private System.Windows.Forms.TextBox tbAttrGetCvt;
+        private System.Windows.Forms.Button btStrCvt;
+        private System.Windows.Forms.TabPage pgTonePlay;
+        private System.Windows.Forms.ToolStripMenuItem srvTreeToolStripMenuItem;
+        private System.Windows.Forms.TreeView tvSrvTree;
+        private System.Windows.Forms.ToolStripProgressBar tsProcessBar;
+        private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.ComboBox cmbSetType;
         private System.Windows.Forms.ComboBox cmbSetFormat;
-        private System.Windows.Forms.TextBox tbAttrGetCvt;
-        private System.Windows.Forms.Button btStrCvt;
-        private System.Windows.Forms.TabPage pgTonePlay;
-        private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.TextBox tbTonePlayFreq;
-        private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.TextBox tbTonePlayAmp;
-        private System.Windows.Forms.Button btTonePlaySet;
-        private System.Windows.Forms.Button btTonePlayStart;
-        private System.Windows.Forms.TextBox tbTonePlayStartHandle;
-        private System.Windows.Forms.TextBox tbTonePlayCfgHandle;
-        private System.Windows.Forms.Button btTonePlayStop;
-        private System.Windows.Forms.ToolStripMenuItem srvTreeToolStripMenuItem;
-        private System.Windows.Forms.TreeView tvSrvTree;
-        private System.Windows.Forms.ToolStripProgressBar tsProcessBar;
+        private System.Windows.Forms.Button btAttrSet;
+        private System.Windows.Forms.TextBox tbAttrSet;
+        private System.Windows.Forms.TabPage pgDose;
+        private System.Windows.Forms.TabPage pgFittest;
     }
 }
 

@@ -77,12 +77,17 @@
             this.label11 = new System.Windows.Forms.Label();
             this.tbCalibRspMicMask = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.tbCalibStsGet = new System.Windows.Forms.TextBox();
+            this.btCalibStsGet = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox6.SuspendLayout();
+            this.groupBox7.SuspendLayout();
             this.SuspendLayout();
             // 
             // cbCalibMicIL
@@ -185,7 +190,7 @@
             this.groupBox2.Controls.Add(this.btCalibFreqGet);
             this.groupBox2.Controls.Add(this.btCalibFreqSet);
             this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Location = new System.Drawing.Point(196, 198);
+            this.groupBox2.Location = new System.Drawing.Point(196, 98);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -220,6 +225,7 @@
             this.btCalibFreqGet.TabIndex = 1;
             this.btCalibFreqGet.Text = "Get";
             this.btCalibFreqGet.UseVisualStyleBackColor = true;
+            this.btCalibFreqGet.Click += new System.EventHandler(this.btCalibFreqGet_Click);
             // 
             // btCalibFreqSet
             // 
@@ -230,6 +236,7 @@
             this.btCalibFreqSet.TabIndex = 1;
             this.btCalibFreqSet.Text = "Set";
             this.btCalibFreqSet.UseVisualStyleBackColor = true;
+            this.btCalibFreqSet.Click += new System.EventHandler(this.btCalibFreqSet_Click);
             // 
             // label1
             // 
@@ -282,6 +289,7 @@
             this.btCalibSoundLevelGet.TabIndex = 1;
             this.btCalibSoundLevelGet.Text = "Get";
             this.btCalibSoundLevelGet.UseVisualStyleBackColor = true;
+            this.btCalibSoundLevelGet.Click += new System.EventHandler(this.btCalibSoundLevelGet_Click);
             // 
             // btCalibSoundLevelSet
             // 
@@ -292,6 +300,7 @@
             this.btCalibSoundLevelSet.TabIndex = 1;
             this.btCalibSoundLevelSet.Text = "Set";
             this.btCalibSoundLevelSet.UseVisualStyleBackColor = true;
+            this.btCalibSoundLevelSet.Click += new System.EventHandler(this.btCalibSoundLevelSet_Click);
             // 
             // label4
             // 
@@ -349,6 +358,7 @@
             this.btCalibConstGet.TabIndex = 1;
             this.btCalibConstGet.Text = "Get";
             this.btCalibConstGet.UseVisualStyleBackColor = true;
+            this.btCalibConstGet.Click += new System.EventHandler(this.btCalibConstGet_Click);
             // 
             // tbCalibConstGetIR
             // 
@@ -416,14 +426,14 @@
             this.groupBox5.Controls.Add(this.label7);
             this.groupBox5.Location = new System.Drawing.Point(5, 98);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(185, 128);
+            this.groupBox5.Size = new System.Drawing.Size(185, 122);
             this.groupBox5.TabIndex = 5;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Speak Sensitivity";
             // 
             // tbCalibSpkSensRightGet
             // 
-            this.tbCalibSpkSensRightGet.Location = new System.Drawing.Point(47, 100);
+            this.tbCalibSpkSensRightGet.Location = new System.Drawing.Point(47, 95);
             this.tbCalibSpkSensRightGet.Name = "tbCalibSpkSensRightGet";
             this.tbCalibSpkSensRightGet.ReadOnly = true;
             this.tbCalibSpkSensRightGet.Size = new System.Drawing.Size(72, 20);
@@ -431,7 +441,7 @@
             // 
             // tbCalibSpkSensRightSet
             // 
-            this.tbCalibSpkSensRightSet.Location = new System.Drawing.Point(47, 74);
+            this.tbCalibSpkSensRightSet.Location = new System.Drawing.Point(47, 70);
             this.tbCalibSpkSensRightSet.Name = "tbCalibSpkSensRightSet";
             this.tbCalibSpkSensRightSet.Size = new System.Drawing.Size(72, 20);
             this.tbCalibSpkSensRightSet.TabIndex = 2;
@@ -445,10 +455,11 @@
             this.btCalibSpkSensGet.TabIndex = 1;
             this.btCalibSpkSensGet.Text = "Get";
             this.btCalibSpkSensGet.UseVisualStyleBackColor = true;
+            this.btCalibSpkSensGet.Click += new System.EventHandler(this.btCalibSpkSensGet_Click);
             // 
             // tbCalibSpkSensLeftGet
             // 
-            this.tbCalibSpkSensLeftGet.Location = new System.Drawing.Point(47, 48);
+            this.tbCalibSpkSensLeftGet.Location = new System.Drawing.Point(47, 46);
             this.tbCalibSpkSensLeftGet.Name = "tbCalibSpkSensLeftGet";
             this.tbCalibSpkSensLeftGet.ReadOnly = true;
             this.tbCalibSpkSensLeftGet.Size = new System.Drawing.Size(72, 20);
@@ -475,7 +486,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 78);
+            this.label8.Location = new System.Drawing.Point(6, 74);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(35, 13);
             this.label8.TabIndex = 1;
@@ -493,7 +504,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(6, 22);
+            this.label9.Location = new System.Drawing.Point(5, 22);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(40, 13);
             this.label9.TabIndex = 6;
@@ -506,7 +517,6 @@
             this.tbCalibRspResult.ReadOnly = true;
             this.tbCalibRspResult.Size = new System.Drawing.Size(66, 20);
             this.tbCalibRspResult.TabIndex = 7;
-            this.tbCalibRspResult.Text = "IL-IR-OL-OR";
             // 
             // btCalibRspGet
             // 
@@ -516,24 +526,27 @@
             this.btCalibRspGet.TabIndex = 8;
             this.btCalibRspGet.Text = "Get";
             this.btCalibRspGet.UseVisualStyleBackColor = true;
+            this.btCalibRspGet.Click += new System.EventHandler(this.btCalibRspGet_Click);
             // 
             // btCalibStart
             // 
-            this.btCalibStart.Location = new System.Drawing.Point(204, 294);
+            this.btCalibStart.Location = new System.Drawing.Point(6, 18);
             this.btCalibStart.Name = "btCalibStart";
             this.btCalibStart.Size = new System.Drawing.Size(60, 29);
             this.btCalibStart.TabIndex = 9;
             this.btCalibStart.Text = "StartCalib";
             this.btCalibStart.UseVisualStyleBackColor = true;
+            this.btCalibStart.Click += new System.EventHandler(this.btCalibStart_Click);
             // 
             // btCalibStop
             // 
-            this.btCalibStop.Location = new System.Drawing.Point(270, 294);
+            this.btCalibStop.Location = new System.Drawing.Point(91, 18);
             this.btCalibStop.Name = "btCalibStop";
             this.btCalibStop.Size = new System.Drawing.Size(60, 29);
             this.btCalibStop.TabIndex = 9;
             this.btCalibStop.Text = "StopCalib";
             this.btCalibStop.UseVisualStyleBackColor = true;
+            this.btCalibStop.Click += new System.EventHandler(this.btCalibStop_Click);
             // 
             // groupBox6
             // 
@@ -544,33 +557,33 @@
             this.groupBox6.Controls.Add(this.tbCalibRspResult);
             this.groupBox6.Controls.Add(this.label9);
             this.groupBox6.Controls.Add(this.btCalibRspGet);
-            this.groupBox6.Location = new System.Drawing.Point(196, 99);
+            this.groupBox6.Location = new System.Drawing.Point(196, 180);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(163, 90);
+            this.groupBox6.Size = new System.Drawing.Size(163, 94);
             this.groupBox6.TabIndex = 10;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Response";
             // 
             // tbCalibRspSensitivity
             // 
-            this.tbCalibRspSensitivity.Location = new System.Drawing.Point(69, 65);
+            this.tbCalibRspSensitivity.Location = new System.Drawing.Point(85, 67);
             this.tbCalibRspSensitivity.Name = "tbCalibRspSensitivity";
             this.tbCalibRspSensitivity.ReadOnly = true;
-            this.tbCalibRspSensitivity.Size = new System.Drawing.Size(85, 20);
+            this.tbCalibRspSensitivity.Size = new System.Drawing.Size(69, 20);
             this.tbCalibRspSensitivity.TabIndex = 10;
             // 
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(5, 68);
+            this.label11.Location = new System.Drawing.Point(5, 71);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(57, 13);
+            this.label11.Size = new System.Drawing.Size(78, 13);
             this.label11.TabIndex = 9;
-            this.label11.Text = "Sensitivity:";
+            this.label11.Text = "Sens(dBV/Pa):";
             // 
             // tbCalibRspMicMask
             // 
-            this.tbCalibRspMicMask.Location = new System.Drawing.Point(69, 42);
+            this.tbCalibRspMicMask.Location = new System.Drawing.Point(69, 43);
             this.tbCalibRspMicMask.Name = "tbCalibRspMicMask";
             this.tbCalibRspMicMask.ReadOnly = true;
             this.tbCalibRspMicMask.Size = new System.Drawing.Size(85, 20);
@@ -579,20 +592,60 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(9, 45);
+            this.label10.Location = new System.Drawing.Point(5, 47);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(53, 13);
             this.label10.TabIndex = 9;
             this.label10.Text = "MicMask:";
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Controls.Add(this.tbCalibStsGet);
+            this.groupBox7.Controls.Add(this.label12);
+            this.groupBox7.Controls.Add(this.btCalibStop);
+            this.groupBox7.Controls.Add(this.btCalibStart);
+            this.groupBox7.Controls.Add(this.btCalibStsGet);
+            this.groupBox7.Location = new System.Drawing.Point(196, 280);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(157, 77);
+            this.groupBox7.TabIndex = 11;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "Status";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(9, 55);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(40, 13);
+            this.label12.TabIndex = 10;
+            this.label12.Text = "Status:";
+            // 
+            // tbCalibStsGet
+            // 
+            this.tbCalibStsGet.Location = new System.Drawing.Point(51, 53);
+            this.tbCalibStsGet.Name = "tbCalibStsGet";
+            this.tbCalibStsGet.ReadOnly = true;
+            this.tbCalibStsGet.Size = new System.Drawing.Size(42, 20);
+            this.tbCalibStsGet.TabIndex = 11;
+            // 
+            // btCalibStsGet
+            // 
+            this.btCalibStsGet.Location = new System.Drawing.Point(99, 51);
+            this.btCalibStsGet.Name = "btCalibStsGet";
+            this.btCalibStsGet.Size = new System.Drawing.Size(32, 23);
+            this.btCalibStsGet.TabIndex = 8;
+            this.btCalibStsGet.Text = "Get";
+            this.btCalibStsGet.UseVisualStyleBackColor = true;
+            this.btCalibStsGet.Click += new System.EventHandler(this.btCalibStsGet_Click);
             // 
             // frmSrvCalib
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(365, 367);
+            this.Controls.Add(this.groupBox7);
             this.Controls.Add(this.groupBox6);
-            this.Controls.Add(this.btCalibStop);
-            this.Controls.Add(this.btCalibStart);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
@@ -618,6 +671,8 @@
             this.groupBox5.PerformLayout();
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
+            this.groupBox7.ResumeLayout(false);
+            this.groupBox7.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -672,5 +727,9 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox tbCalibRspMicMask;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.GroupBox groupBox7;
+        private System.Windows.Forms.TextBox tbCalibStsGet;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Button btCalibStsGet;
     }
 }
