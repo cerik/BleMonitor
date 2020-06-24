@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.stsLb_ConnSts = new System.Windows.Forms.ToolStripStatusLabel();
             this.stsLb_ConnMac = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tslbRxMsg = new System.Windows.Forms.ToolStripStatusLabel();
@@ -42,6 +43,8 @@
             this.m_Edit = new System.Windows.Forms.ToolStripMenuItem();
             this.m_Tool = new System.Windows.Forms.ToolStripMenuItem();
             this.srvTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabMain = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.splitTab1_Main = new System.Windows.Forms.SplitContainer();
@@ -53,6 +56,8 @@
             this.cAddrType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.panel1 = new System.Windows.Forms.Panel();
             this.btDisconnect = new System.Windows.Forms.Button();
+            this.btConnect = new System.Windows.Forms.Button();
+            this.btScanStart = new System.Windows.Forms.Button();
             this.splitTab1_Attr = new System.Windows.Forms.SplitContainer();
             this.tvSrvTree = new System.Windows.Forms.TreeView();
             this.tabAttr = new System.Windows.Forms.TabControl();
@@ -77,6 +82,8 @@
             this.btAttrGet = new System.Windows.Forms.Button();
             this.pgCalib = new System.Windows.Forms.TabPage();
             this.pgTonePlay = new System.Windows.Forms.TabPage();
+            this.pgDose = new System.Windows.Forms.TabPage();
+            this.pgFittest = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.comDev = new System.IO.Ports.SerialPort(this.components);
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
@@ -85,17 +92,14 @@
             this.toolCmbPort = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
             this.toolCmbBaudrate = new System.Windows.Forms.ToolStripComboBox();
+            this.toolBtOpenCom = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.timPeridic = new System.Windows.Forms.Timer(this.components);
-            this.pgDose = new System.Windows.Forms.TabPage();
-            this.pgFittest = new System.Windows.Forms.TabPage();
-            this.btConnect = new System.Windows.Forms.Button();
-            this.btScanStart = new System.Windows.Forms.Button();
-            this.toolBtOpenCom = new System.Windows.Forms.ToolStripButton();
             this.tbtDirectLeft = new System.Windows.Forms.ToolStripButton();
             this.tbtDirectRight = new System.Windows.Forms.ToolStripButton();
-            this.stsLb_ConnSts = new System.Windows.Forms.ToolStripStatusLabel();
+            this.timPeridic = new System.Windows.Forms.Timer(this.components);
+            this.cBond = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.cPackType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tabMain.SuspendLayout();
@@ -140,6 +144,18 @@
             this.statusStrip1.Size = new System.Drawing.Size(908, 25);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
+            // 
+            // stsLb_ConnSts
+            // 
+            this.stsLb_ConnSts.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Top) 
+            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) 
+            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
+            this.stsLb_ConnSts.Image = global::ToolSet.Properties.Resources.BMP_GRAY;
+            this.stsLb_ConnSts.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.stsLb_ConnSts.Name = "stsLb_ConnSts";
+            this.stsLb_ConnSts.Size = new System.Drawing.Size(72, 20);
+            this.stsLb_ConnSts.Text = "Connect";
+            this.stsLb_ConnSts.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // stsLb_ConnMac
             // 
@@ -190,7 +206,8 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.m_File,
             this.m_Edit,
-            this.m_Tool});
+            this.m_Tool,
+            this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(908, 24);
@@ -222,7 +239,21 @@
             this.srvTreeToolStripMenuItem.Name = "srvTreeToolStripMenuItem";
             this.srvTreeToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.srvTreeToolStripMenuItem.Text = "SrvTree";
-            this.srvTreeToolStripMenuItem.Click += new System.EventHandler(this.srvTreeToolStripMenuItem_Click);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.aboutToolStripMenuItem.Text = "About";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // tabMain
             // 
@@ -261,7 +292,7 @@
             // 
             this.splitTab1_Main.Panel2.Controls.Add(this.splitTab1_Attr);
             this.splitTab1_Main.Size = new System.Drawing.Size(894, 460);
-            this.splitTab1_Main.SplitterDistance = 241;
+            this.splitTab1_Main.SplitterDistance = 402;
             this.splitTab1_Main.TabIndex = 1;
             // 
             // splitContainer1
@@ -280,7 +311,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.panel1);
-            this.splitContainer1.Size = new System.Drawing.Size(239, 458);
+            this.splitContainer1.Size = new System.Drawing.Size(400, 458);
             this.splitContainer1.SplitterDistance = 425;
             this.splitContainer1.TabIndex = 5;
             // 
@@ -291,7 +322,9 @@
             this.cName,
             this.cRssi,
             this.cMacAddr,
-            this.cAddrType});
+            this.cAddrType,
+            this.cBond,
+            this.cPackType});
             this.listScanDev.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listScanDev.FullRowSelect = true;
             this.listScanDev.GridLines = true;
@@ -300,7 +333,7 @@
             this.listScanDev.MultiSelect = false;
             this.listScanDev.Name = "listScanDev";
             this.listScanDev.ShowGroups = false;
-            this.listScanDev.Size = new System.Drawing.Size(239, 425);
+            this.listScanDev.Size = new System.Drawing.Size(400, 425);
             this.listScanDev.TabIndex = 3;
             this.listScanDev.UseCompatibleStateImageBehavior = false;
             this.listScanDev.View = System.Windows.Forms.View.Details;
@@ -334,7 +367,7 @@
             this.panel1.Margin = new System.Windows.Forms.Padding(10, 0, 0, 0);
             this.panel1.MaximumSize = new System.Drawing.Size(0, 23);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(0, 23);
+            this.panel1.Size = new System.Drawing.Size(400, 23);
             this.panel1.TabIndex = 4;
             // 
             // btDisconnect
@@ -347,6 +380,35 @@
             this.btDisconnect.Text = "Disconnect";
             this.btDisconnect.UseVisualStyleBackColor = true;
             this.btDisconnect.Click += new System.EventHandler(this.btDisconnect_Click);
+            // 
+            // btConnect
+            // 
+            this.btConnect.Image = global::ToolSet.Properties.Resources.BMP_GRAY;
+            this.btConnect.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btConnect.Location = new System.Drawing.Point(91, 0);
+            this.btConnect.Margin = new System.Windows.Forms.Padding(0);
+            this.btConnect.Name = "btConnect";
+            this.btConnect.Size = new System.Drawing.Size(68, 23);
+            this.btConnect.TabIndex = 3;
+            this.btConnect.Text = "Connect";
+            this.btConnect.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btConnect.UseVisualStyleBackColor = true;
+            this.btConnect.Click += new System.EventHandler(this.btConnect_Click);
+            // 
+            // btScanStart
+            // 
+            this.btScanStart.Dock = System.Windows.Forms.DockStyle.Left;
+            this.btScanStart.Image = global::ToolSet.Properties.Resources.BMP_GRAY;
+            this.btScanStart.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btScanStart.Location = new System.Drawing.Point(0, 0);
+            this.btScanStart.Margin = new System.Windows.Forms.Padding(0);
+            this.btScanStart.Name = "btScanStart";
+            this.btScanStart.Size = new System.Drawing.Size(75, 23);
+            this.btScanStart.TabIndex = 1;
+            this.btScanStart.Text = "StartScan";
+            this.btScanStart.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btScanStart.UseVisualStyleBackColor = true;
+            this.btScanStart.Click += new System.EventHandler(this.btScanStart_Click);
             // 
             // splitTab1_Attr
             // 
@@ -361,8 +423,8 @@
             // splitTab1_Attr.Panel2
             // 
             this.splitTab1_Attr.Panel2.Controls.Add(this.tabAttr);
-            this.splitTab1_Attr.Size = new System.Drawing.Size(647, 458);
-            this.splitTab1_Attr.SplitterDistance = 232;
+            this.splitTab1_Attr.Size = new System.Drawing.Size(486, 458);
+            this.splitTab1_Attr.SplitterDistance = 174;
             this.splitTab1_Attr.TabIndex = 2;
             // 
             // tvSrvTree
@@ -371,7 +433,7 @@
             this.tvSrvTree.Location = new System.Drawing.Point(0, 0);
             this.tvSrvTree.Name = "tvSrvTree";
             this.tvSrvTree.ShowNodeToolTips = true;
-            this.tvSrvTree.Size = new System.Drawing.Size(232, 458);
+            this.tvSrvTree.Size = new System.Drawing.Size(174, 458);
             this.tvSrvTree.TabIndex = 0;
             this.tvSrvTree.DoubleClick += new System.EventHandler(this.tvSrvTree_DoubleClick);
             // 
@@ -386,7 +448,7 @@
             this.tabAttr.Location = new System.Drawing.Point(0, 0);
             this.tabAttr.Name = "tabAttr";
             this.tabAttr.SelectedIndex = 0;
-            this.tabAttr.Size = new System.Drawing.Size(411, 458);
+            this.tabAttr.Size = new System.Drawing.Size(308, 458);
             this.tabAttr.TabIndex = 0;
             // 
             // pgRW
@@ -396,7 +458,7 @@
             this.pgRW.Location = new System.Drawing.Point(4, 22);
             this.pgRW.Name = "pgRW";
             this.pgRW.Padding = new System.Windows.Forms.Padding(3);
-            this.pgRW.Size = new System.Drawing.Size(403, 432);
+            this.pgRW.Size = new System.Drawing.Size(300, 432);
             this.pgRW.TabIndex = 0;
             this.pgRW.Text = "Read&Write";
             this.pgRW.UseVisualStyleBackColor = true;
@@ -613,7 +675,7 @@
             this.pgCalib.Location = new System.Drawing.Point(4, 22);
             this.pgCalib.Name = "pgCalib";
             this.pgCalib.Padding = new System.Windows.Forms.Padding(3);
-            this.pgCalib.Size = new System.Drawing.Size(403, 432);
+            this.pgCalib.Size = new System.Drawing.Size(403, 430);
             this.pgCalib.TabIndex = 1;
             this.pgCalib.Text = "MicCalibration";
             this.pgCalib.UseVisualStyleBackColor = true;
@@ -623,17 +685,37 @@
             this.pgTonePlay.Location = new System.Drawing.Point(4, 22);
             this.pgTonePlay.Name = "pgTonePlay";
             this.pgTonePlay.Padding = new System.Windows.Forms.Padding(3);
-            this.pgTonePlay.Size = new System.Drawing.Size(403, 432);
+            this.pgTonePlay.Size = new System.Drawing.Size(403, 430);
             this.pgTonePlay.TabIndex = 2;
             this.pgTonePlay.Text = "TonePlay";
             this.pgTonePlay.UseVisualStyleBackColor = true;
+            // 
+            // pgDose
+            // 
+            this.pgDose.Location = new System.Drawing.Point(4, 22);
+            this.pgDose.Name = "pgDose";
+            this.pgDose.Padding = new System.Windows.Forms.Padding(3);
+            this.pgDose.Size = new System.Drawing.Size(403, 430);
+            this.pgDose.TabIndex = 3;
+            this.pgDose.Text = "DOSE";
+            this.pgDose.UseVisualStyleBackColor = true;
+            // 
+            // pgFittest
+            // 
+            this.pgFittest.Location = new System.Drawing.Point(4, 22);
+            this.pgFittest.Name = "pgFittest";
+            this.pgFittest.Padding = new System.Windows.Forms.Padding(3);
+            this.pgFittest.Size = new System.Drawing.Size(403, 430);
+            this.pgFittest.TabIndex = 4;
+            this.pgFittest.Text = "FIT Test";
+            this.pgFittest.UseVisualStyleBackColor = true;
             // 
             // tabPage2
             // 
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(900, 466);
+            this.tabPage2.Size = new System.Drawing.Size(900, 464);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -718,69 +800,6 @@
             this.toolCmbBaudrate.Size = new System.Drawing.Size(75, 25);
             this.toolCmbBaudrate.ToolTipText = "Baundrate";
             // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
-            // 
-            // timPeridic
-            // 
-            this.timPeridic.Tick += new System.EventHandler(this.timPeridic_Tick);
-            // 
-            // pgDose
-            // 
-            this.pgDose.Location = new System.Drawing.Point(4, 22);
-            this.pgDose.Name = "pgDose";
-            this.pgDose.Padding = new System.Windows.Forms.Padding(3);
-            this.pgDose.Size = new System.Drawing.Size(403, 432);
-            this.pgDose.TabIndex = 3;
-            this.pgDose.Text = "DOSE";
-            this.pgDose.UseVisualStyleBackColor = true;
-            // 
-            // pgFittest
-            // 
-            this.pgFittest.Location = new System.Drawing.Point(4, 22);
-            this.pgFittest.Name = "pgFittest";
-            this.pgFittest.Padding = new System.Windows.Forms.Padding(3);
-            this.pgFittest.Size = new System.Drawing.Size(403, 432);
-            this.pgFittest.TabIndex = 4;
-            this.pgFittest.Text = "FIT Test";
-            this.pgFittest.UseVisualStyleBackColor = true;
-            // 
-            // btConnect
-            // 
-            this.btConnect.Image = global::ToolSet.Properties.Resources.BMP_GRAY;
-            this.btConnect.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btConnect.Location = new System.Drawing.Point(91, 0);
-            this.btConnect.Margin = new System.Windows.Forms.Padding(0);
-            this.btConnect.Name = "btConnect";
-            this.btConnect.Size = new System.Drawing.Size(68, 23);
-            this.btConnect.TabIndex = 3;
-            this.btConnect.Text = "Connect";
-            this.btConnect.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btConnect.UseVisualStyleBackColor = true;
-            this.btConnect.Click += new System.EventHandler(this.btConnect_Click);
-            // 
-            // btScanStart
-            // 
-            this.btScanStart.Dock = System.Windows.Forms.DockStyle.Left;
-            this.btScanStart.Image = global::ToolSet.Properties.Resources.BMP_GRAY;
-            this.btScanStart.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btScanStart.Location = new System.Drawing.Point(0, 0);
-            this.btScanStart.Margin = new System.Windows.Forms.Padding(0);
-            this.btScanStart.Name = "btScanStart";
-            this.btScanStart.Size = new System.Drawing.Size(75, 23);
-            this.btScanStart.TabIndex = 1;
-            this.btScanStart.Text = "StartScan";
-            this.btScanStart.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btScanStart.UseVisualStyleBackColor = true;
-            this.btScanStart.Click += new System.EventHandler(this.btScanStart_Click);
-            // 
             // toolBtOpenCom
             // 
             this.toolBtOpenCom.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
@@ -790,6 +809,16 @@
             this.toolBtOpenCom.Size = new System.Drawing.Size(56, 22);
             this.toolBtOpenCom.Text = "Open";
             this.toolBtOpenCom.Click += new System.EventHandler(this.toolBtOpenCom_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
             // tbtDirectLeft
             // 
@@ -815,17 +844,17 @@
             this.tbtDirectRight.Text = "->";
             this.tbtDirectRight.Click += new System.EventHandler(this.tbtDirectRight_Click);
             // 
-            // stsLb_ConnSts
+            // timPeridic
             // 
-            this.stsLb_ConnSts.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Top) 
-            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) 
-            | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
-            this.stsLb_ConnSts.Image = global::ToolSet.Properties.Resources.BMP_GRAY;
-            this.stsLb_ConnSts.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.stsLb_ConnSts.Name = "stsLb_ConnSts";
-            this.stsLb_ConnSts.Size = new System.Drawing.Size(72, 20);
-            this.stsLb_ConnSts.Text = "Connect";
-            this.stsLb_ConnSts.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.timPeridic.Tick += new System.EventHandler(this.timPeridic_Tick);
+            // 
+            // cBond
+            // 
+            this.cBond.Text = "Bond";
+            // 
+            // cPackType
+            // 
+            this.cPackType.Text = "PacketType";
             // 
             // frmMain
             // 
@@ -944,6 +973,10 @@
         private System.Windows.Forms.TextBox tbAttrSet;
         private System.Windows.Forms.TabPage pgDose;
         private System.Windows.Forms.TabPage pgFittest;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.ColumnHeader cBond;
+        private System.Windows.Forms.ColumnHeader cPackType;
     }
 }
 

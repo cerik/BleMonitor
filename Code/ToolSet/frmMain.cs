@@ -65,7 +65,7 @@ namespace ToolSet
         // [14]:uint8 array, data; Scan response data.
         public void EventDevScanResponse(object sender, Bluegiga.BLE.Events.GAP.ScanResponseEventArgs e)
         {
-            string mName = "(No Name)";
+            string mName = "(NoName)";
 
             // pull all advertised service info from ad packet
             //List<Byte[]> ad_services = new List<Byte[]>();
@@ -136,7 +136,13 @@ namespace ToolSet
                     ListViewItem lv = new ListViewItem(mName);//[0];
                     lv.SubItems.Add(rssi.ToString());//[1]
                     lv.SubItems.Add(DatConvert.ByteArrayToHexString(e.sender));//[2]
-                    lv.SubItems.Add(e.address_type.ToString());//[3]
+                    lv.SubItems[2].Tag = e.bond;
+                    if (e.address_type==1) lv.SubItems.Add("Random");//[3]
+                    else lv.SubItems.Add("Public");//[3]
+                    lv.SubItems.Add(e.bond.ToString());//[4]
+                    lv.SubItems.Add(e.packet_type.ToString());//[4];
+                    
+
                     listScanDev.Items.Add(lv);
                 }
             });
@@ -183,6 +189,12 @@ namespace ToolSet
                 c_BleDev.MacAddr = e.address.ToString();
                 c_BleDev.AddrType = e.address_type;
                 c_BleDev.State = GhpBle.ACTTION_SCAN_PRIMSRV;
+
+ 
+                byte[] cmd1 = bglib.BLECommandSystemWhitelistAppend(e.address,e.address_type);
+                bglib.SendCommand(comDev, cmd1);
+                byte[] cmd2 = bglib.BLECommandSMEncryptStart(e.connection, 1);
+                bglib.SendCommand(comDev, cmd2);
             }
         }
 
@@ -248,6 +260,31 @@ namespace ToolSet
                 c_BleDev.AttReadDone = true;
                 c_BleDev.AttReadValue = e.value;
                 c_BleDev.AttReadType = e.type;
+            }
+        }
+
+        public void EventBondStatusEventHandler(object sender, Bluegiga.BLE.Events.SM.BondStatusEventArgs e)
+        {
+            if (e.bond == 1)
+            {
+            }
+        }
+        public void EventPasskeyRequestEventHandler(object sender, Bluegiga.BLE.Events.SM.PasskeyRequestEventArgs e)
+        {
+            if (e.handle == 1)
+            {
+            }
+        }
+        public void EventPasskeyDisplayEventHandler(object sender, Bluegiga.BLE.Events.SM.PasskeyDisplayEventArgs e)
+        {
+            if (e.handle == 1)
+            {
+            }
+        }
+        public void EventBondingFailEventHandler(object sender, Bluegiga.BLE.Events.SM.BondingFailEventArgs e)
+        {
+            if (e.handle == 1)
+            {
             }
         }
 
@@ -486,6 +523,11 @@ namespace ToolSet
             //is indicated or notified by the remote device.
             bglib.BLEEventATTClientAttributeValue += new Bluegiga.BLE.Events.ATTClient.AttributeValueEventHandler(this.EventReadAttributeValue);
 
+            bglib.BLEEventSMBondStatus += new Bluegiga.BLE.Events.SM.BondStatusEventHandler(this.EventBondStatusEventHandler);
+            bglib.BLEEventSMPasskeyDisplay += new Bluegiga.BLE.Events.SM.PasskeyDisplayEventHandler(this.EventPasskeyDisplayEventHandler);
+            bglib.BLEEventSMPasskeyRequest += new Bluegiga.BLE.Events.SM.PasskeyRequestEventHandler(this.EventPasskeyRequestEventHandler);
+            bglib.BLEEventSMBondingFail += new Bluegiga.BLE.Events.SM.BondingFailEventHandler(this.EventBondingFailEventHandler);
+
             //Attribute read response event
             ////response data:
             //  [4~5] : uint16, handle; handle of the attribute which was read;
@@ -586,6 +628,14 @@ namespace ToolSet
                     MessageBox.Show(ex.Message, "打开失败", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
+
+                //bglib.BLEEventSMBondStatus();
+                byte[] cmd1 = bglib.BLECommandSMSetBondableMode(1);
+                bglib.SendCommand(comDev, cmd1);
+                byte[] cmd2 = bglib.BLECommandSMSetParameters(1, 7, 0);
+                bglib.SendCommand(comDev, cmd2);
+                byte[] cmd3 = bglib.BLECommandSMWhitelistBonds();
+                bglib.SendCommand(comDev,cmd3);
             }
             else
             {
@@ -772,12 +822,6 @@ namespace ToolSet
             }
         }
 
-        private void srvTreeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            frmSrvTonePlay frm = new frmSrvTonePlay();
-            frm.Show();
-        }
-
         private void listScanDev_DoubleClick(object sender, EventArgs e)
         {
             if (comDev.IsOpen == false)
@@ -790,7 +834,8 @@ namespace ToolSet
             {
                 c_BleDev.Reset();
                 c_BleDev.MacAddr = listScanDev.SelectedItems[0].SubItems[2].Text;
-                c_BleDev.AddrType = byte.Parse(listScanDev.SelectedItems[0].SubItems[3].Text);
+                if(listScanDev.SelectedItems[0].SubItems[3].Text == "Random") c_BleDev.AddrType = 1;
+                else c_BleDev.AddrType = 0;
                 c_BleDev.DevName = listScanDev.SelectedItems[0].SubItems[0].Text;
 
                 stsLb_ConnSts.Text = listScanDev.SelectedItems[0].SubItems[0].Text;
@@ -990,6 +1035,12 @@ namespace ToolSet
                 tbAttrGetCvt.Text = DatConvert.HexArrayToString(hexDat);
                 break;
             }
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmAbout frm = new frmAbout();
+            frm.Show();
         }
     }
 }
