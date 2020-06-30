@@ -41,6 +41,22 @@ namespace ToolSet
         public void EventProcedureCompleted(object sender, Bluegiga.BLE.Events.ATTClient.ProcedureCompletedEventArgs e)
         {
             c_BleDev.Busy = false;
+#if false
+            if(c_BleDev.State == GhpBle.ACTIION_ATTR_PAIR_CHECK)
+            {
+                switch(e.result)
+                {
+                case 0x040F:
+                case 0x0405:
+                case 0x0408:
+                     c_BleDev.NeedPair = true;
+                     break;
+                default:
+                    c_BleDev.NeedPair = false;
+                    break;
+                }
+            }
+#endif
         }
 
         //Adevertising search event.
@@ -193,17 +209,16 @@ namespace ToolSet
                 c_BleDev.State = GhpBle.ACTTION_SCAN_PRIMSRV;
                 c_BleDev.Bonding = e.bonding;
 
-                if(e.bonding == 0xFF)
-                { 
-                    byte[] cmd2 = bglib.BLECommandSMEncryptStart(e.connection, 1);
-                    bglib.SendCommand(comDev, cmd2);
-                }
+                //if(e.bonding == 0xFF)
+                //{ 
+                //     byte[] cmd2 = bglib.BLECommandSMEncryptStart(e.connection, 1);
+                //    bglib.SendCommand(comDev, cmd2);
+                //}
             }
         }
 
         public void EventDisconnect(object sender, Bluegiga.BLE.Events.Connection.DisconnectedEventArgs e)
         {
-            c_BleDev.Reset();
         }
 
         //This event is produced when an attributed group(a service) is found. Typically this event is produced after Read by Group Type command.
@@ -269,6 +284,7 @@ namespace ToolSet
         public void EventBondStatusEventHandler(object sender, Bluegiga.BLE.Events.SM.BondStatusEventArgs e)
         {
             //MessageBox.Show(e.bond.ToString(), "tBondStatus", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+            c_BleDev.Paired = true;
         }
         public void EventPasskeyRequestEventHandler(object sender, Bluegiga.BLE.Events.SM.PasskeyRequestEventArgs e)
         {
@@ -315,6 +331,7 @@ namespace ToolSet
         }
         private void ScanThread()
         {
+            DateTime mTimStart=DateTime.Now;
             while (true)
             {
                 switch (c_BleDev.State)
@@ -322,19 +339,75 @@ namespace ToolSet
                 case GhpBle.ACTTION_IDLE:
                     Thread.Sleep(50);
                     break;
+#if false
+                case GhpBle.ACTIION_ATTR_PAIR_CHECK:
+                    {
+                        mTimStart = DateTime.Now;
+                        while (c_BleDev.Busy)
+                        {
+                            TimeSpan mTimDif = DateTime.Now.Subtract(mTimStart);
+                            if(mTimDif.Seconds>3) break;
+                        }
+                        c_BleDev.Busy = true;
+                        byte[] cmd = bglib.BLECommandATTClientReadByType(c_BleDev.ConnHandle, 0x0001, 0xFFFF, new byte[] { 0x03, 0x28 });
+                        bglib.SendCommand(comDev, cmd);
+
+                        mTimStart = DateTime.Now;
+                        while (c_BleDev.Busy)
+                        {
+                            TimeSpan mTimDif = DateTime.Now.Subtract(mTimStart);
+                            if (mTimDif.Seconds > 3) break;
+                        }
+                        if(c_BleDev.NeedPair )
+                        {
+                            if(c_BleDev.Paired == false)
+                            {
+                                c_BleDev.Busy = true;
+                                byte[] cmd2 = bglib.BLECommandSMEncryptStart(c_BleDev.ConnHandle, 1);
+                                bglib.SendCommand(comDev, cmd2);
+
+                                mTimStart = DateTime.Now;
+                                while (c_BleDev.Paired == false) 
+                                {
+                                    TimeSpan mTimDif = DateTime.Now.Subtract(mTimStart);
+                                    if (mTimDif.Seconds > 3) break;
+                                }
+                            }
+                            else
+                            {
+                                c_BleDev.State = GhpBle.ACTIONN_ATTR_PAIR_DONE;
+                            }
+                        }
+                        else
+                        {
+                            c_BleDev.State = GhpBle.ACTIONN_ATTR_PAIR_DONE;
+                        }
+                    }
+                    break;
+                case GhpBle.ACTIONN_ATTR_PAIR_DONE:
+                    if(c_BleDev.NeedPair && c_BleDev.Paired)
+                    {
+                        c_BleDev.State = GhpBle.ACTTION_SCAN_PRIMSRV;
+                    }
+                    break;
+#endif
                 case GhpBle.ACTTION_SCAN_PRIMSRV:
                     {
                         c_BleDev.Busy = true;
                         Byte[] cmd = bglib.BLECommandATTClientReadByGroupType(c_BleDev.ConnHandle, 0x0001, 0xFFFF, new Byte[] { 0x00, 0x28 });
                         bglib.SendCommand(comDev, cmd);
+
+                        mTimStart = DateTime.Now;
                         while (c_BleDev.Busy)
                         {
+                            TimeSpan mTimDif = DateTime.Now.Subtract(mTimStart);
+                            if (mTimDif.Seconds > 10) break;
                         }
                         c_BleDev.State = GhpBle.ACTTION_SCAN_PRIMSRV_DONE;
                     }
                     break;
                 case GhpBle.ACTTION_SCAN_PRIMSRV_DONE:
-                    break;
+                        break;
                 case GhpBle.ACTTION_SCAN_ATTRIB:
                     if(c_BleDev.CurrentPrimSrv != null)
                     {
@@ -346,8 +419,12 @@ namespace ToolSet
                             c_BleDev.Busy = true;
                             Byte[] cmd = bglib.BLECommandATTClientFindInformation(c_BleDev.ConnHandle, c_BleDev.CurrentPrimSrv.Start, c_BleDev.CurrentPrimSrv.End);
                             bglib.SendCommand(comDev, cmd);
+
+                            mTimStart = DateTime.Now;
                             while (c_BleDev.Busy)
                             {
+                                TimeSpan mTimDif = DateTime.Now.Subtract(mTimStart);
+                                if (mTimDif.Seconds > 20) break;
                             }
 
                             //
@@ -395,7 +472,7 @@ namespace ToolSet
         }
         public bool BleIsReadDone()
         {
-            if (c_BleDev.Busy = false || c_BleDev.AttReadDone == true) return true;
+            if (c_BleDev.Busy == false || c_BleDev.AttReadDone == true) return true;
             else return false;
         }
         public void BleStateClear()
@@ -635,9 +712,6 @@ namespace ToolSet
                     return;
                 }
 
-                byte[] cmdErase = bglib.BLECommandFlashPSEraseAll();
-                bglib.SendCommand(comDev, cmdErase);
-                
                 byte[] cmd1 = bglib.BLECommandSMSetBondableMode(1);
                 bglib.SendCommand(comDev, cmd1);
                 byte[] cmd2 = bglib.BLECommandSMSetParameters(1, 7, 2);//Keyboard Only
@@ -1055,6 +1129,19 @@ namespace ToolSet
         {
             frmAbout frm = new frmAbout();
             frm.Show();
+        }
+
+        private void toolBtPair_Click(object sender, EventArgs e)
+        {
+            c_BleDev.Busy = true;
+            byte[] cmd2 = bglib.BLECommandSMEncryptStart(c_BleDev.ConnHandle, 1);
+            bglib.SendCommand(comDev, cmd2);
+        }
+
+        private void toolBtPairClr_Click(object sender,EventArgs e)
+        {
+            byte[] cmdErase = bglib.BLECommandFlashPSEraseAll();
+            bglib.SendCommand(comDev, cmdErase);
         }
     }
 }

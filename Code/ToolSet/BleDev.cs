@@ -229,6 +229,8 @@ namespace ToolSet
         public const byte ACTTION_ATTR_READ = 5;
         public const byte ACTIONN_ATTR_READ_DONE = 6;
         public const byte ACTTION_ATTR_WRITE = 7;
+        public const byte ACTIION_ATTR_PAIR_CHECK = 8;
+        public const byte ACTIONN_ATTR_PAIR_DONE = 9;
 
         //
         //Member
@@ -253,6 +255,9 @@ namespace ToolSet
         public string DevName { get; set; }
         public bool Busy { get; set; }
         public byte Bonding { get; set; }
+
+        public bool NeedPair { get; set; }
+        public bool Paired { get; set; }
         public GhpBle()
         {
             ConnHandle = CAttribute.InvalidHandle;
@@ -266,6 +271,9 @@ namespace ToolSet
             AttReadValue = null;
             Busy = false;
             AttReadDone = false;
+
+            NeedPair = true;
+            Paired = false;
         }
 
         public void Reset()
@@ -281,6 +289,8 @@ namespace ToolSet
             AttReadValue = null;
             Busy = false;
             AttReadDone = false;
+            NeedPair = true;
+            Paired = false;
         }
 
         public int GetPrimSrvIndex(string uuidstr)

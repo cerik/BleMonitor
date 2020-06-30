@@ -20,9 +20,12 @@ namespace ToolSet
 
         private void btOK_Click(object sender, EventArgs e)
         {
-            PairKey = UInt32.Parse(tbPairKey.Text);
-            PairYes = true;
-            Close();
+            if(tbPairKey.Text != string.Empty)
+            { 
+                PairKey = UInt32.Parse(tbPairKey.Text);
+                PairYes = true;
+                Close();
+            }
         }
 
         private void btCancel_Click(object sender, EventArgs e)

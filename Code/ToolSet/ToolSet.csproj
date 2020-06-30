@@ -75,6 +75,10 @@
     <Compile Include="frmPairKey.Designer.cs">
       <DependentUpon>frmPairKey.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmPersistent.cs" />
+    <Compile Include="frmPersistent.Designer.cs">
+      <DependentUpon>frmPersistent.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmSrvCalib.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -110,6 +114,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmPairKey.resx">
       <DependentUpon>frmPairKey.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmPersistent.resx">
+      <DependentUpon>frmPersistent.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmSrvCalib.resx">
       <DependentUpon>frmSrvCalib.cs</DependentUpon>
