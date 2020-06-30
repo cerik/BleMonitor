@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Threading;
 
+
 namespace ToolSet
 {
     public partial class frmMain : Form
@@ -33,6 +34,7 @@ namespace ToolSet
         private frmSrvTonePlay mFrmSrvTonePly = new frmSrvTonePlay();
         private frmSrvDose mFrmSrvDose = new frmSrvDose();
         private frmSrvFittest mFrmSrvFittest = new frmSrvFittest();
+        private frmPairKey mFrmPairKey = new frmPairKey();
         #endregion
 
         #region BleEventCallback
@@ -189,12 +191,13 @@ namespace ToolSet
                 c_BleDev.MacAddr = e.address.ToString();
                 c_BleDev.AddrType = e.address_type;
                 c_BleDev.State = GhpBle.ACTTION_SCAN_PRIMSRV;
+                c_BleDev.Bonding = e.bonding;
 
- 
-                byte[] cmd1 = bglib.BLECommandSystemWhitelistAppend(e.address,e.address_type);
-                bglib.SendCommand(comDev, cmd1);
-                byte[] cmd2 = bglib.BLECommandSMEncryptStart(e.connection, 1);
-                bglib.SendCommand(comDev, cmd2);
+                if(e.bonding == 0xFF)
+                { 
+                    byte[] cmd2 = bglib.BLECommandSMEncryptStart(e.connection, 1);
+                    bglib.SendCommand(comDev, cmd2);
+                }
             }
         }
 
@@ -265,26 +268,26 @@ namespace ToolSet
 
         public void EventBondStatusEventHandler(object sender, Bluegiga.BLE.Events.SM.BondStatusEventArgs e)
         {
-            if (e.bond == 1)
-            {
-            }
+            //MessageBox.Show(e.bond.ToString(), "tBondStatus", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
         }
         public void EventPasskeyRequestEventHandler(object sender, Bluegiga.BLE.Events.SM.PasskeyRequestEventArgs e)
         {
-            if (e.handle == 1)
-            {
-            }
+            mFrmPairKey.ShowDialog();
         }
         public void EventPasskeyDisplayEventHandler(object sender, Bluegiga.BLE.Events.SM.PasskeyDisplayEventArgs e)
         {
-            if (e.handle == 1)
-            {
-            }
+            //MessageBox.Show(e.handle.ToString(), "PasskeyDisplay", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
         }
         public void EventBondingFailEventHandler(object sender, Bluegiga.BLE.Events.SM.BondingFailEventArgs e)
         {
-            if (e.handle == 1)
-            {
+        }
+
+        public void ResponseEncryptStartEventHandler(object sender, Bluegiga.BLE.Responses.SM.EncryptStartEventArgs e)
+        {
+            if(e.result == 0)
+            { 
+                //byte[] cmd = bglib.BLECommandSMEncryptStart(e.connection, 1);
+                //bglib.SendCommand(comDev, cmd);
             }
         }
 
@@ -536,6 +539,9 @@ namespace ToolSet
             //  [10..]: uint8array; value; maximum of 32 bytes can be read at a time.
             //bglib.BLEResponseAttributesRead += new Bluegiga.BLE.Responses.Attributes.ReadEventHandler(this.AttributesReadResponseEvent);
 
+            bglib.BLEResponseSMEncryptStart += new Bluegiga.BLE.Responses.SM.EncryptStartEventHandler(this.ResponseEncryptStartEventHandler);
+            
+            
             //Indicated --attclient
             //This event is produced at the GATT server side when an attribute is successfully indicated to the GATT client.
             //This means the event is only produced at the GATT server if the indication is acknowledged by the GATT client(the removte device).
@@ -629,10 +635,12 @@ namespace ToolSet
                     return;
                 }
 
-                //bglib.BLEEventSMBondStatus();
+                byte[] cmdErase = bglib.BLECommandFlashPSEraseAll();
+                bglib.SendCommand(comDev, cmdErase);
+                
                 byte[] cmd1 = bglib.BLECommandSMSetBondableMode(1);
                 bglib.SendCommand(comDev, cmd1);
-                byte[] cmd2 = bglib.BLECommandSMSetParameters(1, 7, 0);
+                byte[] cmd2 = bglib.BLECommandSMSetParameters(1, 7, 2);//Keyboard Only
                 bglib.SendCommand(comDev, cmd2);
                 byte[] cmd3 = bglib.BLECommandSMWhitelistBonds();
                 bglib.SendCommand(comDev,cmd3);
@@ -771,6 +779,12 @@ namespace ToolSet
             if (bglib.IsBusy()) tsLabelScan.Text = "Busy";
             else tsLabelScan.Text = "Ready";
 
+            if (mFrmPairKey.PairYes)
+            {
+                byte[] cmd = bglib.BLECommandSMPasskeyEntry(c_BleDev.ConnHandle, mFrmPairKey.PairKey);
+                bglib.SendCommand(comDev, cmd);
+                mFrmPairKey.PairYes = false;
+            }
             switch (c_BleDev.State)
             {
             case GhpBle.ACTTION_IDLE:

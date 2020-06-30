@@ -252,6 +252,7 @@ namespace ToolSet
         public string MacAddr { get; set; }
         public string DevName { get; set; }
         public bool Busy { get; set; }
+        public byte Bonding { get; set; }
         public GhpBle()
         {
             ConnHandle = CAttribute.InvalidHandle;

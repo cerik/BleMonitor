@@ -54,6 +54,8 @@
             this.cRssi = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.cMacAddr = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.cAddrType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.cBond = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.cPackType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.panel1 = new System.Windows.Forms.Panel();
             this.btDisconnect = new System.Windows.Forms.Button();
             this.btConnect = new System.Windows.Forms.Button();
@@ -98,8 +100,6 @@
             this.tbtDirectLeft = new System.Windows.Forms.ToolStripButton();
             this.tbtDirectRight = new System.Windows.Forms.ToolStripButton();
             this.timPeridic = new System.Windows.Forms.Timer(this.components);
-            this.cBond = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.cPackType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tabMain.SuspendLayout();
@@ -356,6 +356,14 @@
             // cAddrType
             // 
             this.cAddrType.Text = "AddrType";
+            // 
+            // cBond
+            // 
+            this.cBond.Text = "Bond";
+            // 
+            // cPackType
+            // 
+            this.cPackType.Text = "PacketType";
             // 
             // panel1
             // 
@@ -675,7 +683,7 @@
             this.pgCalib.Location = new System.Drawing.Point(4, 22);
             this.pgCalib.Name = "pgCalib";
             this.pgCalib.Padding = new System.Windows.Forms.Padding(3);
-            this.pgCalib.Size = new System.Drawing.Size(403, 430);
+            this.pgCalib.Size = new System.Drawing.Size(300, 430);
             this.pgCalib.TabIndex = 1;
             this.pgCalib.Text = "MicCalibration";
             this.pgCalib.UseVisualStyleBackColor = true;
@@ -685,7 +693,7 @@
             this.pgTonePlay.Location = new System.Drawing.Point(4, 22);
             this.pgTonePlay.Name = "pgTonePlay";
             this.pgTonePlay.Padding = new System.Windows.Forms.Padding(3);
-            this.pgTonePlay.Size = new System.Drawing.Size(403, 430);
+            this.pgTonePlay.Size = new System.Drawing.Size(300, 430);
             this.pgTonePlay.TabIndex = 2;
             this.pgTonePlay.Text = "TonePlay";
             this.pgTonePlay.UseVisualStyleBackColor = true;
@@ -695,7 +703,7 @@
             this.pgDose.Location = new System.Drawing.Point(4, 22);
             this.pgDose.Name = "pgDose";
             this.pgDose.Padding = new System.Windows.Forms.Padding(3);
-            this.pgDose.Size = new System.Drawing.Size(403, 430);
+            this.pgDose.Size = new System.Drawing.Size(300, 430);
             this.pgDose.TabIndex = 3;
             this.pgDose.Text = "DOSE";
             this.pgDose.UseVisualStyleBackColor = true;
@@ -705,7 +713,7 @@
             this.pgFittest.Location = new System.Drawing.Point(4, 22);
             this.pgFittest.Name = "pgFittest";
             this.pgFittest.Padding = new System.Windows.Forms.Padding(3);
-            this.pgFittest.Size = new System.Drawing.Size(403, 430);
+            this.pgFittest.Size = new System.Drawing.Size(300, 430);
             this.pgFittest.TabIndex = 4;
             this.pgFittest.Text = "FIT Test";
             this.pgFittest.UseVisualStyleBackColor = true;
@@ -847,14 +855,6 @@
             // timPeridic
             // 
             this.timPeridic.Tick += new System.EventHandler(this.timPeridic_Tick);
-            // 
-            // cBond
-            // 
-            this.cBond.Text = "Bond";
-            // 
-            // cPackType
-            // 
-            this.cPackType.Text = "PacketType";
             // 
             // frmMain
             // 
