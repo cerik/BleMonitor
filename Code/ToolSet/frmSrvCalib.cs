@@ -221,7 +221,7 @@ namespace ToolSet
                 {
                     freq = System.BitConverter.ToUInt32(m_ParentFrm.c_BleDev.AttReadValue, 0);
 
-                    tbCalibSoundLevelGet.Text = freq.ToString();
+                    tbCalibFreqGet.Text = freq.ToString();
                 }
             }
         }

@@ -3,7 +3,7 @@
 "VSVersion" = "3:800"
 "ProjectType" = "8:{978C614F-708E-4E1A-B201-565925725DBA}"
 "IsWebType" = "8:FALSE"
-"ProjectName" = "8:BleMonitorSetup"
+"ProjectName" = "8:BleMonitor"
 "LanguageId" = "3:1033"
 "CodePage" = "3:1252"
 "UILanguageId" = "3:1033"
@@ -21,26 +21,26 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_2F419C6274AD4F3BB7BB11CDACC5AD6C"
+        "MsmKey" = "8:_2DEAA500F43C49C8B8205AF5F040C66A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_75202FD3DCE54CFB90F3D17E0A1B21BA"
+        "MsmKey" = "8:_441A3CFE0A5A4845A50F55206A15F272"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_A0A1C3B622C54DF986F29819AE6C5381"
+        "MsmKey" = "8:_7CD611365B47451BB0FE5F78B25868F8"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_75202FD3DCE54CFB90F3D17E0A1B21BA"
+        "OwnerKey" = "8:_441A3CFE0A5A4845A50F55206A15F272"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -61,6 +61,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
         "Release"
         {
@@ -77,6 +85,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
     }
     "Deployable"
@@ -126,10 +142,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2F419C6274AD4F3BB7BB11CDACC5AD6C"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2DEAA500F43C49C8B8205AF5F040C66A"
             {
-            "SourcePath" = "8:..\\ToolSet\\bin\\x86\\Release\\ToolSet.exe.config"
-            "TargetName" = "8:ToolSet.exe.config"
+            "SourcePath" = "8:..\\ToolSet\\bin\\x86\\Release\\BleMonitor.exe.config"
+            "TargetName" = "8:BleMonitor.exe.config"
             "Tag" = "8:"
             "Folder" = "8:_9C4114B8DD6143379AAFDE21315CDDA9"
             "Condition" = "8:"
@@ -146,20 +162,20 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_75202FD3DCE54CFB90F3D17E0A1B21BA"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_441A3CFE0A5A4845A50F55206A15F272"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:ToolSet, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:BleMonitor, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
-                    "_75202FD3DCE54CFB90F3D17E0A1B21BA"
+                    "_441A3CFE0A5A4845A50F55206A15F272"
                     {
-                    "Name" = "8:ToolSet.exe"
+                    "Name" = "8:BleMonitor.exe"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:..\\ToolSet\\bin\\x86\\Release\\ToolSet.exe"
+            "SourcePath" = "8:..\\ToolSet\\bin\\x86\\Release\\BleMonitor.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_9C4114B8DD6143379AAFDE21315CDDA9"
@@ -177,10 +193,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A0A1C3B622C54DF986F29819AE6C5381"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7CD611365B47451BB0FE5F78B25868F8"
             {
-            "SourcePath" = "8:..\\ToolSet\\Res\\Logo.ico"
-            "TargetName" = "8:Logo.ico"
+            "SourcePath" = "8:..\\ToolSet\\Res\\Bluetooth.ico"
+            "TargetName" = "8:Bluetooth.ico"
             "Tag" = "8:"
             "Folder" = "8:_48FC28E115B54AE0B2944D41444F902C"
             "Condition" = "8:"
@@ -284,7 +300,7 @@
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
         "ProductVersion" = "8:1.0.1"
-        "Manufacturer" = "8:CCZY"
+        "Manufacturer" = "8:MicMind"
         "ARPHELPTELEPHONE" = "8:18917977319"
         "ARPHELPLINK" = "8:"
         "Title" = "8:BleMonitor"
@@ -396,15 +412,29 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_EAC2BA5F39064060AECC8A385DC95A14"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_02936E9731E74987B13335A0C86DA7D9"
             {
-            "Name" = "8:ToolSet.exe"
+            "Name" = "8:BleMonitor.exe"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_75202FD3DCE54CFB90F3D17E0A1B21BA"
+            "Target" = "8:_441A3CFE0A5A4845A50F55206A15F272"
+            "Folder" = "8:_60D9F5BACF7047628B7DDB085EFBA9F1"
+            "WorkingFolder" = "8:_9C4114B8DD6143379AAFDE21315CDDA9"
+            "Icon" = "8:"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_0C3E88F96D1143B398947A6520BD1E87"
+            {
+            "Name" = "8:BleMonitor.exe"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_441A3CFE0A5A4845A50F55206A15F272"
             "Folder" = "8:_775A69373E9A4DAE8BF2C82C32F8F327"
             "WorkingFolder" = "8:_9C4114B8DD6143379AAFDE21315CDDA9"
             "Icon" = "8:"
@@ -420,20 +450,6 @@
             "Transitive" = "11:FALSE"
             "Target" = "8:_003D29D2B6D745F48FD8BF2152F0C49B"
             "Folder" = "8:_775A69373E9A4DAE8BF2C82C32F8F327"
-            "WorkingFolder" = "8:_9C4114B8DD6143379AAFDE21315CDDA9"
-            "Icon" = "8:"
-            "Feature" = "8:"
-            }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_EF1430A1179F49A9B3FD0B331D945634"
-            {
-            "Name" = "8:ToolSet.exe"
-            "Arguments" = "8:"
-            "Description" = "8:"
-            "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
-            "Transitive" = "11:FALSE"
-            "Target" = "8:_75202FD3DCE54CFB90F3D17E0A1B21BA"
-            "Folder" = "8:_60D9F5BACF7047628B7DDB085EFBA9F1"
             "WorkingFolder" = "8:_9C4114B8DD6143379AAFDE21315CDDA9"
             "Icon" = "8:"
             "Feature" = "8:"
