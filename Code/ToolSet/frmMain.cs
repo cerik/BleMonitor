@@ -35,6 +35,7 @@ namespace ToolSet
         private frmSrvDose mFrmSrvDose = new frmSrvDose();
         private frmSrvFittest mFrmSrvFittest = new frmSrvFittest();
         private frmPairKey mFrmPairKey = new frmPairKey();
+        
         #endregion
 
         #region BleEventCallback
@@ -506,7 +507,14 @@ namespace ToolSet
 
         public void SendBleCmd(byte[] dat)
         {
-            bglib.SendCommand(comDev, dat);
+            if(comDev.IsOpen==false)
+            {
+                MessageBox.Show("Com port is not opened.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+                bglib.SendCommand(comDev, dat);
+            }
         }
         public frmMain()
         {
@@ -1138,10 +1146,10 @@ namespace ToolSet
             bglib.SendCommand(comDev, cmd2);
         }
 
-        private void toolBtPairClr_Click(object sender,EventArgs e)
+        private void toolBtKeyMgr_Click(object sender,EventArgs e)
         {
-            byte[] cmdErase = bglib.BLECommandFlashPSEraseAll();
-            bglib.SendCommand(comDev, cmdErase);
+            frmPersistent mFrmKeyMgr = new frmPersistent(this);
+            mFrmKeyMgr.Show(this);
         }
     }
 }

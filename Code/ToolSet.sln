@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.1169
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolSet", "ToolSet\ToolSet.csproj", "{5E15D0FC-12A6-4595-8D2E-BC286564569B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{74F397B0-7E71-4228-97C1-A84B1034461F}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "BleMonitorSetup", "BleMonitorSetup\BleMonitorSetup.vdproj", "{0FAE4F32-C60C-46A8-B721-A41166212341}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,8 +19,13 @@ Global
 		{5E15D0FC-12A6-4595-8D2E-BC286564569B}.Debug|x86.Build.0 = Debug|Any CPU
 		{5E15D0FC-12A6-4595-8D2E-BC286564569B}.Release|x86.ActiveCfg = Release|x86
 		{5E15D0FC-12A6-4595-8D2E-BC286564569B}.Release|x86.Build.0 = Release|x86
+		{0FAE4F32-C60C-46A8-B721-A41166212341}.Debug|x86.ActiveCfg = Debug
+		{0FAE4F32-C60C-46A8-B721-A41166212341}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {774ED641-2DD4-47B6-B955-1AB4E3FEDB1F}
 	EndGlobalSection
 EndGlobal

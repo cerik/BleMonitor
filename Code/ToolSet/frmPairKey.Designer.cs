@@ -84,7 +84,7 @@
             this.MinimizeBox = false;
             this.Name = "frmPairKey";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "frmPairKey";
+            this.Text = "PairKey";
             this.ResumeLayout(false);
             this.PerformLayout();
 

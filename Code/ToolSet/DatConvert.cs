@@ -25,7 +25,7 @@ namespace ToolSet
         {
             StringBuilder hex = new StringBuilder(ba.Length * 2);
             foreach (byte b in ba)
-                hex.AppendFormat("{0:x2} ", b);
+                hex.AppendFormat("{0:X2} ", b);
             return hex.ToString();
         }
         static public string ByteArrayToDecString(Byte[] ba)

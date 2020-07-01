@@ -99,9 +99,9 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.tbtDirectLeft = new System.Windows.Forms.ToolStripButton();
             this.tbtDirectRight = new System.Windows.Forms.ToolStripButton();
-            this.timPeridic = new System.Windows.Forms.Timer(this.components);
             this.toolBtPair = new System.Windows.Forms.ToolStripButton();
-            this.toolBtPairClr = new System.Windows.Forms.ToolStripButton();
+            this.toolBtKeyMgr = new System.Windows.Forms.ToolStripButton();
+            this.timPeridic = new System.Windows.Forms.Timer(this.components);
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tabMain.SuspendLayout();
@@ -319,6 +319,7 @@
             // 
             // listScanDev
             // 
+            this.listScanDev.Activation = System.Windows.Forms.ItemActivation.OneClick;
             this.listScanDev.BackColor = System.Drawing.SystemColors.Info;
             this.listScanDev.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.cName,
@@ -331,6 +332,8 @@
             this.listScanDev.FullRowSelect = true;
             this.listScanDev.GridLines = true;
             this.listScanDev.HideSelection = false;
+            this.listScanDev.HotTracking = true;
+            this.listScanDev.HoverSelection = true;
             this.listScanDev.Location = new System.Drawing.Point(0, 0);
             this.listScanDev.MultiSelect = false;
             this.listScanDev.Name = "listScanDev";
@@ -763,7 +766,7 @@
             this.tbtDirectLeft,
             this.tbtDirectRight,
             this.toolBtPair,
-            this.toolBtPairClr});
+            this.toolBtKeyMgr});
             this.toolStripTop.Location = new System.Drawing.Point(0, 0);
             this.toolStripTop.Name = "toolStripTop";
             this.toolStripTop.Size = new System.Drawing.Size(908, 25);
@@ -856,10 +859,6 @@
             this.tbtDirectRight.Text = "->";
             this.tbtDirectRight.Click += new System.EventHandler(this.tbtDirectRight_Click);
             // 
-            // timPeridic
-            // 
-            this.timPeridic.Tick += new System.EventHandler(this.timPeridic_Tick);
-            // 
             // toolBtPair
             // 
             this.toolBtPair.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -871,16 +870,20 @@
             this.toolBtPair.Text = "Pair";
             this.toolBtPair.Click += new System.EventHandler(this.toolBtPair_Click);
             // 
-            // toolBtPairClr
+            // toolBtKeyMgr
             // 
-            this.toolBtPairClr.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolBtPairClr.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.toolBtPairClr.Image = ((System.Drawing.Image)(resources.GetObject("toolBtPairClr.Image")));
-            this.toolBtPairClr.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolBtPairClr.Name = "toolBtPairClr";
-            this.toolBtPairClr.Size = new System.Drawing.Size(71, 22);
-            this.toolBtPairClr.Text = "ClearPaired";
-            this.toolBtPairClr.Click += new System.EventHandler(this.toolBtPairClr_Click);
+            this.toolBtKeyMgr.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolBtKeyMgr.ForeColor = System.Drawing.Color.Fuchsia;
+            this.toolBtKeyMgr.Image = ((System.Drawing.Image)(resources.GetObject("toolBtKeyMgr.Image")));
+            this.toolBtKeyMgr.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolBtKeyMgr.Name = "toolBtKeyMgr";
+            this.toolBtKeyMgr.Size = new System.Drawing.Size(71, 22);
+            this.toolBtKeyMgr.Text = "KeyManger";
+            this.toolBtKeyMgr.Click += new System.EventHandler(this.toolBtKeyMgr_Click);
+            // 
+            // timPeridic
+            // 
+            this.timPeridic.Tick += new System.EventHandler(this.timPeridic_Tick);
             // 
             // frmMain
             // 
@@ -892,7 +895,7 @@
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "frmMain";
-            this.Text = "frmMain";
+            this.Text = "BleMonitor";
             this.Load += new System.EventHandler(this.frmMain_Load);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
@@ -1004,7 +1007,7 @@
         private System.Windows.Forms.ColumnHeader cBond;
         private System.Windows.Forms.ColumnHeader cPackType;
         private System.Windows.Forms.ToolStripButton toolBtPair;
-        private System.Windows.Forms.ToolStripButton toolBtPairClr;
+        private System.Windows.Forms.ToolStripButton toolBtKeyMgr;
     }
 }
 

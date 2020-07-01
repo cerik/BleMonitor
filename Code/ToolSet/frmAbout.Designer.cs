@@ -63,7 +63,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "frmAbout";
-            this.Text = "frmAbout";
+            this.Text = "About";
             this.ResumeLayout(false);
             this.PerformLayout();
 

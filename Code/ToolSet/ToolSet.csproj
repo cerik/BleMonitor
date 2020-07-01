@@ -75,7 +75,9 @@
     <Compile Include="frmPairKey.Designer.cs">
       <DependentUpon>frmPairKey.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmPersistent.cs" />
+    <Compile Include="frmPersistent.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="frmPersistent.Designer.cs">
       <DependentUpon>frmPersistent.cs</DependentUpon>
     </Compile>
